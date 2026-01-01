@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useBanners } from "../hooks/useBanners";
+import { useBannerApi } from "../hooks/useBanners";
 
 export function BannerCarousel() {
-  const { data: banners, isLoading } = useBanners();
+  const { data: banners, isLoading } = useBannerApi();
   const [index, setIndex] = useState(0);
 
   // Auto slide every 5 seconds
@@ -38,8 +38,7 @@ export function BannerCarousel() {
   return (
     <div
       className="position-relative overflow-hidden rounded shadow w-100"
-      style={{ height: "380px" }}
-    >
+      style={{ height: "380px" }}>
       {/* Background Image */}
       <img
         src={imageUrl}
@@ -70,8 +69,7 @@ export function BannerCarousel() {
           {current.ctaText && (
             <a
               href={current.link}
-              className="btn btn-light fw-semibold rounded-pill px-4 py-2 mt-3"
-            >
+              className="btn btn-light fw-semibold rounded-pill px-4 py-2 mt-3">
               {current.ctaText}
             </a>
           )}
@@ -84,8 +82,7 @@ export function BannerCarousel() {
           setIndex((i) => (i - 1 + banners.length) % banners.length)
         }
         className="position-absolute top-50 start-0 translate-middle-y btn btn-dark rounded-circle ms-3"
-        style={{ width: "48px", height: "48px", opacity: 0.7 }}
-      >
+        style={{ width: "48px", height: "48px", opacity: 0.7 }}>
         ‹
       </button>
 
@@ -93,8 +90,7 @@ export function BannerCarousel() {
       <button
         onClick={() => setIndex((i) => (i + 1) % banners.length)}
         className="position-absolute top-50 end-0 translate-middle-y btn btn-dark rounded-circle me-3"
-        style={{ width: "48px", height: "48px", opacity: 0.7 }}
-      >
+        style={{ width: "48px", height: "48px", opacity: 0.7 }}>
         ›
       </button>
 
