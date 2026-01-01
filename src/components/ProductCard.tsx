@@ -1,125 +1,161 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore } from "../store/useCartStore";
 import { Link } from "react-router-dom";
 
 export function ProductCard({ product }: any) {
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
-  const [cartAdded, setCartAdded] = useState(false);
-  const [wishAdded, setWishAdded] = useState(false);
+  // ---- Safe default variant
+  const defaultVariant =
+    product?.variants?.find((v: any) => v.isDefaultVariant) ||
+    product?.variants?.[0] ||
+    null;
 
-  const isInWishlist = wishlistItems?.some((p: any) => p.id === product.id);
+  const [variant, setVariant] = useState<any>(defaultVariant);
 
+  useEffect(() => {
+    setVariant(defaultVariant);
+  }, [product]);
+
+  if (!product || !variant) return null;
+
+  // ---- Prices
+  const price = Number(variant.price ?? 0);
+  const compare = Number(variant.comparePrice ?? 0);
+  const discount =
+    compare > price ? Math.round(((compare - price) / compare) * 100) : 0;
+
+  // ---- Wishlist state
+  const isWishlisted = wishlistItems?.some(
+    (p: any) => p.variantId === variant.id
+  );
+
+  // ---- Cart handler
   const handleAddToCart = () => {
-    addToCart(product);
-    setCartAdded(true);
-
-    setTimeout(() => {
-      setCartAdded(false);
-    }, 2000);
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      image: product.images?.[0],
+      variantId: variant.id,
+      price: price,
+      comparePrice: compare,
+      weight: variant.weight,
+      unit: variant.unitSymbol,
+      stock: variant.stock,
+      sku: variant.sku,
+    });
   };
 
   const handleWishlist = () => {
-    addToWishlist(product);
-    setWishAdded(true);
+    addToWishlist({
+      productId: product.id,
+      name: product.name,
+      image: product.images?.[0],
+      variantId: variant.id,
+      price: price,
+      weight: variant.weight,
+      unit: variant.unitSymbol,
+    });
   };
 
   return (
     <div
       className="bg-white rounded-4 h-100 overflow-hidden"
       style={{
-        boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-        transition: "all 0.3s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.08)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.05)";
+        boxShadow: "0 12px 30px rgba(0,0,0,.06)",
+        transition: "all .3s ease",
       }}>
-      {/* Image */}
-      <div className="position-relative">
+      {/* IMAGE */}
+      <div className="position-relative p-3">
         <Link to={`/product/${product.id}`}>
           <img
-            src={product.image}
-            className="w-100"
-            style={{
-              height: "260px",
-              objectFit: "cover",
-              borderTopLeftRadius: "1rem",
-              borderTopRightRadius: "1rem",
-              cursor: "pointer",
-            }}
+            src={product.images?.[0]}
+            className="w-100 rounded-3"
+            style={{ height: "240px", objectFit: "cover" }}
           />
         </Link>
-        {/* Floating Buttons */}
-        <div className="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2">
-          {/* Wishlist */}
-          <button
-            onClick={handleWishlist}
-            className="btn rounded-circle d-flex align-items-center justify-content-center"
-            style={{
-              background: isInWishlist || wishAdded ? "#16a34a" : "#fff",
-              color: isInWishlist || wishAdded ? "#fff" : "#111",
-              boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-              width: "42px",
-              height: "42px",
-              transition: "all 0.3s ease",
-            }}>
-            {isInWishlist || wishAdded ? (
-              <i className="bi bi-check fs-5"></i>
-            ) : (
-              <i className="bi bi-heart fs-5"></i>
-            )}
-          </button>
 
-          {/* Quick View */}
-          <button
-            className="btn rounded-circle"
-            style={{
-              background: "#fff",
-              boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-              width: "42px",
-              height: "42px",
-            }}>
-            <i className="bi bi-eye fs-5"></i>
-          </button>
-        </div>
+        {/* Stock */}
+        {variant.stock > 0 && (
+          <span className="badge bg-success position-absolute top-0 start-0 m-3">
+            In Stock
+          </span>
+        )}
+
+        {/* Discount */}
+        {discount > 0 && (
+          <span className="badge bg-danger position-absolute bottom-0 start-0 m-3">
+            -{discount}%
+          </span>
+        )}
+
+        {/* Wishlist */}
+        <button
+          onClick={handleWishlist}
+          className="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm">
+          <i
+            className={`bi ${
+              isWishlisted ? "bi-heart-fill text-danger" : "bi-heart"
+            }`}></i>
+        </button>
       </div>
 
-      {/* Content */}
-      <div className="p-4">
+      {/* BODY */}
+      <div className="p-4 pt-2">
+        <div className="text-muted small">{product.category?.name}</div>
+
         <Link
           to={`/product/${product.id}`}
-          className="text-decoration-none text-dark">
-          <div className="fw-bold text-uppercase">{product.name}</div>
+          className="fw-semibold d-block text-dark text-decoration-none">
+          {product.name}
         </Link>
 
-        <div className="text-muted small">{product.category}</div>
-
-        <div className="mt-3 fw-bold fs-5" style={{ color: "#F59E0B" }}>
-          ₹{product.price}
+        {/* Rating */}
+        <div className="text-warning small my-2">
+          ★★★★☆ <span className="text-muted">(3.0)</span>
         </div>
 
-        {/* Add to Cart */}
-        <button
-          className="btn w-100 mt-3 d-flex align-items-center justify-content-center gap-2"
-          style={{
-            background: cartAdded ? "#16a34a" : "#F59E0B",
-            color: "#fff",
-            transition: "all 0.3s ease",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-          }}
-          onClick={handleAddToCart}>
-          {cartAdded ? (
-            <>
-              <i className="bi bi-check-circle"></i> Added
-            </>
-          ) : (
-            "Add to Cart"
+        {/* Price */}
+        <div className="d-flex align-items-center gap-2">
+          <div className="fw-bold fs-5 text-primary">₹{price}</div>
+          {compare > price && (
+            <div className="text-muted text-decoration-line-through">
+              ₹{compare}
+            </div>
           )}
+        </div>
+
+        {/* Variant selector */}
+        {product.variants?.length > 1 && (
+          <select
+            className="form-select form-select-sm mt-2"
+            value={variant.id}
+            onChange={(e) =>
+              setVariant(
+                product.variants.find(
+                  (v: any) => v.id === Number(e.target.value)
+                )
+              )
+            }>
+            {product.variants.map((v: any) => (
+              <option key={v.id} value={v.id}>
+                {v.weight}
+                {v.unitSymbol} – ₹{v.price}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {/* Add to cart */}
+        <button
+          onClick={handleAddToCart}
+          className="btn w-100 mt-3 fw-semibold"
+          style={{
+            background: "#f59e0b",
+            color: "#fff",
+            borderRadius: "12px",
+          }}>
+          <i className="bi bi-cart me-2"></i> Add to Cart
         </button>
       </div>
     </div>
