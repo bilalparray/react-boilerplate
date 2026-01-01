@@ -8,7 +8,7 @@ export function Footer() {
       }}>
       {/* Center watermark logo */}
       <img
-        src="https://wildvalleyfoods.in/media/logo-no-bg-ERF2T3VH.png"
+        src="/logo.png"
         alt=""
         style={{
           position: "absolute",
@@ -28,15 +28,13 @@ export function Footer() {
           <div className="row g-4">
             {/* Brand */}
             <div className="col-md-4">
-              <h4 style={{ color: "#F59E0B", fontWeight: 700 }}>
-                Wild Valley Foods
-              </h4>
+              <h4 style={{ color: "#F59E0B", fontWeight: 700 }}>Alpine</h4>
               <p
                 className="mt-3"
                 style={{ lineHeight: "1.7", color: "#D1D5DB" }}>
-                Wild Valley Foods brings you premium natural products straight
-                from the farms of Kashmir. We believe in purity, honest
-                sourcing, and wellness for every home.
+                Alpine brings you premium natural products straight from the
+                farms of Kashmir. We believe in purity, honest sourcing, and
+                wellness for every home.
               </p>
             </div>
 
@@ -65,7 +63,7 @@ export function Footer() {
 
               <div className="mb-3">
                 <i className="bi bi-envelope me-2"></i>
-                support@wildvalleyfoods.in
+                support@alpine.com
               </div>
 
               <div className="mb-3">
@@ -97,8 +95,8 @@ export function Footer() {
               </span>
             </div>
             <div>
-              © 2025 <span style={{ color: "#F59E0B" }}>WildValleyFoods</span>.
-              All rights reserved.
+              © 2025 <span style={{ color: "#F59E0B" }}>Alpine</span>. All
+              rights reserved.
             </div>
           </div>
         </div>
