@@ -1,3 +1,5 @@
+/* ───────────────────────────────────────── */
+/* Footer links */
 .footer-link {
   color: #d1d5db;
   text-decoration: none;
@@ -6,32 +8,83 @@
 .footer-link:hover {
   color: #f59e0b;
 }
-.dropdown:hover .dropdown-menu {
-  display: block;
+
+/* ───────────────────────────────────────── */
+/* Desktop Categories Dropdown Animation */
+
+.dropdown-menu {
+  display: block; /* required for animation */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  border-radius: 12px;
+  padding: 8px;
 }
-/* Force Alpine mobile menu styles */
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Dropdown items */
+.dropdown-item {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background: #16a34a;
+  color: white;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: #16a34a !important;
+  color: white;
+}
+
+/* ───────────────────────────────────────── */
+/* Mobile Off-Canvas Menu */
+
+#mobileMenu a {
+  text-decoration: none; /* remove bootstrap underline */
+}
+
+/* Reset bootstrap link styles but keep usability */
 #mobileMenu .mobile-link {
   all: unset;
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+
   padding: 14px 24px;
   font-weight: 500;
   color: #111827;
-  cursor: pointer;
+
   border-bottom: 1px solid #f3f4f6;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
+/* Icon style */
 #mobileMenu .mobile-link i {
   font-size: 18px;
   color: #16a34a;
 }
 
+/* Hover state */
 #mobileMenu .mobile-link:hover {
   background: #f9fafb;
 }
 
+/* Active route */
 #mobileMenu .mobile-link.active {
   background: rgba(22, 163, 74, 0.12);
   color: #16a34a;

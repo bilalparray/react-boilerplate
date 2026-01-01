@@ -1,29 +1,58 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+type Product = any;
+
 type CartState = {
+  cartItems: Product[];
+  wishlistItems: Product[];
+
   cartCount: number;
   wishlistCount: number;
-  addToCart: () => void;
-  addToWishlist: () => void;
-  clear: () => void;
+
+  addToCart: (product: Product) => void;
+  addToWishlist: (product: Product) => void;
 };
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
+      cartItems: [],
+      wishlistItems: [],
+
       cartCount: 0,
       wishlistCount: 0,
 
-      addToCart: () => set((state) => ({ cartCount: state.cartCount + 1 })),
+      addToCart: (product) => {
+        const items = get().cartItems;
 
-      addToWishlist: () =>
-        set((state) => ({ wishlistCount: state.wishlistCount + 1 })),
+        const exists = items.find((p) => p.id === product.id);
+        if (exists) return;
 
-      clear: () => set({ cartCount: 0, wishlistCount: 0 }),
+        const updated = [...items, product];
+
+        set({
+          cartItems: updated,
+          cartCount: updated.length,
+        });
+      },
+
+      addToWishlist: (product) => {
+        const items = get().wishlistItems;
+
+        const exists = items.find((p) => p.id === product.id);
+        if (exists) return;
+
+        const updated = [...items, product];
+
+        set({
+          wishlistItems: updated,
+          wishlistCount: updated.length,
+        });
+      },
     }),
     {
-      name: "alpine-cart", // localStorage key
+      name: "alpine-cart-storage",
     }
   )
 );
