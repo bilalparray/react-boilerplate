@@ -6,3 +6,34 @@
 .footer-link:hover {
   color: #f59e0b;
 }
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+/* Force Alpine mobile menu styles */
+#mobileMenu .mobile-link {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  font-weight: 500;
+  color: #111827;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#mobileMenu .mobile-link i {
+  font-size: 18px;
+  color: #16a34a;
+}
+
+#mobileMenu .mobile-link:hover {
+  background: #f9fafb;
+}
+
+#mobileMenu .mobile-link.active {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  font-weight: 600;
+}
