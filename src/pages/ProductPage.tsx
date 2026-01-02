@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useProductApi } from "../hooks/useProductApi";
 import { useCartStore } from "../store/useCartStore";
+import { useProduct } from "../hooks/useProduct";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { data: product, isLoading } = useProductApi(id!);
+  const { product, loading } = useProduct(Number(id));
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
   const [activeImage, setActiveImage] = useState(0);
@@ -13,19 +13,16 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  if (isLoading) return <div className="container py-5">Loading…</div>;
+  if (loading) return <div className="container py-5">Loading…</div>;
   if (!product) return <div className="container py-5">Product not found</div>;
 
   const variant = product.variants[selectedVariantIndex];
-  const isInWishlist = wishlistItems.some((p: any) => p.id === product.id);
+  const isInWishlist = wishlistItems.some((p) => p.id === product.id);
 
   const handleAddToCart = () => {
     addToCart({
-      ...product,
-      variantId: variant.id,
-      price: variant.price,
-      sku: variant.sku,
-      unit: `${variant.weight}${variant.unitSymbol}`,
+      product,
+      variant,
       quantity: qty,
     });
 
@@ -49,7 +46,7 @@ export default function ProductPage() {
           </div>
 
           <div className="d-flex gap-3 mt-3">
-            {product.images.map((img: string, i: number) => (
+            {product.images.map((img, i) => (
               <img
                 key={i}
                 src={img}
@@ -73,25 +70,27 @@ export default function ProductPage() {
         {/* Info */}
         <div className="col-md-6">
           <div className="text-success fw-bold text-uppercase small">
-            {product.category.name}
+            Starting from ₹{product.minPrice}
           </div>
 
           <h1 className="fw-bold mt-2">{product.name}</h1>
 
           <div className="fs-3 fw-bold mt-3" style={{ color: "#F59E0B" }}>
             ₹{variant.price}
-            <span className="text-muted fs-6 ms-2 text-decoration-line-through">
-              ₹{variant.comparePrice}
-            </span>
+            {variant.comparePrice > 0 && (
+              <span className="text-muted fs-6 ms-2 text-decoration-line-through">
+                ₹{variant.comparePrice}
+              </span>
+            )}
           </div>
 
-          <p className="text-muted mt-4">{product.richDescription}</p>
+          <p className="text-muted mt-4">{product.description}</p>
 
           {/* Variants */}
           <div className="mt-4">
             <div className="fw-semibold mb-2">Select Pack</div>
             <div className="d-flex gap-3 flex-wrap">
-              {product.variants.map((v: any, i: number) => (
+              {product.variants.map((v, i) => (
                 <button
                   key={v.id}
                   onClick={() => setSelectedVariantIndex(i)}
@@ -104,8 +103,7 @@ export default function ProductPage() {
                     background: i === selectedVariantIndex ? "#ecfdf5" : "#fff",
                     color: "#111827",
                   }}>
-                  {v.weight}
-                  {v.unitSymbol}
+                  {v.displayWeight}
                 </button>
               ))}
             </div>
@@ -114,13 +112,16 @@ export default function ProductPage() {
           {/* Quantity */}
           <div className="d-flex align-items-center gap-3 mt-4">
             <span className="fw-semibold">Quantity</span>
+
             <div className="d-flex border rounded-pill overflow-hidden">
               <button
                 className="btn px-3"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}>
                 −
               </button>
+
               <div className="px-4 py-2 fw-bold">{qty}</div>
+
               <button className="btn px-3" onClick={() => setQty((q) => q + 1)}>
                 +
               </button>
@@ -151,20 +152,20 @@ export default function ProductPage() {
                 color: isInWishlist ? "#fff" : "#111",
                 boxShadow: "0 10px 20px rgba(0,0,0,.1)",
               }}>
-              <i className={isInWishlist ? "bi bi-check" : "bi bi-heart"}></i>
+              <i className={isInWishlist ? "bi bi-check" : "bi bi-heart"} />
             </button>
           </div>
 
           {/* Trust */}
           <div className="d-flex gap-4 mt-5 text-muted">
             <div>
-              <i className="bi bi-truck"></i> Free Shipping
+              <i className="bi bi-truck" /> Free Shipping
             </div>
             <div>
-              <i className="bi bi-shield-check"></i> 100% Natural
+              <i className="bi bi-shield-check" /> 100% Natural
             </div>
             <div>
-              <i className="bi bi-arrow-repeat"></i> 7-Day Return
+              <i className="bi bi-arrow-repeat" /> 7-Day Return
             </div>
           </div>
         </div>
