@@ -1,35 +1,18 @@
+// hooks/useBanners.ts
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { BannerApiClient } from "../api/clients/bannerApiClient";
-import { storageService } from "../store/storageService";
-import { CommonResponseCodeHandler } from "../api/base/helpers/common-response-code-handler.helper";
-import type { BannerSM } from "../models/service/app/v1/general/bannerSM";
+import { Banner } from "../models/Banner";
+import { getBanners } from "../services/BannerService";
 
-export function useBannerApi() {
-  const navigate = useNavigate();
-
-  const [data, setData] = useState<BannerSM[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function useBanners() {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handler = new CommonResponseCodeHandler(navigate, storageService);
-    const api = new BannerApiClient(handler);
-
-    api
-      .getAllPaginated()
-      .then((res) => {
-        if (res.isError) {
-          throw new Error(res.errorData.displayMessage);
-        }
-        setData(res.successData || []);
-      })
-      .catch((err) => {
-        console.error("Banner API error:", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    getBanners().then((b) => {
+      setBanners(b);
+      setLoading(false);
+    });
   }, []);
 
-  return { data, isLoading };
+  return { banners, loading };
 }

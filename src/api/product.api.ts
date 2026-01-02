@@ -1,7 +1,6 @@
-import { environment } from "../environment";
+import type { ProductDTO } from "../dto/productDTO";
+import { apiGet } from "./base/apiClient";
 
-export async function fetchProduct(productId: number) {
-  const res = await fetch(`${environment.apiBaseUrl}/product/${productId}`);
-  const json = await res.json();
-  return json.successData;
+export function fetchProduct(productId: number) {
+  return apiGet<ProductDTO>(`/product/${productId}`, true);
 }

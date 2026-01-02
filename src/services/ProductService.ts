@@ -28,8 +28,13 @@ function mapProduct(dto: ProductDTO): Product {
 }
 
 export async function getProduct(productId: number): Promise<Product> {
-  const dto = await fetchProduct(productId);
-  return mapProduct(dto);
+  const response = await fetchProduct(productId);
+  const dto = response.successData; // Assuming the data is in the `data` property of the response
+  if (dto != null) {
+    return mapProduct(dto);
+  } else {
+    throw new Error("Data is null");
+  }
 }
 export async function getBestSellingProducts(): Promise<Product[]> {
   const dtos = await fetchBestSellingProducts();

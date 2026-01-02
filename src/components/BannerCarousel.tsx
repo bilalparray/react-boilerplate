@@ -1,111 +1,110 @@
 import { useEffect, useState } from "react";
-import { useBannerApi } from "../hooks/useBanners";
+import { useBanners } from "../hooks/useBanners";
 
 export function BannerCarousel() {
-  const { data: banners, isLoading } = useBannerApi();
+  const { banners, loading } = useBanners();
   const [index, setIndex] = useState(0);
 
-  // Auto slide every 5 seconds
+  // Auto slide
   useEffect(() => {
-    if (!banners || banners.length === 0) return;
+    if (banners.length === 0) return;
+
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
-    }, 5000);
+    }, 6000);
+
     return () => clearInterval(timer);
   }, [banners]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div
-        className="w-100 rounded"
+        className="w-100 rounded-4"
         style={{
-          height: "380px",
-          backgroundColor: "#e5e7eb",
-          animation: "pulse 1.5s infinite",
+          height: "420px",
+          background:
+            "linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%)",
+          backgroundSize: "400% 100%",
+          animation: "shimmer 1.4s ease infinite",
         }}
       />
     );
   }
 
-  if (!banners || banners.length === 0) return null;
+  if (banners.length === 0) return null;
 
   const current = banners[index];
 
-  const imageUrl = current.image_base64
-    ? current.image_base64
-    : `https://api.wildvalleyfoods.in${current.imagePath}`;
-
   return (
     <div
-      className="position-relative overflow-hidden rounded shadow w-100"
-      style={{ height: "380px" }}>
-      {/* Background Image */}
+      className="position-relative overflow-hidden rounded-4 shadow-lg"
+      style={{ height: "420px" }}>
+      {/* Background */}
       <img
-        src={imageUrl}
+        src={current.image_base64 ?? current.imageUrl}
         alt={current.title}
         className="w-100 h-100 position-absolute top-0 start-0"
         style={{
           objectFit: "cover",
           transform: "scale(1.05)",
-          transition: "transform 0.7s",
+          transition: "transform 1s ease",
         }}
       />
 
-      {/* Gradient Overlay */}
+      {/* Gradient */}
       <div
         className="position-absolute top-0 start-0 w-100 h-100"
         style={{
           background:
-            "linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3), transparent)",
+            "linear-gradient(90deg, rgba(0,0,0,0.65) 10%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 70%)",
         }}
       />
 
       {/* Content */}
       <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center px-5 text-white">
         <div style={{ maxWidth: "520px" }}>
-          <h1 className="fw-bold display-5">{current.title}</h1>
-          <p className="mt-3 text-light">{current.description}</p>
+          <h1 className="fw-bold display-5 lh-sm">{current.title}</h1>
 
-          {current.ctaText && (
+          {current.link && (
             <a
               href={current.link}
-              className="btn btn-light fw-semibold rounded-pill px-4 py-2 mt-3">
-              {current.ctaText}
+              className="btn btn-warning rounded-pill px-4 py-2 fw-semibold mt-4">
+              Shop Now
             </a>
           )}
         </div>
       </div>
 
-      {/* Left Arrow */}
+      {/* Navigation */}
       <button
         onClick={() =>
           setIndex((i) => (i - 1 + banners.length) % banners.length)
         }
-        className="position-absolute top-50 start-0 translate-middle-y btn btn-dark rounded-circle ms-3"
-        style={{ width: "48px", height: "48px", opacity: 0.7 }}>
+        className="position-absolute top-50 start-0 translate-middle-y btn btn-light rounded-circle ms-3 shadow"
+        style={{ width: "44px", height: "44px", opacity: 0.85 }}>
         ‹
       </button>
 
-      {/* Right Arrow */}
       <button
         onClick={() => setIndex((i) => (i + 1) % banners.length)}
-        className="position-absolute top-50 end-0 translate-middle-y btn btn-dark rounded-circle me-3"
-        style={{ width: "48px", height: "48px", opacity: 0.7 }}>
+        className="position-absolute top-50 end-0 translate-middle-y btn btn-light rounded-circle me-3 shadow"
+        style={{ width: "44px", height: "44px", opacity: 0.85 }}>
         ›
       </button>
 
-      {/* Dots */}
-      <div className="position-absolute bottom-0 start-50 translate-middle-x mb-3 d-flex gap-2">
-        {banners.map((_: any, i: number) => (
+      {/* Indicators */}
+      <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4 d-flex gap-2">
+        {banners.map((_, i) => (
           <div
             key={i}
             onClick={() => setIndex(i)}
             style={{
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
+              width: i === index ? "28px" : "10px",
+              height: "10px",
+              borderRadius: "20px",
               cursor: "pointer",
-              backgroundColor: i === index ? "#fff" : "rgba(255,255,255,0.4)",
+              backgroundColor: i === index ? "#fff" : "rgba(255,255,255,0.5)",
+              transition: "all 0.3s ease",
             }}
           />
         ))}
