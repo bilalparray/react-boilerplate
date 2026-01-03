@@ -18,12 +18,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth/login" element={<Login />} />
-        <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/shop" element={<Shop />} />
-
+        <Route path="/category/:categoryId" element={<Shop />} />
         <Route element={<RequireAuth role="customer" />}>
           <Route path="/account" element={<Account />} />
         </Route>

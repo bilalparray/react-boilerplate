@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCartStore } from "../store/useCartStore";
-import { categories } from "../data/categories";
+import { useCategories } from "../hooks/useCategories";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -10,6 +10,7 @@ export function Header() {
     useCartStore();
   const navigate = useNavigate();
   const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const { categories } = useCategories();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -108,7 +109,7 @@ export function Header() {
                 {categories.map((cat) => (
                   <li key={cat.slug}>
                     <NavLink
-                      to={`/category/${cat.slug}`}
+                      to={`/category/${cat.id}`}
                       className="dropdown-item">
                       {cat.name}
                     </NavLink>
@@ -215,7 +216,7 @@ export function Header() {
             {categories.map((cat) => (
               <NavLink
                 key={cat.slug}
-                to={`/category/${cat.slug}`}
+                to={`/category/${cat.id}`}
                 className="mobile-link ps-5">
                 {cat.name}
               </NavLink>
