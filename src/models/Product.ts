@@ -4,6 +4,7 @@ export class Product {
   id: number;
   name: string;
   description: string;
+  categoryId: number;
   images: string[];
   variants: ProductVariant[];
 
@@ -11,6 +12,7 @@ export class Product {
     id: number,
     name: string,
     description: string,
+    categoryId: number,
     images: string[],
     variants: ProductVariant[]
   ) {
@@ -19,6 +21,7 @@ export class Product {
     this.description = description;
     this.images = images;
     this.variants = variants;
+    this.categoryId = categoryId;
   }
 
   get defaultVariant() {

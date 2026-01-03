@@ -137,16 +137,16 @@ export function Header() {
                 style={{ width: "220px", background: "#f3f4f6" }}
               />
             )}
-
-            <div className="position-relative">
-              <i className="bi bi-heart fs-5"></i>
-              {wishlistCount > 0 && (
-                <span className="badge bg-success position-absolute top-0 start-100 translate-middle">
-                  {wishlistCount}
-                </span>
-              )}
-            </div>
-
+            <Link to="/wishlist" className="d-flex align-items-center">
+              <div className="position-relative">
+                <i className="bi bi-heart fs-5"></i>
+                {wishlistCount > 0 && (
+                  <span className="badge bg-success position-absolute top-0 start-100 translate-middle">
+                    {wishlistCount}
+                  </span>
+                )}
+              </div>
+            </Link>
             <div
               className="position-relative cursor-pointer"
               data-bs-toggle="offcanvas"

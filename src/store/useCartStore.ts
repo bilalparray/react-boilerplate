@@ -28,7 +28,7 @@ type CartState = {
   decreaseQty: (productId: number, variantId: number) => void;
 
   addToWishlist: (item: CartItem) => void;
-  removeFromWishlist: (productId: number, variantId: number) => void;
+  removeFromWishlist: (productId: number) => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -119,12 +119,8 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      removeFromWishlist: (productId, variantId) => {
-        const items = get().wishlistItems;
-        const updated = items.filter(
-          (x) => !(x.productId === productId && x.variantId === variantId)
-        );
-
+      removeFromWishlist: (id) => {
+        const updated = get().wishlistItems.filter((p) => p.productId !== id);
         set({
           wishlistItems: updated,
           wishlistCount: updated.length,
