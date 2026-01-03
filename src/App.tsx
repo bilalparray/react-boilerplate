@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import CategoryPage from "./pages/Category";
 import ProductPage from "./pages/ProductPage";
 import { RequireAuth } from "./services/auth/RequireAuth";
 import Account from "./pages/Account";
@@ -10,6 +9,7 @@ import Checkout from "./pages/Checkout";
 import Login from "./admin/pages/Login";
 import WishlistPage from "./pages/WishlistPage";
 import Shop from "./pages/Shop";
+import CategoryPage from "./pages/Category";
 
 export default function App() {
   return (
@@ -22,7 +22,7 @@ export default function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/category/:categoryId" element={<Shop />} />
+        <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route element={<RequireAuth role="customer" />}>
           <Route path="/account" element={<Account />} />
         </Route>
