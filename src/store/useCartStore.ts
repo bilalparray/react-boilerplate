@@ -8,7 +8,7 @@ type CartItem = {
   variantId: number;
   price: number;
   comparePrice?: number;
-  weight: string;
+  weight: number;
   unit: string;
   qty: number;
   stock: number;

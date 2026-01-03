@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useProduct } from "../hooks/useProduct";
+import { BestSelling } from "../components/BestSelling";
 
 export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
-  const { addToCart, addToWishlist, wishlistItems } = useCartStore();
+
+  const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } =
+    useCartStore();
 
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -17,20 +20,58 @@ export default function ProductPage() {
   if (!product) return <div className="container py-5">Product not found</div>;
 
   const variant = product.variants[selectedVariantIndex];
-  const isInWishlist = wishlistItems.some((p) => p.id === product.id);
 
+  const isInWishlist = wishlistItems.some(
+    (x) => x.productId === product.id && x.variantId === variant.id
+  );
+
+  /* ---------------------------------------------
+     ADD TO CART — STRICTLY MATCHES CartItem TYPE
+  --------------------------------------------- */
   const handleAddToCart = () => {
+    if (!variant.isInStock) return;
+
     addToCart({
-      product,
-      variant,
-      quantity: qty,
+      productId: product.id,
+      name: product.name,
+      image: product.images[0],
+      variantId: variant.id,
+      price: variant.price,
+      comparePrice: variant.comparePrice,
+      weight: variant.weight,
+      unit: variant.unit.symbol,
+      qty: qty,
+      stock: variant.stock,
+      sku: `${product.id}-${variant.id}`,
     });
 
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const handleWishlist = () => addToWishlist(product);
+  /* ---------------------------------------------
+     WISHLIST TOGGLE (ADD / REMOVE)
+  --------------------------------------------- */
+  const handleWishlist = () => {
+    if (isInWishlist) {
+      removeFromWishlist(product.id, variant.id);
+      return;
+    }
+
+    addToWishlist({
+      productId: product.id,
+      name: product.name,
+      image: product.images[0],
+      variantId: variant.id,
+      price: variant.price,
+      comparePrice: variant.comparePrice,
+      weight: variant.weight,
+      unit: variant.unit.symbol,
+      qty: 1,
+      stock: variant.stock,
+      sku: `${product.id}-${variant.id}`,
+    });
+  };
 
   return (
     <div className="container py-5">
@@ -101,7 +142,6 @@ export default function ProductPage() {
                         ? "2px solid #16a34a"
                         : "1px solid #e5e7eb",
                     background: i === selectedVariantIndex ? "#ecfdf5" : "#fff",
-                    color: "#111827",
                   }}>
                   {v.displayWeight}
                 </button>
@@ -122,7 +162,9 @@ export default function ProductPage() {
 
               <div className="px-4 py-2 fw-bold">{qty}</div>
 
-              <button className="btn px-3" onClick={() => setQty((q) => q + 1)}>
+              <button
+                className="btn px-3"
+                onClick={() => setQty((q) => Math.min(variant.stock, q + 1))}>
                 +
               </button>
             </div>
@@ -134,10 +176,12 @@ export default function ProductPage() {
           <div className="d-flex gap-3 mt-5">
             <button
               onClick={handleAddToCart}
+              disabled={!variant.isInStock}
               className="btn flex-fill rounded-pill py-3"
               style={{
                 background: added ? "#16a34a" : "#F59E0B",
                 color: "#fff",
+                opacity: variant.isInStock ? 1 : 0.5,
               }}>
               {added ? "✔ Added" : "Add to Cart"}
             </button>
@@ -155,21 +199,9 @@ export default function ProductPage() {
               <i className={isInWishlist ? "bi bi-check" : "bi bi-heart"} />
             </button>
           </div>
-
-          {/* Trust */}
-          <div className="d-flex gap-4 mt-5 text-muted">
-            <div>
-              <i className="bi bi-truck" /> Free Shipping
-            </div>
-            <div>
-              <i className="bi bi-shield-check" /> 100% Natural
-            </div>
-            <div>
-              <i className="bi bi-arrow-repeat" /> 7-Day Return
-            </div>
-          </div>
         </div>
       </div>
+      <BestSelling />
     </div>
   );
 }
