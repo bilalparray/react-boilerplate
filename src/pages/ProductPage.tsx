@@ -5,11 +5,13 @@ import { useProduct } from "../hooks/useProduct";
 import { useProductRating } from "../hooks/useProductRating";
 import { RatingStars } from "../components/Ratings/RatingStars";
 import "./ProductPage.css";
+import { WriteReviewModal } from "../components/Ratings/WriteReviewModal";
 
 export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
   const { rating, count } = useProductRating(Number(id));
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
@@ -223,13 +225,24 @@ export default function ProductPage() {
 
         {tab === "reviews" && (
           <div className="mt-4">
-            <RatingStars rating={rating} count={count} />
-            <p className="text-muted mt-2">
-              Reviews are loaded from customers who purchased this product.
-            </p>
+            <div className="d-flex justify-content-between align-items-center">
+              <RatingStars rating={rating} count={count} />
+              <button
+                className="btn btn-outline-success"
+                onClick={() => setShowReviewModal(true)}>
+                Write a Review
+              </button>
+            </div>
           </div>
         )}
       </div>
+      {showReviewModal && (
+        <WriteReviewModal
+          productId={product.id}
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={() => setShowReviewModal(false)}
+        />
+      )}
     </div>
   );
 }

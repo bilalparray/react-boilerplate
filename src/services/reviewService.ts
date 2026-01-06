@@ -1,4 +1,4 @@
-import { fetchProductReviews } from "../api/review.api";
+import { createProductReview, fetchProductReviews } from "../api/review.api";
 
 export async function getProductReviews(productId: number) {
   const res = await fetchProductReviews(productId);
@@ -13,4 +13,14 @@ export async function getProductReviews(productId: number) {
         : reviews.reduce((s: any, r: { rating: any }) => s + r.rating, 0) /
           reviews.length,
   };
+}
+
+export async function submitProductReview(data: {
+  name: string;
+  email: string;
+  rating: number;
+  comment: string;
+  productId: number;
+}) {
+  return await createProductReview(data);
 }
