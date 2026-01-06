@@ -1,19 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-type CartItem = {
-  productId: number;
-  name: string;
-  image: string;
-  variantId: number;
-  price: number;
-  comparePrice?: number;
-  weight: number;
-  unit: string;
-  qty: number;
-  stock: number;
-  sku: string;
-};
+import type { CartItem } from "../models/CartItems";
 
 type CartState = {
   cartItems: CartItem[];
@@ -22,13 +9,13 @@ type CartState = {
   cartCount: number;
   wishlistCount: number;
 
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: Omit<CartItem, "qty">) => void;
   removeFromCart: (productId: number, variantId: number) => void;
   increaseQty: (productId: number, variantId: number) => void;
   decreaseQty: (productId: number, variantId: number) => void;
 
-  addToWishlist: (item: CartItem) => void;
-  removeFromWishlist: (productId: number) => void;
+  addToWishlist: (item: Omit<CartItem, "qty">) => void;
+  removeFromWishlist: (productId: number, variantId: number) => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -41,7 +28,6 @@ export const useCartStore = create<CartState>()(
 
       addToCart: (item) => {
         const items = get().cartItems;
-
         const existing = items.find(
           (x) =>
             x.productId === item.productId && x.variantId === item.variantId
@@ -49,12 +35,13 @@ export const useCartStore = create<CartState>()(
 
         if (existing) {
           if (existing.qty < existing.stock) {
-            existing.qty += 1;
+            existing.qty++;
+            set({
+              cartItems: [...items],
+              cartCount: get().cartCount + 1,
+            });
           }
-          return set({
-            cartItems: [...items],
-            cartCount: get().cartCount + 1,
-          });
+          return;
         }
 
         set({
@@ -68,12 +55,10 @@ export const useCartStore = create<CartState>()(
         const item = items.find(
           (x) => x.productId === productId && x.variantId === variantId
         );
-        if (!item) return;
+        if (!item || item.qty >= item.stock) return;
 
-        if (item.qty < item.stock) {
-          item.qty += 1;
-          set({ cartItems: [...items], cartCount: get().cartCount + 1 });
-        }
+        item.qty++;
+        set({ cartItems: [...items], cartCount: get().cartCount + 1 });
       },
 
       decreaseQty: (productId, variantId) => {
@@ -81,12 +66,10 @@ export const useCartStore = create<CartState>()(
         const item = items.find(
           (x) => x.productId === productId && x.variantId === variantId
         );
-        if (!item) return;
+        if (!item || item.qty <= 1) return;
 
-        if (item.qty > 1) {
-          item.qty -= 1;
-          set({ cartItems: [...items], cartCount: get().cartCount - 1 });
-        }
+        item.qty--;
+        set({ cartItems: [...items], cartCount: get().cartCount - 1 });
       },
 
       removeFromCart: (productId, variantId) => {
@@ -106,29 +89,28 @@ export const useCartStore = create<CartState>()(
 
       addToWishlist: (item) => {
         const items = get().wishlistItems;
-
-        const exists = items.find(
+        const exists = items.some(
           (x) =>
             x.productId === item.productId && x.variantId === item.variantId
         );
         if (exists) return;
 
         set({
-          wishlistItems: [...items, item],
+          wishlistItems: [...items, { ...item, qty: 1 }],
           wishlistCount: get().wishlistCount + 1,
         });
       },
 
-      removeFromWishlist: (id) => {
-        const updated = get().wishlistItems.filter((p) => p.productId !== id);
+      removeFromWishlist: (productId, variantId) => {
+        const updated = get().wishlistItems.filter(
+          (x) => !(x.productId === productId && x.variantId === variantId)
+        );
         set({
           wishlistItems: updated,
           wishlistCount: updated.length,
         });
       },
     }),
-    {
-      name: "alpine-cart-storage",
-    }
+    { name: "alpine-cart" }
   )
 );

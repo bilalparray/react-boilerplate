@@ -87,7 +87,7 @@ export default function WishlistPage() {
                 </button>
 
                 <button
-                  onClick={() => removeFromWishlist(p.productId)}
+                  onClick={() => removeFromWishlist(p.productId, p.variantId)}
                   className="btn btn-light btn-sm text-danger">
                   <i className="bi bi-trash"></i>
                 </button>

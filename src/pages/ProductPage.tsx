@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useProduct } from "../hooks/useProduct";
-import { BestSelling } from "../components/BestSelling";
 
 export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
 
-  const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } =
-    useCartStore();
+  const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -25,64 +23,54 @@ export default function ProductPage() {
     (x) => x.productId === product.id && x.variantId === variant.id
   );
 
-  /* ---------------------------------------------
-     ADD TO CART — STRICTLY MATCHES CartItem TYPE
-  --------------------------------------------- */
+  const price = variant.price;
+  const compare = variant.comparePrice;
+
+  /* -------------------------------
+     ADD TO CART (qty-aware)
+  -------------------------------- */
   const handleAddToCart = () => {
-    if (!variant.isInStock) return;
-
-    addToCart({
-      productId: product.id,
-      name: product.name,
-      image: product.images[0],
-      variantId: variant.id,
-      price: variant.price,
-      comparePrice: variant.comparePrice,
-      weight: variant.weight,
-      unit: variant.unit.symbol,
-      qty: qty,
-      stock: variant.stock,
-      sku: `${product.id}-${variant.id}`,
-    });
-
+    for (let i = 0; i < qty; i++) {
+      addToCart({
+        productId: product.id,
+        variantId: variant.id,
+        name: product.name,
+        image: product.images?.[0],
+        price,
+        comparePrice: compare,
+        weight: variant.weight,
+        unit: variant.unit.symbol,
+        stock: variant.stock,
+      });
+    }
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    setTimeout(() => setAdded(false), 1500);
   };
 
-  /* ---------------------------------------------
-     WISHLIST TOGGLE (ADD / REMOVE)
-  --------------------------------------------- */
   const handleWishlist = () => {
-    if (isInWishlist) {
-      removeFromWishlist(product.id, variant.id);
-      return;
-    }
-
     addToWishlist({
       productId: product.id,
-      name: product.name,
-      image: product.images[0],
       variantId: variant.id,
-      price: variant.price,
-      comparePrice: variant.comparePrice,
+      name: product.name,
+      image: product.images?.[0],
+      price,
+      comparePrice: compare,
       weight: variant.weight,
       unit: variant.unit.symbol,
-      qty: 1,
       stock: variant.stock,
-      sku: `${product.id}-${variant.id}`,
     });
   };
 
   return (
     <div className="container py-5">
-      <div className="row g-5">
-        {/* Gallery */}
+      <div className="row g-5 align-items-start">
+        {/* GALLERY */}
         <div className="col-md-6">
-          <div className="rounded-4 overflow-hidden shadow">
+          <div className="rounded-4 overflow-hidden shadow-lg">
             <img
               src={product.images[activeImage]}
               className="w-100"
-              style={{ height: "450px", objectFit: "cover" }}
+              style={{ height: "480px", objectFit: "cover" }}
             />
           </div>
 
@@ -92,10 +80,10 @@ export default function ProductPage() {
                 key={i}
                 src={img}
                 onClick={() => setActiveImage(i)}
-                className="rounded-3"
+                className="rounded-3 shadow-sm"
                 style={{
-                  width: "70px",
-                  height: "70px",
+                  width: "72px",
+                  height: "72px",
                   objectFit: "cover",
                   cursor: "pointer",
                   border:
@@ -108,7 +96,7 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Info */}
+        {/* INFO */}
         <div className="col-md-6">
           <div className="text-success fw-bold text-uppercase small">
             Starting from ₹{product.minPrice}
@@ -117,25 +105,28 @@ export default function ProductPage() {
           <h1 className="fw-bold mt-2">{product.name}</h1>
 
           <div className="fs-3 fw-bold mt-3" style={{ color: "#F59E0B" }}>
-            ₹{variant.price}
-            {variant.comparePrice > 0 && (
+            ₹{price}
+            {compare > 0 && (
               <span className="text-muted fs-6 ms-2 text-decoration-line-through">
-                ₹{variant.comparePrice}
+                ₹{compare}
               </span>
             )}
           </div>
 
           <p className="text-muted mt-4">{product.description}</p>
 
-          {/* Variants */}
+          {/* VARIANTS */}
           <div className="mt-4">
             <div className="fw-semibold mb-2">Select Pack</div>
             <div className="d-flex gap-3 flex-wrap">
               {product.variants.map((v, i) => (
                 <button
                   key={v.id}
-                  onClick={() => setSelectedVariantIndex(i)}
-                  className="btn rounded-pill px-4 py-2"
+                  onClick={() => {
+                    setSelectedVariantIndex(i);
+                    setQty(1);
+                  }}
+                  className="btn rounded-pill px-4 py-2 fw-semibold"
                   style={{
                     border:
                       i === selectedVariantIndex
@@ -149,11 +140,11 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* Quantity */}
-          <div className="d-flex align-items-center gap-3 mt-4">
+          {/* QUANTITY */}
+          <div className="d-flex align-items-center gap-4 mt-4">
             <span className="fw-semibold">Quantity</span>
 
-            <div className="d-flex border rounded-pill overflow-hidden">
+            <div className="d-flex border rounded-pill overflow-hidden shadow-sm">
               <button
                 className="btn px-3"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}>
@@ -172,12 +163,12 @@ export default function ProductPage() {
             <span className="text-muted">Stock: {variant.stock}</span>
           </div>
 
-          {/* Buttons */}
+          {/* ACTIONS */}
           <div className="d-flex gap-3 mt-5">
             <button
               onClick={handleAddToCart}
               disabled={!variant.isInStock}
-              className="btn flex-fill rounded-pill py-3"
+              className="btn flex-fill rounded-pill py-3 fw-semibold shadow-lg"
               style={{
                 background: added ? "#16a34a" : "#F59E0B",
                 color: "#fff",
@@ -188,20 +179,18 @@ export default function ProductPage() {
 
             <button
               onClick={handleWishlist}
-              className="btn rounded-circle"
+              className="btn rounded-circle shadow-lg"
               style={{
                 width: "52px",
                 height: "52px",
                 background: isInWishlist ? "#16a34a" : "#fff",
                 color: isInWishlist ? "#fff" : "#111",
-                boxShadow: "0 10px 20px rgba(0,0,0,.1)",
               }}>
               <i className={isInWishlist ? "bi bi-check" : "bi bi-heart"} />
             </button>
           </div>
         </div>
       </div>
-      <BestSelling />
     </div>
   );
 }

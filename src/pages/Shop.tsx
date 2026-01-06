@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useProducts } from "../hooks/useProducts";
-import { ProductCard } from "../components/ProductCard";
+import { ProductCard } from "../components/Product/ProductCard";
 
 export default function Shop() {
   const [page, setPage] = useState(1);

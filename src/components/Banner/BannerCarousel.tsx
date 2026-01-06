@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useBanners } from "../hooks/useBanners";
+import { useBanners } from "../../hooks/useBanners";
+import "./BannerCarousel.css";
 
 export function BannerCarousel() {
   const { banners, loading } = useBanners();
@@ -38,37 +39,32 @@ export function BannerCarousel() {
   return (
     <div
       className="position-relative overflow-hidden rounded-4 shadow-lg"
-      style={{ height: "420px" }}>
-      {/* Background */}
+      style={{ height: "460px" }}>
+      {/* Background image */}
       <img
         src={current.image_base64 ?? current.imageUrl}
         alt={current.title}
-        className="w-100 h-100 position-absolute top-0 start-0"
-        style={{
-          objectFit: "cover",
-          transform: "scale(1.05)",
-          transition: "transform 1s ease",
-        }}
+        className="w-100 h-100 position-absolute top-0 start-0 banner-image"
+        style={{ objectFit: "cover" }}
       />
 
-      {/* Gradient */}
-      <div
-        className="position-absolute top-0 start-0 w-100 h-100"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(0,0,0,0.65) 10%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0) 70%)",
-        }}
-      />
+      {/* Premium gradient */}
+      <div className="position-absolute top-0 start-0 w-100 h-100 banner-overlay" />
 
       {/* Content */}
-      <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center px-5 text-white">
-        <div style={{ maxWidth: "520px" }}>
-          <h1 className="fw-bold display-5 lh-sm">{current.title}</h1>
+      <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center px-5">
+        <div className="banner-glass text-white" style={{ maxWidth: "520px" }}>
+          <h1 className="fw-bold display-5 lh-sm mb-3">{current.title}</h1>
+
+          <p style={{ color: "#d1fae5" }}>
+            Pure Kashmiri produce, sourced directly from farms and delivered to
+            your home with uncompromised freshness.
+          </p>
 
           {current.link && (
             <a
               href={current.link}
-              className="btn btn-warning rounded-pill px-4 py-2 fw-semibold mt-4">
+              className="btn banner-cta rounded-pill px-4 py-2 fw-semibold mt-3">
               Shop Now
             </a>
           )}
@@ -81,14 +77,14 @@ export function BannerCarousel() {
           setIndex((i) => (i - 1 + banners.length) % banners.length)
         }
         className="position-absolute top-50 start-0 translate-middle-y btn btn-light rounded-circle ms-3 shadow"
-        style={{ width: "44px", height: "44px", opacity: 0.85 }}>
+        style={{ width: "46px", height: "46px", opacity: 0.9 }}>
         ‹
       </button>
 
       <button
         onClick={() => setIndex((i) => (i + 1) % banners.length)}
         className="position-absolute top-50 end-0 translate-middle-y btn btn-light rounded-circle me-3 shadow"
-        style={{ width: "44px", height: "44px", opacity: 0.85 }}>
+        style={{ width: "46px", height: "46px", opacity: 0.9 }}>
         ›
       </button>
 
@@ -99,11 +95,12 @@ export function BannerCarousel() {
             key={i}
             onClick={() => setIndex(i)}
             style={{
-              width: i === index ? "28px" : "10px",
+              width: i === index ? "32px" : "10px",
               height: "10px",
               borderRadius: "20px",
               cursor: "pointer",
-              backgroundColor: i === index ? "#fff" : "rgba(255,255,255,0.5)",
+              backgroundColor:
+                i === index ? "#facc15" : "rgba(255,255,255,0.4)",
               transition: "all 0.3s ease",
             }}
           />

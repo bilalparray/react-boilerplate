@@ -1,5 +1,5 @@
-import { useBestSellingProducts } from "../hooks/useBestSellingProducts";
-import { ProductCard } from "./ProductCard";
+import { useBestSellingProducts } from "../../hooks/useBestSellingProducts";
+import { ProductCard } from "../Product/ProductCard";
 
 export function BestSelling() {
   const { products, loading } = useBestSellingProducts();

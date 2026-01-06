@@ -1,0 +1,78 @@
+@keyframes kenburns {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.banner-image {
+  animation: kenburns 12s ease-in-out infinite alternate;
+}
+
+.banner-overlay {
+  background: linear-gradient(
+    90deg,
+    rgba(5, 20, 15, 0.9) 5%,
+    rgba(15, 61, 46, 0.75) 35%,
+    rgba(15, 61, 46, 0.2) 60%,
+    rgba(0, 0, 0, 0) 75%
+  );
+}
+
+.banner-glass {
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.banner-cta {
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  color: #0f3d2e;
+  border: none;
+  box-shadow: 0 10px 30px rgba(250, 204, 21, 0.45);
+}
+
+.banner-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(250, 204, 21, 0.6);
+}
+@media (max-width: 768px) {
+  .banner-glass {
+    max-width: 92% !important;
+    padding: 22px !important;
+    border-radius: 16px !important;
+  }
+
+  .banner-glass h1 {
+    font-size: 1.9rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .banner-glass p {
+    font-size: 14px !important;
+  }
+
+  .banner-cta {
+    width: 100%;
+    text-align: center;
+    padding: 12px 18px !important;
+    font-size: 15px;
+  }
+
+  .banner-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 20, 15, 0.85) 10%,
+      rgba(15, 61, 46, 0.65) 45%,
+      rgba(0, 0, 0, 0.15) 70%
+    );
+  }
+
+  .banner-image {
+    animation: none; /* disable heavy zoom on mobile */
+  }
+}

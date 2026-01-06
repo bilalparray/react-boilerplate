@@ -1,0 +1,52 @@
+.feature-section {
+  padding: 70px 0;
+  background: #f7faf8;
+}
+
+.feature-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 28px 26px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 100%;
+  box-shadow: 0 20px 40px rgba(16, 39, 30, 0.08);
+  transition: all 0.35s ease;
+  border: 1px solid rgba(15, 61, 46, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 70px rgba(16, 39, 30, 0.15);
+}
+
+.feature-icon {
+  min-width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #0f3d2e, #1f6f50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(31, 111, 80, 0.35);
+}
+
+.feature-icon i {
+  font-size: 26px;
+  color: #facc15;
+}
+
+.feature-text h6 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f3d2e;
+  margin-bottom: 6px;
+}
+
+.feature-text p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}

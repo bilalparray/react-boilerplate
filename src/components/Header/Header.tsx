@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useCartStore } from "../store/useCartStore";
-import { useCategories } from "../hooks/useCategories";
+import { useCartStore } from "../../store/useCartStore";
+import { useCategories } from "../../hooks/useCategories";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,13 +22,45 @@ export function Header() {
     <header className="w-100">
       {/* Top Ribbon */}
       <div
-        className="w-100 text-center py-2"
+        className="w-100 py-2"
         style={{
           background: "linear-gradient(90deg, #0f3d2e, #1f6f50)",
           color: "#eaf7f1",
           fontSize: "14px",
         }}>
-        Pure Kashmiri produce • Farm-to-Home • No middlemen
+        <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+          {/* Left: Store info */}
+          <div className="d-flex flex-wrap gap-3 align-items-center">
+            <span>
+              <i className="bi bi-geo-alt-fill me-1"></i>
+              Kashmir, India
+            </span>
+
+            <span>
+              <i className="bi bi-telephone-fill me-1"></i>
+              +91 98765 43210
+            </span>
+
+            <span>
+              <i className="bi bi-envelope-fill me-1"></i>
+              support@alpine.com
+            </span>
+          </div>
+
+          {/* Right: Brand message + Social */}
+          <div className="d-flex align-items-center gap-3">
+            <span className="d-none d-md-inline">
+              Pure Kashmiri produce • Farm-to-Home • No middlemen
+            </span>
+
+            <div className="d-flex gap-3 fs-6">
+              <i className="bi bi-facebook"></i>
+              <i className="bi bi-instagram"></i>
+              <i className="bi bi-youtube"></i>
+              <i className="bi bi-twitter-x"></i>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Sticky Header */}
