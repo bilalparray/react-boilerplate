@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../../store/useCartStore";
 import type { Product } from "../../models/Product";
 import type { ProductVariant } from "../../models/ProductVaraint";
+import { RatingStars } from "../Ratings/RatingStars";
+import { useProductRating } from "../../hooks/useProductRating";
 
 type Props = {
   product: Product;
@@ -10,6 +12,7 @@ type Props = {
 
 export function ProductCard({ product }: Props) {
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
+  const { rating, count } = useProductRating(product.id);
 
   const defaultVariant =
     product.variants.find((v) => v.isDefault) || product.variants[0];
@@ -103,7 +106,7 @@ export function ProductCard({ product }: Props) {
           </Link>
 
           <div className="text-warning small my-2">
-            ★★★★☆ <span className="text-muted">(3.0)</span>
+            <RatingStars rating={rating} count={count} />
           </div>
 
           <div className="d-flex align-items-center gap-2">

@@ -7,6 +7,8 @@ export class Product {
   categoryId: number;
   images: string[];
   variants: ProductVariant[];
+  rating: number; // e.g. 3.7
+  reviewCount: number; // e.g. 124
 
   constructor(
     id: number,
@@ -14,7 +16,9 @@ export class Product {
     description: string,
     categoryId: number,
     images: string[],
-    variants: ProductVariant[]
+    variants: ProductVariant[],
+    rating = 0,
+    reviewCount = 0
   ) {
     this.id = id;
     this.name = name;
@@ -22,6 +26,8 @@ export class Product {
     this.images = images;
     this.variants = variants;
     this.categoryId = categoryId;
+    this.rating = rating;
+    this.reviewCount = reviewCount;
   }
 
   get defaultVariant() {
@@ -30,5 +36,17 @@ export class Product {
 
   get minPrice() {
     return Math.min(...this.variants.map((v) => v.price));
+  }
+
+  get hasReviews() {
+    return this.reviewCount > 0;
+  }
+
+  get fullStars() {
+    return Math.floor(this.rating);
+  }
+
+  get hasHalfStar() {
+    return this.rating % 1 >= 0.5;
   }
 }
