@@ -13,6 +13,7 @@ import AboutUs from "./pages/About";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSummaryPage from "./pages/OrderSummaryPage";
+import ContactUs from "./pages/ContactUs";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/order-summary" element={<OrderSummaryPage />} />
 
         <Route path="/shop" element={<Shop />} />

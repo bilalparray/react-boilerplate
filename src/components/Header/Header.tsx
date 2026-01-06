@@ -159,17 +159,20 @@ export function Header() {
               }>
               About Us
             </NavLink>
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `fw-semibold text-decoration-none ${
+                  isActive ? "text-success" : "text-dark"
+                }`
+              }>
+              Contact
+            </NavLink>
           </nav>
 
           {/* Right Cluster */}
           <div className="d-flex align-items-center gap-4">
-            {!scrolled && (
-              <input
-                placeholder="Search organic foods…"
-                className="form-control rounded-pill px-4 d-none d-lg-block"
-                style={{ width: "220px", background: "#f3f4f6" }}
-              />
-            )}
+            {!scrolled && <i className="bi bi-search fs-5"></i>}
             <Link to="/wishlist" className="d-flex align-items-center">
               <div className="position-relative">
                 <i className="bi bi-heart fs-5"></i>
