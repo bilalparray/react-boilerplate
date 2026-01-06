@@ -10,6 +10,7 @@ import Login from "./admin/pages/Login";
 import WishlistPage from "./pages/WishlistPage";
 import Shop from "./pages/Shop";
 import CategoryPage from "./pages/Category";
+import AboutUs from "./pages/About";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route element={<RequireAuth role="customer" />}>

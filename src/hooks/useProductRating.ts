@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { ReviewDTO } from "../dto/reviewDTO";
 import { getProductReviews } from "../services/reviewService";
 
 export function useProductRating(productId: number) {
+  const [reviews, setReviews] = useState<ReviewDTO[]>([]);
   const [rating, setRating] = useState(0);
   const [count, setCount] = useState(0);
 
@@ -9,6 +11,7 @@ export function useProductRating(productId: number) {
     if (!productId) return;
 
     getProductReviews(productId).then((res) => {
+      setReviews(res.reviews);
       setRating(res.average);
       setCount(res.count);
     });
@@ -18,5 +21,5 @@ export function useProductRating(productId: number) {
     load();
   }, [load]);
 
-  return { rating, count, refresh: load };
+  return { reviews, rating, count, refresh: load };
 }

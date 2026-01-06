@@ -1,7 +1,8 @@
+import type { ReviewDTO } from "../dto/reviewDTO";
 import { apiGet, apiPost } from "./base/apiClient";
 
 export function fetchProductReviews(productId: number) {
-  return apiGet<any>(
+  return apiGet<ReviewDTO[]>(
     `/review/GetAllPaginatedProductReviewsByProductId/${productId}`
   );
 }

@@ -151,13 +151,13 @@ export function Header() {
             </div>
 
             <NavLink
-              to="/story"
+              to="/about"
               className={({ isActive }) =>
                 `fw-semibold text-decoration-none ${
                   isActive ? "text-success" : "text-dark"
                 }`
               }>
-              Our Story
+              About Us
             </NavLink>
           </nav>
 

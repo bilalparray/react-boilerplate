@@ -11,7 +11,7 @@ export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const { rating, count, refresh } = useProductRating(Number(id));
+  const { rating, count, reviews, refresh } = useProductRating(Number(id));
 
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
@@ -225,7 +225,7 @@ export default function ProductPage() {
 
         {tab === "reviews" && (
           <div className="mt-4">
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center mb-3">
               <RatingStars rating={rating} count={count} />
               <button
                 className="btn btn-outline-success"
@@ -233,6 +233,27 @@ export default function ProductPage() {
                 Write a Review
               </button>
             </div>
+
+            {reviews.length === 0 && (
+              <p className="text-muted">No reviews yet</p>
+            )}
+
+            {reviews.map((r) => (
+              <div key={r.id} className="border-bottom py-3">
+                <div className="d-flex justify-content-between">
+                  <div className="fw-semibold">{r.name}</div>
+                  <small className="text-muted">
+                    {new Date(r.createdOnUTC).toLocaleDateString()}
+                  </small>
+                </div>
+
+                <div className="mb-1">
+                  <RatingStars rating={r.rating} count={1} />
+                </div>
+
+                <p className="mb-0 text-muted">{r.comment}</p>
+              </div>
+            ))}
           </div>
         )}
       </div>
