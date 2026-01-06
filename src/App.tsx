@@ -16,6 +16,7 @@ import OrderSummaryPage from "./pages/OrderSummaryPage";
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
+import ReturnExchangePolicy from "./pages/ReturnExchangePolicy";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/order-summary" element={<OrderSummaryPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
         <Route path="/terms" element={<Terms />} />
 
         <Route path="/shop" element={<Shop />} />

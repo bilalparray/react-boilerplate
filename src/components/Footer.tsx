@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export function Footer() {
   return (
     <footer
@@ -25,9 +27,21 @@ export function Footer() {
           <div className="col-md-4">
             <h5 className="mb-3">Quick Links</h5>
             <ul className="list-unstyled d-flex flex-column gap-2 text-secondary">
-              <li>Home</li>
-              <li>About Us</li>
-              <li>Contact Us</li>
+              <li>
+                <Link to="/" className="footer-link">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="footer-link">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="footer-link">
+                  Contact Us
+                </Link>
+              </li>
             </ul>
 
             <div className="mt-4">
@@ -46,11 +60,21 @@ export function Footer() {
           <div className="col-md-4">
             <h5 className="mb-3">Company Policy</h5>
             <ul className="list-unstyled d-flex flex-column gap-2 text-secondary">
-              <li>Terms & Conditions</li>
-              <li>Privacy Policy</li>
-              <li>Return & Exchange Policy</li>
-              <li>Shipping Policy</li>
-              <li>Cancellation Policy</li>
+              <li>
+                <Link to="/terms" className="footer-link">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="footer-link">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="footer-link">
+                  Return & Exchange Policy
+                </Link>
+              </li>
             </ul>
           </div>
 

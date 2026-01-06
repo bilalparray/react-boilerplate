@@ -172,7 +172,11 @@ export function Header() {
 
           {/* Right Cluster */}
           <div className="d-flex align-items-center gap-4">
-            {!scrolled && <i className="bi bi-search fs-5"></i>}
+            <Link to="/shop" className="d-flex align-items-center">
+              <div className="position-relative">
+                <i className="bi bi-search fs-5"></i>
+              </div>
+            </Link>
             <Link to="/wishlist" className="d-flex align-items-center">
               <div className="position-relative">
                 <i className="bi bi-heart fs-5"></i>
