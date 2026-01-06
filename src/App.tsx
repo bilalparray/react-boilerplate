@@ -14,6 +14,8 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSummaryPage from "./pages/OrderSummaryPage";
 import ContactUs from "./pages/ContactUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/order-summary" element={<OrderSummaryPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
 
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<CartPage />} />
