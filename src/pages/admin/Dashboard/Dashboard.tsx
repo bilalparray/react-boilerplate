@@ -3,7 +3,7 @@ import { KpiGrid } from "../../../components/admin/dashboard/KpiGrid";
 import { MonthlySalesChart } from "../../../components/admin/dashboard/MonthlySalesChart";
 import { RecentOrders } from "../../../components/admin/dashboard/RecentOrders";
 import { TopProducts } from "../../../components/admin/dashboard/TopProducts";
-import { Visitors } from "../../../components/admin/dashboard/Visitors";
+import { DailyVisitors } from "../../../components/admin/dashboard/DailyVisitors";
 import { VisitorsChart } from "../../../components/admin/dashboard/VisitorsChart";
 import { useDashboard } from "../../../hooks/admin/useDashboard";
 
@@ -42,7 +42,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="mb-4">
-        <Visitors data={data.charts.dailyVisitors} />
+        <DailyVisitors data={data.charts.dailyVisitors} />
       </div>
 
       <div className="alert alert-warning">
