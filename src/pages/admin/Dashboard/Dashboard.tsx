@@ -1,7 +1,10 @@
+import { CategoryChart } from "../../../components/admin/dashboard/CategoryChart";
 import { KpiGrid } from "../../../components/admin/dashboard/KpiGrid";
+import { MonthlySalesChart } from "../../../components/admin/dashboard/MonthlySalesChart";
 import { RecentOrders } from "../../../components/admin/dashboard/RecentOrders";
 import { TopProducts } from "../../../components/admin/dashboard/TopProducts";
 import { Visitors } from "../../../components/admin/dashboard/Visitors";
+import { VisitorsChart } from "../../../components/admin/dashboard/VisitorsChart";
 import { useDashboard } from "../../../hooks/admin/useDashboard";
 
 export default function DashboardPage() {
@@ -16,6 +19,18 @@ export default function DashboardPage() {
       <h3 className="mb-4">Dashboard</h3>
 
       <KpiGrid kpis={data.kpis} />
+      <div className="row g-4 mb-4">
+        <div className="col-lg-8">
+          <MonthlySalesChart data={data.charts.monthlySales} />
+        </div>
+        <div className="col-lg-4">
+          <CategoryChart data={data.charts.categorySales} />
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <VisitorsChart data={data.charts.dailyVisitors} />
+      </div>
 
       <div className="row g-4 mb-4">
         <div className="col-lg-6">
