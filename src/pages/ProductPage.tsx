@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useProduct } from "../hooks/useProduct";
+import { useProductRating } from "../hooks/useProductRating";
+import { RatingStars } from "../components/Ratings/RatingStars";
+import "./ProductPage.css";
 
 export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
+  const { rating, count } = useProductRating(Number(id));
 
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
@@ -13,6 +17,7 @@ export default function ProductPage() {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [tab, setTab] = useState<"desc" | "specs" | "reviews">("desc");
 
   if (loading) return <div className="container py-5">Loading…</div>;
   if (!product) return <div className="container py-5">Product not found</div>;
@@ -23,21 +28,15 @@ export default function ProductPage() {
     (x) => x.productId === product.id && x.variantId === variant.id
   );
 
-  const price = variant.price;
-  const compare = variant.comparePrice;
-
-  /* -------------------------------
-     ADD TO CART (qty-aware)
-  -------------------------------- */
   const handleAddToCart = () => {
     for (let i = 0; i < qty; i++) {
       addToCart({
         productId: product.id,
         variantId: variant.id,
         name: product.name,
-        image: product.images?.[0],
-        price,
-        comparePrice: compare,
+        image: product.images[0],
+        price: variant.price,
+        comparePrice: variant.comparePrice,
         weight: variant.weight,
         unit: variant.unit.symbol,
         stock: variant.stock,
@@ -47,149 +46,189 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 1500);
   };
 
-  const handleWishlist = () => {
-    addToWishlist({
-      productId: product.id,
-      variantId: variant.id,
-      name: product.name,
-      image: product.images?.[0],
-      price,
-      comparePrice: compare,
-      weight: variant.weight,
-      unit: variant.unit.symbol,
-      stock: variant.stock,
-    });
-  };
-
   return (
     <div className="container py-5">
-      <div className="row g-5 align-items-start">
-        {/* GALLERY */}
+      <div className="row g-5">
+        {/* IMAGE GALLERY */}
         <div className="col-md-6">
-          <div className="rounded-4 overflow-hidden shadow-lg">
+          <div className="border rounded-4 p-3">
             <img
               src={product.images[activeImage]}
-              className="w-100"
+              className="w-100 rounded-3"
               style={{ height: "480px", objectFit: "cover" }}
             />
-          </div>
 
-          <div className="d-flex gap-3 mt-3">
-            {product.images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                onClick={() => setActiveImage(i)}
-                className="rounded-3 shadow-sm"
-                style={{
-                  width: "72px",
-                  height: "72px",
-                  objectFit: "cover",
-                  cursor: "pointer",
-                  border:
-                    i === activeImage
-                      ? "2px solid #16a34a"
-                      : "1px solid #e5e7eb",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* INFO */}
-        <div className="col-md-6">
-          <div className="text-success fw-bold text-uppercase small">
-            Starting from ₹{product.minPrice}
-          </div>
-
-          <h1 className="fw-bold mt-2">{product.name}</h1>
-
-          <div className="fs-3 fw-bold mt-3" style={{ color: "#F59E0B" }}>
-            ₹{price}
-            {compare > 0 && (
-              <span className="text-muted fs-6 ms-2 text-decoration-line-through">
-                ₹{compare}
-              </span>
-            )}
-          </div>
-
-          <p className="text-muted mt-4">{product.description}</p>
-
-          {/* VARIANTS */}
-          <div className="mt-4">
-            <div className="fw-semibold mb-2">Select Pack</div>
-            <div className="d-flex gap-3 flex-wrap">
-              {product.variants.map((v, i) => (
-                <button
-                  key={v.id}
-                  onClick={() => {
-                    setSelectedVariantIndex(i);
-                    setQty(1);
-                  }}
-                  className="btn rounded-pill px-4 py-2 fw-semibold"
+            <div className="d-flex gap-3 mt-3 justify-content-center">
+              {product.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  onClick={() => setActiveImage(i)}
+                  className="rounded-3"
                   style={{
+                    width: "70px",
+                    height: "70px",
+                    objectFit: "cover",
+                    cursor: "pointer",
                     border:
-                      i === selectedVariantIndex
+                      i === activeImage
                         ? "2px solid #16a34a"
                         : "1px solid #e5e7eb",
-                    background: i === selectedVariantIndex ? "#ecfdf5" : "#fff",
-                  }}>
-                  {v.displayWeight}
-                </button>
+                  }}
+                />
               ))}
             </div>
           </div>
+        </div>
 
-          {/* QUANTITY */}
-          <div className="d-flex align-items-center gap-4 mt-4">
-            <span className="fw-semibold">Quantity</span>
+        {/* PRODUCT INFO */}
+        <div className="col-md-6">
+          <div className="product-meta-box">
+            <div className="d-flex justify-content-between">
+              <div>
+                <h2 className="fw-bold">{product.name}</h2>
+                <div className="text-muted small">
+                  Seller: Wild Valley Foods
+                </div>
+              </div>
 
-            <div className="d-flex border rounded-pill overflow-hidden shadow-sm">
               <button
-                className="btn px-3"
-                onClick={() => setQty((q) => Math.max(1, q - 1))}>
-                −
-              </button>
-
-              <div className="px-4 py-2 fw-bold">{qty}</div>
-
-              <button
-                className="btn px-3"
-                onClick={() => setQty((q) => Math.min(variant.stock, q + 1))}>
-                +
+                onClick={() =>
+                  addToWishlist({
+                    productId: product.id,
+                    variantId: variant.id,
+                    name: product.name,
+                    image: product.images[0],
+                    price: variant.price,
+                    comparePrice: variant.comparePrice,
+                    weight: variant.weight,
+                    unit: variant.unit.symbol,
+                    stock: variant.stock,
+                  })
+                }
+                className="btn btn-light rounded-circle shadow-sm">
+                <i
+                  className={`bi ${
+                    isInWishlist ? "bi-heart-fill text-danger" : "bi-heart"
+                  }`}
+                />
               </button>
             </div>
 
-            <span className="text-muted">Stock: {variant.stock}</span>
-          </div>
+            <div className="mt-2">
+              <RatingStars rating={rating} count={count} />
+            </div>
 
-          {/* ACTIONS */}
-          <div className="d-flex gap-3 mt-5">
-            <button
-              onClick={handleAddToCart}
-              disabled={!variant.isInStock}
-              className="btn flex-fill rounded-pill py-3 fw-semibold shadow-lg"
-              style={{
-                background: added ? "#16a34a" : "#F59E0B",
-                color: "#fff",
-                opacity: variant.isInStock ? 1 : 0.5,
-              }}>
-              {added ? "✔ Added" : "Add to Cart"}
-            </button>
+            <div className="price-box mt-3">
+              ₹{variant.price}
+              {variant.comparePrice > variant.price && (
+                <span className="old-price ms-2">₹{variant.comparePrice}</span>
+              )}
+            </div>
 
-            <button
-              onClick={handleWishlist}
-              className="btn rounded-circle shadow-lg"
-              style={{
-                width: "52px",
-                height: "52px",
-                background: isInWishlist ? "#16a34a" : "#fff",
-                color: isInWishlist ? "#fff" : "#111",
-              }}>
-              <i className={isInWishlist ? "bi bi-check" : "bi bi-heart"} />
-            </button>
+            <div className="mt-2 fw-semibold text-success">
+              {variant.isInStock ? "In Stock" : "Out of Stock"}
+            </div>
+
+            {/* Variants */}
+            <div className="mt-4">
+              <div className="fw-semibold mb-2">Choose Variant</div>
+              <div className="variant-grid">
+                {product.variants.map((v, i) => (
+                  <button
+                    key={v.id}
+                    onClick={() => {
+                      setSelectedVariantIndex(i);
+                      setQty(1);
+                    }}
+                    className={`variant-chip ${
+                      i === selectedVariantIndex ? "active" : ""
+                    }`}>
+                    {v.displayWeight}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quantity + Cart */}
+            <div className="d-flex align-items-center gap-3 mt-4">
+              <div className="qty-box">
+                <button onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
+                <span>{qty}</span>
+                <button
+                  onClick={() => setQty(Math.min(variant.stock, qty + 1))}>
+                  +
+                </button>
+              </div>
+
+              <button
+                onClick={handleAddToCart}
+                disabled={!variant.isInStock}
+                className="btn btn-warning flex-fill fw-semibold py-3 rounded-pill">
+                {added ? "✔ Added" : "Add to Cart"}
+              </button>
+            </div>
+
+            {/* Feature Icons */}
+            <div className="feature-list mt-4">
+              <div>🌱 Vegetarian</div>
+              <div>🚚 Fast Delivery</div>
+              <div>♻️ Non Returnable</div>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* TABS */}
+      <div className="mt-5">
+        <div className="d-flex gap-4 border-bottom pb-2">
+          {["desc", "specs", "reviews"].map((t) => (
+            <button
+              key={t}
+              className={`btn p-0 ${
+                tab === t ? "fw-bold text-success" : "text-muted"
+              }`}
+              onClick={() => setTab(t as any)}>
+              {t === "desc"
+                ? "Product Description"
+                : t === "specs"
+                ? "Specifications"
+                : "Ratings & Reviews"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "desc" && (
+          <p className="mt-4 text-muted">{product.description}</p>
+        )}
+
+        {tab === "specs" && (
+          <table className="table mt-4">
+            <tbody>
+              <tr>
+                <th>SKU</th>
+                <td>{product.id}</td>
+              </tr>
+              <tr>
+                <th>Weight</th>
+                <td>{variant.displayWeight}</td>
+              </tr>
+              <tr>
+                <th>Availability</th>
+                <td>{variant.isInStock ? "In Stock" : "Out of Stock"}</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+
+        {tab === "reviews" && (
+          <div className="mt-4">
+            <RatingStars rating={rating} count={count} />
+            <p className="text-muted mt-2">
+              Reviews are loaded from customers who purchased this product.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
