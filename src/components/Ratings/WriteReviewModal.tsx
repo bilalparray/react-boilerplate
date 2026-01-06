@@ -26,7 +26,6 @@ export function WriteReviewModal({ productId, onClose, onSuccess }: Props) {
         comment,
         productId,
       });
-
       onSuccess();
       onClose();
     } catch {

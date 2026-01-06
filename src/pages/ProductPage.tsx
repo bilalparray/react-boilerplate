@@ -10,8 +10,8 @@ import { WriteReviewModal } from "../components/Ratings/WriteReviewModal";
 export default function ProductPage() {
   const { id } = useParams();
   const { product, loading } = useProduct(Number(id));
-  const { rating, count } = useProductRating(Number(id));
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const { rating, count, refresh } = useProductRating(Number(id));
 
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
 
@@ -240,7 +240,10 @@ export default function ProductPage() {
         <WriteReviewModal
           productId={product.id}
           onClose={() => setShowReviewModal(false)}
-          onSuccess={() => setShowReviewModal(false)}
+          onSuccess={() => {
+            refresh(); // reload rating
+            alert("Review submitted successfully");
+          }}
         />
       )}
     </div>

@@ -1,30 +1,22 @@
-import { useEffect, useState } from "react";
-import { fetchProductReviews } from "../api/review.api";
+import { useEffect, useState, useCallback } from "react";
+import { getProductReviews } from "../services/reviewService";
 
 export function useProductRating(productId: number) {
   const [rating, setRating] = useState(0);
   const [count, setCount] = useState(0);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!productId) return;
 
-    fetchProductReviews(productId).then((res) => {
-      const reviews = res.successData || [];
-
-      if (reviews.length === 0) {
-        setRating(0);
-        setCount(0);
-        return;
-      }
-
-      const total = reviews.reduce(
-        (sum: any, r: { rating: any }) => sum + r.rating,
-        0
-      );
-      setRating(total / reviews.length);
-      setCount(reviews.length);
+    getProductReviews(productId).then((res) => {
+      setRating(res.average);
+      setCount(res.count);
     });
   }, [productId]);
 
-  return { rating, count };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { rating, count, refresh: load };
 }
