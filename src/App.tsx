@@ -5,13 +5,14 @@ import { Footer } from "./components/Footer";
 import ProductPage from "./pages/ProductPage";
 import { RequireAuth } from "./services/auth/RequireAuth";
 import Account from "./pages/Account";
-import Checkout from "./pages/Checkout";
 import Login from "./admin/pages/Login";
 import WishlistPage from "./pages/WishlistPage";
 import Shop from "./pages/Shop";
 import CategoryPage from "./pages/Category";
 import AboutUs from "./pages/About";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderSummaryPage from "./pages/OrderSummaryPage";
 
 export default function App() {
   return (
@@ -21,9 +22,11 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/product/:id" element={<ProductPage />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/order-summary" element={<OrderSummaryPage />} />
+
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
