@@ -86,6 +86,13 @@ export function Footer() {
           background: "#0a0f13",
           borderTop: "1px solid rgba(255,255,255,0.1)",
         }}>
+        Designed & Developed by{" "}
+        <span>
+          <a href="https://www.siffrum.com/" target="_blank">
+            {" "}
+            Siffrum Analytics Pvt Ltd
+          </a>
+        </span>{" "}
         © 2025 Alpine. All rights reserved.
       </div>
     </footer>

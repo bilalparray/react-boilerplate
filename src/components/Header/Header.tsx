@@ -369,9 +369,14 @@ export function Header() {
                   <span className="fw-semibold">Subtotal</span>
                   <span className="fw-bold">₹{total.toFixed(2)}</span>
                 </div>
-
                 <button
-                  className="btn btn-success w-100 py-3 rounded-pill"
+                  className="btn btn-success w-50 py-3 rounded-pill"
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => navigate("/cart")}>
+                  View Cart
+                </button>
+                <button
+                  className="btn btn-success w-50 py-3 rounded-pill"
                   data-bs-dismiss="offcanvas"
                   onClick={() => navigate("/checkout")}>
                   Proceed to Checkout

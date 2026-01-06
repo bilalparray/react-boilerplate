@@ -11,6 +11,7 @@ import WishlistPage from "./pages/WishlistPage";
 import Shop from "./pages/Shop";
 import CategoryPage from "./pages/Category";
 import AboutUs from "./pages/About";
+import CartPage from "./pages/CartPage";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route element={<RequireAuth role="customer" />}>
           <Route path="/account" element={<Account />} />
