@@ -1,52 +1,48 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import { Header } from "./components/Header/Header";
-import { Footer } from "./components/Footer";
 import ProductPage from "./pages/ProductPage";
-import { RequireAuth } from "./services/auth/RequireAuth";
-import Account from "./pages/Account";
-import Login from "./admin/pages/Login";
-import WishlistPage from "./pages/WishlistPage";
 import Shop from "./pages/Shop";
-import CategoryPage from "./pages/Category";
-import AboutUs from "./pages/About";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import OrderSummaryPage from "./pages/OrderSummaryPage";
+import WishlistPage from "./pages/WishlistPage";
+import AboutUs from "./pages/About";
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import ReturnExchangePolicy from "./pages/ReturnExchangePolicy";
+import Login from "./pages/admin/Login";
+import DashboardPage from "./pages/admin/Dashboard/Dashboard";
+import { RequireAuth } from "./services/auth/RequireAuth";
+import PublicLayout from "./layout/PublicLayout";
+import AdminLayout from "./layout/AdminLayout";
 
 export default function App() {
   return (
-    <>
-      <Header />
-      <Routes>
+    <Routes>
+      {/* PUBLIC SITE */}
+      <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/auth/login" element={<Login />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
-        <Route path="/order-summary" element={<OrderSummaryPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
+      </Route>
 
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/category/:categoryId" element={<CategoryPage />} />
-        <Route element={<RequireAuth role="customer" />}>
-          <Route path="/account" element={<Account />} />
-        </Route>
-        <Route element={<RequireAuth role="Admin" />}>
-          <Route path="/admin" element={<Account />} />
-        </Route>
-      </Routes>
+      {/* AUTH */}
+      <Route path="/auth/login" element={<Login />} />
 
-      <Footer />
-    </>
+      {/* ADMIN */}
+      <Route element={<RequireAuth role="Admin" />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }

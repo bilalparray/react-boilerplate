@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiPost } from "../../api/base/apiClient";
 import { setToken } from "../../auth/tokenManager";
-
-interface LoginResponseDTO {
-  token: string;
-}
+import { loginUser } from "../../services/auth/authService";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,22 +14,17 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    const res = await apiPost<LoginResponseDTO>("/auth/login", {
-      email,
-      password,
-    });
-
-    setLoading(false);
-
-    if (res.isError || !res.successData) {
-      setError(res.errorData?.displayMessage || "Login failed");
-      return;
+    try {
+      setLoading(true);
+      const data = await loginUser(username, password);
+      setToken(data.accessToken);
+      navigate("/dashboard", { replace: true });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setToken(res.successData.token);
-    navigate("/", { replace: true });
   };
 
   return (
@@ -49,12 +40,12 @@ export default function Login() {
         )}
 
         <div className="mb-3">
-          <label className="form-label">Email</label>
+          <label className="form-label">Username</label>
           <input
-            type="email"
+            type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="form-control rounded-pill"
           />
         </div>
