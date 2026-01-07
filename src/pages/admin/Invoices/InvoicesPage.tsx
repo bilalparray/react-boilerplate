@@ -167,7 +167,7 @@ export default function InvoicesPage() {
           <button
             disabled={page === 1}
             className="btn btn-outline-secondary"
-            onClick={() => setPage(page - 1)}>
+            onClick={() => setPage((p) => p - 1)}>
             Prev
           </button>
 
@@ -176,7 +176,7 @@ export default function InvoicesPage() {
           <button
             disabled={!hasNextPage}
             className="btn btn-outline-secondary"
-            onClick={() => setPage(page + 1)}>
+            onClick={() => setPage((p) => p + 1)}>
             Next
           </button>
         </div>
