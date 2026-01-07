@@ -15,6 +15,9 @@ import DashboardPage from "./pages/admin/Dashboard/Dashboard";
 import { RequireAuth } from "./services/auth/RequireAuth";
 import PublicLayout from "./layout/PublicLayout";
 import AdminLayout from "./layout/AdminLayout";
+import OrdersPage from "./pages/admin/Orders/Orders";
+import OrderDetailsPage from "./pages/admin/Orders/OrderDetailsPage";
+import InvoicePage from "./pages/admin/Invoices/InvoicePage";
 
 export default function App() {
   return (
@@ -41,6 +44,9 @@ export default function App() {
       <Route element={<RequireAuth role="Admin" />}>
         <Route element={<AdminLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailsPage />} />
+          <Route path="/orders/:id/invoice" element={<InvoicePage />} />
         </Route>
       </Route>
     </Routes>
