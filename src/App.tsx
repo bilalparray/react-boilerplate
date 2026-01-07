@@ -18,6 +18,7 @@ import AdminLayout from "./layout/AdminLayout";
 import OrdersPage from "./pages/admin/Orders/Orders";
 import OrderDetailsPage from "./pages/admin/Orders/OrderDetailsPage";
 import InvoicePage from "./pages/admin/Invoices/InvoicePage";
+import InvoicesPage from "./pages/admin/Invoices/InvoicesPage";
 
 export default function App() {
   return (
@@ -47,6 +48,8 @@ export default function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailsPage />} />
           <Route path="/orders/:id/invoice" element={<InvoicePage />} />
+          <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/invoices/:id" element={<InvoicePage />} />
         </Route>
       </Route>
     </Routes>
