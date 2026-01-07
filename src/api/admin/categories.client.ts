@@ -20,6 +20,5 @@ export function deleteCategory(id: number) {
 export function updateCategory(id: number, payload: any) {
   const form = new FormData();
   form.append("reqData", JSON.stringify(payload));
-
   return apiPut(`/admin/updatecategoryById/${id}`, form);
 }

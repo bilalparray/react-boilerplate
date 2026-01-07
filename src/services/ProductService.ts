@@ -55,3 +55,7 @@ export async function getPaginatedProducts(skip: number, top: number) {
     products: response.successData.map(mapProduct),
   };
 }
+export async function getPaginatedProductsForGrid(skip: number, top: number) {
+  const response = await fetchPaginatedProducts(skip, top);
+  return response.successData.map(mapProduct);
+}

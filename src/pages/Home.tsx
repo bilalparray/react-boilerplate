@@ -2,6 +2,7 @@ import { BannerCarousel } from "../components/Banner/BannerCarousel";
 import { BestSelling } from "../components/BestSelling/BestSelling";
 
 import { FeatureBar } from "../components/Feature/FeatureBar";
+import { ProductsGrid } from "../components/Product/ProductGrid/ProductGrid";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <BannerCarousel />
       <FeatureBar />
       <BestSelling />
+      <ProductsGrid />
     </div>
   );
 }
