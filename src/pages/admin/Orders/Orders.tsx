@@ -15,7 +15,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const pageSize = 10;
 
   const [filters, setFilters] = useState({
     status: "",

@@ -20,6 +20,7 @@ import OrderDetailsPage from "./pages/admin/Orders/OrderDetailsPage";
 import InvoicePage from "./pages/admin/Invoices/InvoicePage";
 import InvoicesPage from "./pages/admin/Invoices/InvoicesPage";
 import CustomersPage from "./components/admin/dashboard/CustomersPage";
+import CategoriesPage from "./pages/admin/categories/CategoriesPage";
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/invoices" element={<InvoicesPage />} />
           <Route path="/invoices/:id" element={<InvoicePage />} />
           <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
         </Route>
       </Route>
     </Routes>
