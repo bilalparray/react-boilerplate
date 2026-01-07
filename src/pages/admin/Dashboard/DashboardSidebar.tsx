@@ -1,11 +1,6 @@
 import { useState } from "react";
-import {
-  Sidebar,
-  Menu,
-  MenuItem,
-  SubMenu,
-  menuClasses,
-} from "react-pro-sidebar";
+import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
+import { NavLink } from "react-router-dom";
 
 const theme = {
   bg: "#020617",
@@ -18,13 +13,31 @@ const theme = {
   border: "#1e293b",
 };
 
+const Section = ({ title }: { title: string }) => (
+  <div
+    style={{
+      padding: "16px 20px 6px",
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: "0.08em",
+      color: theme.muted,
+      textTransform: "uppercase",
+    }}>
+    {title}
+  </div>
+);
+
 export default function DashboardSidebar() {
   const [toggled, setToggled] = useState(false);
   const [broken, setBroken] = useState(false);
 
+  const closeOnMobile = () => {
+    if (broken) setToggled(false);
+  };
+
   return (
     <>
-      {/* Mobile fixed top bar */}
+      {/* Mobile top bar */}
       {broken && (
         <div
           style={{
@@ -45,7 +58,7 @@ export default function DashboardSidebar() {
             onClick={() => setToggled((t) => !t)}>
             ☰
           </button>
-          <span style={{ marginLeft: "12px", fontWeight: 600 }}>Alpine</span>
+          <span style={{ marginLeft: 12, fontWeight: 600 }}>Alpine</span>
         </div>
       )}
 
@@ -58,6 +71,8 @@ export default function DashboardSidebar() {
         rootStyles={{
           color: theme.text,
           borderRight: `1px solid ${theme.border}`,
+          height: "100vh",
+          maxHeight: "100vh",
         }}>
         <div
           style={{
@@ -66,20 +81,16 @@ export default function DashboardSidebar() {
             height: "100%",
             paddingTop: broken ? "56px" : "0",
           }}>
-          {/* Logo + Brand */}
+          {/* Brand */}
           <div
             style={{
               padding: "16px 20px",
               borderBottom: `1px solid ${theme.border}`,
               display: "flex",
               alignItems: "center",
-              gap: "10px",
+              gap: 10,
             }}>
-            <img
-              src="/logo.png"
-              alt="Alpine"
-              style={{ width: 32, height: 32 }}
-            />
+            <img src="/logo.png" style={{ width: 32, height: 32 }} />
             <span style={{ fontSize: 18, fontWeight: 600 }}>Alpine</span>
           </div>
 
@@ -87,44 +98,89 @@ export default function DashboardSidebar() {
           <div style={{ flex: 1, overflowY: "auto" }}>
             <Menu
               menuItemStyles={{
-                root: {
-                  fontSize: "14px",
-                  fontWeight: 500,
-                },
-
+                root: { fontSize: 14, fontWeight: 500 },
                 button: {
                   padding: "12px 16px",
                   margin: "6px 10px",
                   borderRadius: "10px",
                   color: theme.text,
-                  backgroundColor: "transparent",
-
                   "&:hover": {
                     backgroundColor: theme.hover,
                     color: theme.accent,
                   },
-
                   [`&.${menuClasses.active}`]: {
                     backgroundColor: theme.active,
                     color: theme.accent,
                   },
                 },
-
-                label: {
-                  color: theme.text,
-                },
-
-                subMenuContent: {
-                  backgroundColor: theme.panel,
-                },
+                subMenuContent: { backgroundColor: theme.panel },
               }}>
-              <SubMenu label="Charts">
-                <MenuItem>Pie Charts</MenuItem>
-                <MenuItem>Line Charts</MenuItem>
-              </SubMenu>
+              {/* SALES */}
+              <Section title="Sales & Orders" />
+              <MenuItem
+                component={<NavLink to="/orders" />}
+                onClick={closeOnMobile}>
+                Orders
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/invoices" />}
+                onClick={closeOnMobile}>
+                Invoices
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/customers" />}
+                onClick={closeOnMobile}>
+                Customers
+              </MenuItem>
 
-              <MenuItem>Documentation</MenuItem>
-              <MenuItem>Calendar</MenuItem>
+              {/* PRODUCTS */}
+              <Section title="Products" />
+              <MenuItem
+                component={<NavLink to="/products" />}
+                onClick={closeOnMobile}>
+                Products
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/categories" />}
+                onClick={closeOnMobile}>
+                Categories
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/units" />}
+                onClick={closeOnMobile}>
+                Units
+              </MenuItem>
+
+              {/* WEBSITE */}
+              <Section title="Website Resources" />
+              <MenuItem
+                component={<NavLink to="/banners" />}
+                onClick={closeOnMobile}>
+                Banners
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/testimonials" />}
+                onClick={closeOnMobile}>
+                Testimonials
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/videos" />}
+                onClick={closeOnMobile}>
+                Videos
+              </MenuItem>
+
+              {/* OTHER */}
+              <Section title="Other" />
+              <MenuItem
+                component={<NavLink to="/reviews" />}
+                onClick={closeOnMobile}>
+                Reviews
+              </MenuItem>
+              <MenuItem
+                component={<NavLink to="/contact" />}
+                onClick={closeOnMobile}>
+                Contact Us
+              </MenuItem>
             </Menu>
           </div>
         </div>
