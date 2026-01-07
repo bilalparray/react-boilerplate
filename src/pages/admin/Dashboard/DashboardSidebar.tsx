@@ -116,6 +116,12 @@ export default function DashboardSidebar() {
                 subMenuContent: { backgroundColor: theme.panel },
               }}>
               {/* SALES */}
+              <Section title="Dashboard" />
+              <MenuItem
+                component={<NavLink to="/dashboard" />}
+                onClick={closeOnMobile}>
+                Dashboard
+              </MenuItem>
               <Section title="Sales & Orders" />
               <MenuItem
                 component={<NavLink to="/orders" />}
