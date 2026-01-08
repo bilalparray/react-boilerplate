@@ -4,6 +4,7 @@ import { BestSelling } from "../components/BestSelling/BestSelling";
 import { FeatureBar } from "../components/Feature/FeatureBar";
 import { ProductsGrid } from "../components/Product/ProductGrid/ProductGrid";
 import CustomerTestimonials from "../components/Testimonial/CustomerTestimonials";
+import VideoShowcase from "../components/Videos/VideoShowcase";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <BestSelling />
       <ProductsGrid />
       <CustomerTestimonials />
+      <VideoShowcase />
     </div>
   );
 }
