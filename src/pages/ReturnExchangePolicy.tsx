@@ -59,7 +59,7 @@ export default function ReturnExchangePolicy() {
         <h5 className="fw-bold mt-4">6. Contact</h5>
         <p className="text-muted">
           For return or exchange requests, contact us at
-          <strong> support@wildvalleyfoods.in</strong>.
+          <strong> support@alpine.in</strong>.
         </p>
       </div>
     </div>

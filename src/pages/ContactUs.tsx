@@ -61,7 +61,7 @@ export default function ContactUs() {
               </p>
               <p>
                 <i className="bi bi-envelope me-2"></i>{" "}
-                support@wildvalleyfoods.in
+                support@alpine.com
               </p>
               <p>
                 <i className="bi bi-phone me-2"></i> +91 98765 43210
