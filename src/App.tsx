@@ -21,6 +21,7 @@ import InvoicePage from "./pages/admin/Invoices/InvoicePage";
 import InvoicesPage from "./pages/admin/Invoices/InvoicesPage";
 import CustomersPage from "./components/admin/dashboard/CustomersPage";
 import CategoriesPage from "./pages/admin/categories/CategoriesPage";
+import UnitList from "./pages/admin/units/UnitList";
 
 export default function App() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/invoices/:id" element={<InvoicePage />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/units" element={<UnitList />} />
         </Route>
       </Route>
     </Routes>
