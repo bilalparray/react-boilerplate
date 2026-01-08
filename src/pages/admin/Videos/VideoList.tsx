@@ -3,10 +3,10 @@ import { useVideos } from "../../../hooks/admin/useVideos";
 
 export default function VideoList() {
   const [page, setPage] = useState(1);
-  const pageSize = 1;
+  const pageSize = 10;
 
   const {
-    items,
+    items: videos,
     total,
     loading,
     actionLoading,
@@ -20,6 +20,7 @@ export default function VideoList() {
 
   const [show, setShow] = useState(false);
   const [editing, setEditing] = useState<any>(null);
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -27,9 +28,15 @@ export default function VideoList() {
     description: "",
   });
 
+  /* ---------- Helpers ---------- */
+  const isValidYoutubeUrl = (url: string) =>
+    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/i.test(url);
+
+  /* ---------- Modal ---------- */
   const openCreate = () => {
     setEditing(null);
     setForm({ title: "", youtubeUrl: "", description: "" });
+    setUrlError(null);
     setShow(true);
   };
 
@@ -40,20 +47,23 @@ export default function VideoList() {
       youtubeUrl: v.youtubeUrl,
       description: v.description || "",
     });
+    setUrlError(null);
     setShow(true);
   };
 
   const save = async () => {
+    if (!isValidYoutubeUrl(form.youtubeUrl)) {
+      setUrlError("Invalid YouTube URL");
+      return;
+    }
+
     if (editing) await update(editing.id, form);
     else await create(form);
+
     if (!error) setShow(false);
   };
 
-  const toEmbed = (url: string) => {
-    if (url.includes("embed")) return url;
-    const id = url.split("v=")[1] || url.split("/").pop();
-    return `https://www.youtube.com/embed/${id}`;
-  };
+  /* ---------- UI ---------- */
 
   return (
     <div className="container py-5">
@@ -69,25 +79,25 @@ export default function VideoList() {
       {loading ? (
         <div className="text-center py-5">Loading…</div>
       ) : (
-        <table className="table table-hover align-middle shadow-sm">
-          <thead className="table-light">
+        <table className="table table-hover align-middle">
+          <thead>
             <tr>
               <th>#</th>
               <th>Title</th>
               <th>YouTube URL</th>
-              <th>Preview</th>
+              <th>Description</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {items.map((v, i) => (
+            {videos.map((v, i) => (
               <tr key={v.id}>
                 <td>{i + 1}</td>
-                <td className="fw-semibold">{v.title}</td>
-                <td className="text-muted small">{v.youtubeUrl}</td>
-                <td>
-                  <iframe width="120" height="70" src={toEmbed(v.youtubeUrl)} />
+                <td>{v.title}</td>
+                <td style={{ maxWidth: 300, wordBreak: "break-all" }}>
+                  {v.youtubeUrl}
                 </td>
+                <td>{v.description || "-"}</td>
                 <td className="text-end">
                   <button
                     className="btn btn-sm btn-warning me-2"
@@ -107,6 +117,7 @@ export default function VideoList() {
         </table>
       )}
 
+      {/* Pagination */}
       <div className="d-flex justify-content-center gap-2 mt-4">
         {Array.from({ length: totalPages }).map((_, i) => (
           <button
@@ -124,8 +135,8 @@ export default function VideoList() {
       {show && (
         <div
           className="modal fade show d-block"
-          style={{ background: "#0008" }}>
-          <div className="modal-dialog modal-dialog-centered modal-lg">
+          style={{ background: "rgba(0,0,0,.5)" }}>
+          <div className="modal-dialog modal-sm modal-dialog-centered">
             <div className="modal-content rounded-4">
               <div className="modal-header">
                 <h5>{editing ? "Edit Video" : "Add Video"}</h5>
@@ -133,26 +144,32 @@ export default function VideoList() {
               </div>
 
               <div className="modal-body">
-                <label className="form-label fw-semibold">Title</label>
                 <input
                   className="form-control mb-3"
+                  placeholder="Title"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
 
-                <label className="form-label fw-semibold">YouTube URL</label>
                 <input
-                  className="form-control mb-3"
+                  className={`form-control mb-2 ${
+                    urlError ? "is-invalid" : ""
+                  }`}
+                  placeholder="YouTube URL"
                   value={form.youtubeUrl}
-                  onChange={(e) =>
-                    setForm({ ...form, youtubeUrl: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setForm({ ...form, youtubeUrl: e.target.value });
+                    setUrlError(null);
+                  }}
                 />
+                {urlError && (
+                  <div className="text-danger small mb-2">{urlError}</div>
+                )}
 
-                <label className="form-label fw-semibold">Description</label>
                 <textarea
                   className="form-control"
                   rows={3}
+                  placeholder="Description"
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
