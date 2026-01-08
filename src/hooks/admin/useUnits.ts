@@ -70,8 +70,13 @@ export function useUnits(page: number, pageSize: number) {
     try {
       setActionLoading(true);
       setError(null);
-      await deleteUnit(id);
-      await load();
+      const res = await deleteUnit(id);
+      if (res.isError) {
+        alert(res.errorData?.displayMessage);
+      } else {
+        alert("Unit deleted successfully");
+        await load();
+      }
     } catch (e: any) {
       setError(
         e?.errorData?.displayMessage ||
