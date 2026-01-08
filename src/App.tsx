@@ -22,6 +22,7 @@ import InvoicesPage from "./pages/admin/Invoices/InvoicesPage";
 import CustomersPage from "./components/admin/dashboard/CustomersPage";
 import CategoriesPage from "./pages/admin/categories/CategoriesPage";
 import UnitList from "./pages/admin/units/UnitList";
+import BannerList from "./pages/admin/Banner/BannerList";
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/units" element={<UnitList />} />
+          <Route path="/banners" element={<BannerList />} />
         </Route>
       </Route>
     </Routes>

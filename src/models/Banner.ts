@@ -5,6 +5,10 @@ export class Banner {
   imageUrl: string;
   link: string;
   ctaText?: string;
+
+  bannerType: any;
+  isVisible: boolean;
+
   image_base64?: string;
 
   constructor(
@@ -13,6 +17,8 @@ export class Banner {
     description: string,
     imageUrl: string,
     link: string,
+    bannerType: any,
+    isVisible: boolean,
     ctaText?: string,
     image_base64?: string
   ) {
@@ -21,6 +27,8 @@ export class Banner {
     this.description = description;
     this.imageUrl = imageUrl;
     this.link = link;
+    this.bannerType = bannerType;
+    this.isVisible = isVisible;
     this.ctaText = ctaText;
     this.image_base64 = image_base64;
   }
