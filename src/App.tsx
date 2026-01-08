@@ -24,6 +24,7 @@ import CategoriesPage from "./pages/admin/categories/CategoriesPage";
 import UnitList from "./pages/admin/units/UnitList";
 import BannerList from "./pages/admin/Banner/BannerList";
 import TestimonialList from "./pages/admin/Testimonial/TestimonialList";
+import VideoList from "./pages/admin/Videos/VideoList";
 
 export default function App() {
   return (
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/units" element={<UnitList />} />
           <Route path="/banners" element={<BannerList />} />
           <Route path="/testimonials" element={<TestimonialList />} />
+          <Route path="/videos" element={<VideoList />} />
         </Route>
       </Route>
     </Routes>
