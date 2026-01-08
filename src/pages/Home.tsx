@@ -3,6 +3,7 @@ import { BestSelling } from "../components/BestSelling/BestSelling";
 
 import { FeatureBar } from "../components/Feature/FeatureBar";
 import { ProductsGrid } from "../components/Product/ProductGrid/ProductGrid";
+import CustomerTestimonials from "../components/Testimonial/CustomerTestimonials";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <FeatureBar />
       <BestSelling />
       <ProductsGrid />
+      <CustomerTestimonials />
     </div>
   );
 }
