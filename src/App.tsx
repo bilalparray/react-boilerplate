@@ -25,6 +25,7 @@ import UnitList from "./pages/admin/units/UnitList";
 import BannerList from "./pages/admin/Banner/BannerList";
 import TestimonialList from "./pages/admin/Testimonial/TestimonialList";
 import VideoList from "./pages/admin/Videos/VideoList";
+import ReviewList from "./pages/admin/reviews/ReviewList";
 
 export default function App() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/banners" element={<BannerList />} />
           <Route path="/testimonials" element={<TestimonialList />} />
           <Route path="/videos" element={<VideoList />} />
+          <Route path="/reviews" element={<ReviewList />} />
         </Route>
       </Route>
     </Routes>
