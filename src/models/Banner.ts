@@ -2,34 +2,29 @@ export class Banner {
   id: number;
   title: string;
   description: string;
-  imageUrl: string;
+  imagePath: string; // backend filesystem path
+  image_base64: string; // UI renderable base64
   link: string;
-  ctaText?: string;
-
-  bannerType: any;
+  ctaText: string;
   isVisible: boolean;
-
-  image_base64?: string;
 
   constructor(
     id: number,
     title: string,
     description: string,
-    imageUrl: string,
+    imagePath: string,
+    image_base64: string,
     link: string,
-    bannerType: any,
-    isVisible: boolean,
-    ctaText?: string,
-    image_base64?: string
+    ctaText: string,
+    isVisible: boolean
   ) {
     this.id = id;
     this.title = title;
     this.description = description;
-    this.imageUrl = imageUrl;
-    this.link = link;
-    this.bannerType = bannerType;
-    this.isVisible = isVisible;
-    this.ctaText = ctaText;
+    this.imagePath = imagePath;
     this.image_base64 = image_base64;
+    this.link = link;
+    this.ctaText = ctaText;
+    this.isVisible = isVisible;
   }
 }

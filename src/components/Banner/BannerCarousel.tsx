@@ -42,7 +42,7 @@ export function BannerCarousel() {
       style={{ height: "460px" }}>
       {/* Background image */}
       <img
-        src={current.image_base64 ?? current.imageUrl}
+        src={current.image_base64}
         alt={current.title}
         className="w-100 h-100 position-absolute top-0 start-0 banner-image"
         style={{ objectFit: "cover" }}
