@@ -183,7 +183,7 @@ export default function DashboardSidebar() {
                 Reviews
               </MenuItem>
               <MenuItem
-                component={<NavLink to="/contact" />}
+                component={<NavLink to="/contactus" />}
                 onClick={closeOnMobile}>
                 Contact Us
               </MenuItem>

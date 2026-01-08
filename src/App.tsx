@@ -26,6 +26,7 @@ import BannerList from "./pages/admin/Banner/BannerList";
 import TestimonialList from "./pages/admin/Testimonial/TestimonialList";
 import VideoList from "./pages/admin/Videos/VideoList";
 import ReviewList from "./pages/admin/reviews/ReviewList";
+import ContactUsList from "./pages/admin/contactus/ContactUsList";
 
 export default function App() {
   return (
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="/testimonials" element={<TestimonialList />} />
           <Route path="/videos" element={<VideoList />} />
           <Route path="/reviews" element={<ReviewList />} />
+          <Route path="/contactus" element={<ContactUsList />} />
         </Route>
       </Route>
     </Routes>
