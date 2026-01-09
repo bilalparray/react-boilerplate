@@ -8,7 +8,10 @@
 .footer-link:hover {
   color: #f59e0b;
 }
-
+a {
+  text-decoration: none !important;
+  color: red;
+}
 /* ───────────────────────────────────────── */
 /* Desktop Categories Dropdown Animation */
 

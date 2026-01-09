@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCartStore } from "../../store/useCartStore";
 import { useCategories } from "../../hooks/useCategories";
+import "./Header.css";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -200,7 +201,11 @@ export function Header() {
                 </span>
               )}
             </div>
-
+            <Link to="/myorders" className="d-flex align-items-center">
+              <div className="position-relative">
+                <i className="bi bi-bag-fill fs-5"></i>
+              </div>
+            </Link>
             <button
               className="btn d-lg-none"
               data-bs-toggle="offcanvas"
