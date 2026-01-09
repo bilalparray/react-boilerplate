@@ -27,6 +27,7 @@ import TestimonialList from "./pages/admin/Testimonial/TestimonialList";
 import VideoList from "./pages/admin/Videos/VideoList";
 import ReviewList from "./pages/admin/reviews/ReviewList";
 import ContactUsList from "./pages/admin/contactus/ContactUsList";
+import MyOrders from "./pages/MyOrders";
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/myorders" element={<MyOrders />} />
         <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
       </Route>
 

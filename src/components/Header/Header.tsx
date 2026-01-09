@@ -281,8 +281,9 @@ export function Header() {
               <span className="fw-semibold">Cart</span>
               <span className="badge bg-success">{cartCount}</span>
             </div>
-
-            <button className="btn btn-success w-100 rounded-pill">
+            <button
+              className="btn btn-success w-100 rounded-pill"
+              onClick={() => navigate("/myorders")}>
               <i className="bi bi-person me-2"></i>
               My Account
             </button>
