@@ -19,7 +19,6 @@ export function useBanners() {
       .then(setBanners)
       .finally(() => setLoading(false));
   }, []);
-  console.log(banners);
 
   return { banners, loading };
 }

@@ -10,9 +10,7 @@ export default function VideoShowcase() {
   const [index, setIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
-  useEffect(() => {
-    console.log(items);
-  }, [items]);
+  useEffect(() => {}, [items]);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", onResize);

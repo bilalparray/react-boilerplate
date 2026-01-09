@@ -21,8 +21,6 @@ export class StorageService {
   // ─────────────────────────────────────────────────────────────
 
   private async openIndexedDB(): Promise<IDBPDatabase<IndexedDBStorage>> {
-    console.log("[StorageService] Opening IndexedDB");
-
     return openDB<IndexedDBStorage>(
       environment.indexedDBName,
       environment.indexedDBVersion,

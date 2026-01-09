@@ -1,11 +1,9 @@
-import { apiGet, apiPost } from "./base/apiClient";
+import { apiPost } from "./base/apiClient";
 
-/* Razorpay key */
-export function fetchRazorpayKey() {
-  return apiGet<any>("/order/razorpay-key");
+export function placeOrderApi(payload: any) {
+  return apiPost<any>("/order", { reqData: payload });
 }
 
-/* Create customer */
-export function createCustomerApi(reqData: any) {
-  return apiPost<any>("/customer/create", { reqData });
+export function verifyPaymentApi(payload: any) {
+  return apiPost<any>("/order/verify", { reqData: payload }, true);
 }

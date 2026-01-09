@@ -1,48 +1,49 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
-export type Address = {
+export type Customer = {
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
   contact: string;
+  // Based on your Backend Interface: CustomerAddressDetailSM[]
+  addresses: CustomerAddress[];
+};
+
+export type CustomerAddress = {
   addressLine1: string;
   city: string;
   state: string;
   postalCode: string;
+  country: string;
+  addressType: AddressType;
 };
 
-type CheckoutState = {
-  savedAddresses: Address[];
-  selectedAddress?: Address;
-  saveAddress: (addr: Address) => void;
-  selectAddress: (addr: Address) => void;
-};
+// 1. Define the values as a const object (this exists at runtime)
+export const AddressType = {
+  Home: "Home",
+  Work: "Work",
+  Other: "Other",
+} as const;
 
-export const useCheckoutStore = create<CheckoutState>()(
-  persist(
-    (set, get) => ({
-      savedAddresses: [],
-      selectedAddress: undefined,
+// 2. Create a type based on those values (this is erased at compile time)
+export type AddressType = (typeof AddressType)[keyof typeof AddressType];
 
-      saveAddress: (addr) => {
-        const existing = get().savedAddresses.find(
-          (a) =>
-            a.contact === addr.contact && a.addressLine1 === addr.addressLine1
-        );
+export const useCheckoutStore = create<{
+  customers: Customer[];
+  selected: Customer | null;
+  select: (c: Customer) => void;
+  save: (c: Customer) => void;
+}>((set) => ({
+  customers: JSON.parse(localStorage.getItem("customers") || "[]"),
+  selected: null,
 
-        if (!existing) {
-          set({
-            savedAddresses: [...get().savedAddresses, addr],
-            selectedAddress: addr,
-          });
-        } else {
-          set({ selectedAddress: existing });
-        }
-      },
+  select: (c) => set({ selected: c }),
 
-      selectAddress: (addr) => set({ selectedAddress: addr }),
+  save: (c) =>
+    set((state) => {
+      const list = [...state.customers.filter((x) => x.id !== c.id), c];
+      localStorage.setItem("customers", JSON.stringify(list));
+      return { customers: list, selected: c };
     }),
-    { name: "checkout-addresses" }
-  )
-);
+}));
