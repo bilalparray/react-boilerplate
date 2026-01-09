@@ -106,16 +106,23 @@ export default function MyOrders() {
     <div className="container py-5">
       <h2 className="fw-bold mb-4">My Orders</h2>
 
-      <div className="d-flex gap-2 mb-4">
-        <input
-          className="form-control rounded-pill"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button className="btn btn-success rounded-pill" onClick={submit}>
-          Fetch Orders
-        </button>
+      <div className="row g-2 mb-4">
+        <div className="col-12 col-md-10">
+          <input
+            className="form-control rounded-pill"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="col-12 col-md-2">
+          <button
+            className="btn btn-success rounded-pill w-100"
+            onClick={submit}>
+            Fetch Orders
+          </button>
+        </div>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
