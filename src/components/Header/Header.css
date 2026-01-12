@@ -3,6 +3,9 @@ a {
   color: black !important;
   cursor: pointer;
 }
+.bi {
+  color: black;
+}
 /* ===============================
    ROOT
 ================================ */
@@ -28,7 +31,12 @@ header {
   width: 40px;
   object-fit: contain;
 }
-
+.mp-mobile-top span {
+  color: black !important;
+}
+.offcanvas-body a {
+  color: black !important;
+}
 .mp-badge {
   position: absolute;
   top: -6px;
@@ -116,7 +124,7 @@ header {
 .mp-brand {
   font-size: 22px;
   font-weight: 800;
-  color: var(--mp-dark);
+  color: black;
 }
 
 .mp-search {
@@ -165,7 +173,7 @@ header {
 
 .mp-links a {
   font-weight: 600;
-  color: var(--mp-dark);
+  color: black !important;
   text-decoration: none;
 }
 
