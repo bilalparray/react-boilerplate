@@ -21,8 +21,8 @@ function ImagePlane({ url }: { url: string }) {
   }, [texture, viewport]);
 
   useFrame(({ mouse }) => {
-    mesh.current.rotation.y = mouse.x * 0.25;
-    mesh.current.rotation.x = -mouse.y * 0.25;
+    mesh.current.rotation.y = mouse.x * 1.25;
+    mesh.current.rotation.x = -mouse.y * 1.25;
   });
 
   return (
