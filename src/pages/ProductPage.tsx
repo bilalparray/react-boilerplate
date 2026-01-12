@@ -6,6 +6,7 @@ import { useProductRating } from "../hooks/useProductRating";
 import { RatingStars } from "../components/Ratings/RatingStars";
 import "./ProductPage.css";
 import { WriteReviewModal } from "../components/Ratings/WriteReviewModal";
+import { Product3DImage } from "../components/Product3DImage";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -53,33 +54,28 @@ export default function ProductPage() {
       <div className="row g-5">
         {/* IMAGE GALLERY */}
         <div className="col-md-6">
-          <div className="border rounded-4 p-3">
-            <img
-              src={product.images[activeImage]}
-              className="w-100 rounded-3"
-              style={{ height: "480px", objectFit: "cover" }}
-            />
-
-            <div className="d-flex gap-3 mt-3 justify-content-center">
-              {product.images.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  onClick={() => setActiveImage(i)}
-                  className="rounded-3"
-                  style={{
-                    width: "70px",
-                    height: "70px",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                    border:
-                      i === activeImage
-                        ? "2px solid #16a34a"
-                        : "1px solid #e5e7eb",
-                  }}
-                />
-              ))}
-            </div>
+          <div className="border rounded-4 p-3 product-3d-container">
+            <Product3DImage image={product.images[activeImage]} />
+          </div>
+          <div className="d-flex gap-3 mt-3 justify-content-center">
+            {product.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                onClick={() => setActiveImage(i)}
+                className="rounded-3"
+                style={{
+                  width: "70px",
+                  height: "70px",
+                  objectFit: "cover",
+                  cursor: "pointer",
+                  border:
+                    i === activeImage
+                      ? "2px solid #16a34a"
+                      : "1px solid #e5e7eb",
+                }}
+              />
+            ))}
           </div>
         </div>
 
