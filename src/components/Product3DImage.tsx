@@ -1,15 +1,34 @@
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { TextureLoader } from "three";
-import { useRef, useMemo } from "react";
-import { Mesh } from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Mesh, Texture } from "three";
 
-function ImagePlane({ url }: { url: string }) {
+function base64ToTexture(base64: string): Promise<Texture> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const texture = new Texture(img);
+      texture.needsUpdate = true;
+      resolve(texture);
+    };
+    img.onerror = reject;
+    img.src = base64;
+  });
+}
+
+function ImagePlane({ image }: { image: string }) {
   const mesh = useRef<Mesh>(null!);
-  const texture = useLoader(TextureLoader, url);
   const { viewport } = useThree();
+  const [texture, setTexture] = useState<Texture | null>(null);
+
+  useEffect(() => {
+    base64ToTexture(image).then(setTexture);
+  }, [image]);
 
   const [width, height] = useMemo(() => {
-    const img = texture.image;
+    if (!texture?.image) return [1, 1];
+
+    const img = texture.image as HTMLImageElement;
     const imgAspect = img.width / img.height;
     const viewAspect = viewport.width / viewport.height;
 
@@ -21,9 +40,12 @@ function ImagePlane({ url }: { url: string }) {
   }, [texture, viewport]);
 
   useFrame(({ mouse }) => {
-    mesh.current.rotation.y = mouse.x * 1.25;
-    mesh.current.rotation.x = -mouse.y * 1.25;
+    if (!mesh.current) return;
+    mesh.current.rotation.y = mouse.x * 0.25;
+    mesh.current.rotation.x = -mouse.y * 0.25;
   });
+
+  if (!texture) return null;
 
   return (
     <mesh ref={mesh}>
@@ -38,7 +60,7 @@ export function Product3DImage({ image }: { image: string }) {
     <Canvas orthographic camera={{ zoom: 100, position: [0, 0, 10] }}>
       <ambientLight intensity={1.2} />
       <directionalLight position={[5, 5, 5]} intensity={1.4} />
-      <ImagePlane url={image} />
+      <ImagePlane image={image} />
     </Canvas>
   );
 }

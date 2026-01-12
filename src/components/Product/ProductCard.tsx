@@ -91,9 +91,9 @@ export function ProductCard({ product }: Props) {
       {/* BODY */}
       <div className="pc-body">
         <p className="pc-brand">By Lucky Supermarket</p>
-
-        <h3 className="pc-title">{product.name}</h3>
-
+        <Link to={`/product/${product.id}`}>
+          <h3 className="pc-title">{product.name}</h3>
+        </Link>
         <div className="pc-rating">
           {count > 0 ? (
             <RatingStars rating={rating} count={count} />

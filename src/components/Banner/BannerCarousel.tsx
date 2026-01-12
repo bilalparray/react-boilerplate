@@ -6,120 +6,67 @@ export function BannerCarousel() {
   const { banners, loading } = useBanners();
   const [index, setIndex] = useState(0);
 
-  // Auto slide
   useEffect(() => {
     if (banners.length === 0) return;
-
-    const timer = setInterval(() => {
+    const t = setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
     }, 6000);
-
-    return () => clearInterval(timer);
+    return () => clearInterval(t);
   }, [banners]);
 
-  if (loading) {
-    return (
-      <div
-        className="w-100 rounded-4"
-        style={{
-          height: "420px",
-          background:
-            "linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%)",
-          backgroundSize: "400% 100%",
-          animation: "shimmer 1.4s ease infinite",
-        }}
-      />
-    );
-  }
-
+  if (loading) return <div className="banner-skeleton" />;
   if (banners.length === 0) return null;
 
   const current = banners[index];
 
   return (
-    <div
-      className="position-relative overflow-hidden rounded-4 shadow-lg"
-      style={{ height: "460px" }}>
-      {/* Background image */}
-      <img
-        src={current.image_base64}
-        alt={current.title}
-        className="w-100 h-100 position-absolute top-0 start-0 banner-image"
-        style={{ objectFit: "cover" }}
-      />
+    <section className="hero-wrap">
+      <div className="hero-container">
+        {/* LEFT CONTENT */}
+        <div className="hero-left">
+          <span className="hero-badge">
+            Save Up To 50% Off On Your First Order
+          </span>
 
-      {/* Premium gradient */}
-      <div className="position-absolute top-0 start-0 w-100 h-100 banner-overlay" />
+          <h1 className="hero-title">{current.title}</h1>
 
-      {/* Content */}
-      <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center px-5">
-        <div className="banner-glass text-white" style={{ maxWidth: "520px" }}>
-          <h1 className="fw-bold display-5 lh-sm mb-3">{current.title}</h1>
-
-          <p style={{ color: "#d1fae5" }}>
-            Pure Kashmiri produce, sourced directly from farms and delivered to
-            your home with uncompromised freshness.
+          <p className="hero-sub">
+            Get fresh Kashmiri produce delivered to your home with express speed
+            and farm-grade quality.
           </p>
 
-          {current.link && (
-            <a
-              href={current.link}
-              className="btn banner-cta rounded-pill px-4 py-2 fw-semibold mt-3">
-              Shop Now
+          <div className="hero-cta-row">
+            <a href={current.link || "#"} className="hero-btn">
+              Explore Shop
             </a>
-          )}
+            <span className="hero-price">Starting at ₹160.99</span>
+          </div>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <button
-        onClick={() =>
-          setIndex((i) => (i - 1 + banners.length) % banners.length)
-        }
-        className="position-absolute top-50 start-0 translate-middle-y btn btn-light rounded-circle ms-3 shadow"
-        style={{ width: "46px", height: "46px", opacity: 0.9 }}>
-        ‹
-      </button>
-
-      <button
-        onClick={() => setIndex((i) => (i + 1) % banners.length)}
-        className="position-absolute top-50 end-0 translate-middle-y btn btn-light rounded-circle me-3 shadow"
-        style={{ width: "46px", height: "46px", opacity: 0.9 }}>
-        ›
-      </button>
-
-      {/* Indicators */}
-      <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4 d-flex gap-2">
-        {banners.map((_, i) => (
-          <div
-            key={i}
-            onClick={() => setIndex(i)}
-            style={{
-              width: i === index ? "32px" : "10px",
-              height: "10px",
-              borderRadius: "20px",
-              cursor: "pointer",
-              backgroundColor:
-                i === index ? "#facc15" : "rgba(255,255,255,0.4)",
-              transition: "all 0.3s ease",
-            }}
+        {/* RIGHT IMAGE */}
+        <div className="hero-right">
+          <img
+            src={current.image_base64}
+            alt={current.title}
+            className="hero-image"
           />
-        ))}
-      </div>
-      {/* Glass notch + scroll indicator */}
-      <div className="glass-notch">
-        <div
-          className="scroll-indicator"
-          onClick={() => {
-            window.scrollBy({
-              top: window.innerHeight * 0.6,
-              behavior: "smooth",
-            });
-          }}>
-          <span className="arrow">⌄</span>
-          <span className="arrow delay">⌄</span>
         </div>
+
+        {/* SLIDER ARROWS */}
+        <button
+          className="hero-nav left"
+          onClick={() =>
+            setIndex((i) => (i - 1 + banners.length) % banners.length)
+          }>
+          ‹
+        </button>
+
+        <button
+          className="hero-nav right"
+          onClick={() => setIndex((i) => (i + 1) % banners.length)}>
+          ›
+        </button>
       </div>
-    </div>
+    </section>
   );
 }
