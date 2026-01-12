@@ -28,6 +28,7 @@ import VideoList from "./pages/admin/Videos/VideoList";
 import ReviewList from "./pages/admin/reviews/ReviewList";
 import ContactUsList from "./pages/admin/contactus/ContactUsList";
 import MyOrders from "./pages/MyOrders";
+import CategoryPage from "./pages/Category";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/myorders" element={<MyOrders />} />
         <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
+        <Route path="/category/:id" element={<CategoryPage />} />
       </Route>
 
       {/* AUTH */}

@@ -7,8 +7,9 @@ export class Product {
   categoryId: number;
   images: string[];
   variants: ProductVariant[];
-  rating: number; // e.g. 3.7
-  reviewCount: number; // e.g. 124
+  rating: number;
+  reviewCount: number;
+  category?: { id: number; name: string };
 
   constructor(
     id: number,
@@ -17,17 +18,19 @@ export class Product {
     categoryId: number,
     images: string[],
     variants: ProductVariant[],
-    rating = 0,
-    reviewCount = 0
+    rating: number = 0,
+    reviewCount: number = 0,
+    category?: { id: number; name: string }
   ) {
     this.id = id;
     this.name = name;
     this.description = description;
+    this.categoryId = categoryId;
     this.images = images;
     this.variants = variants;
-    this.categoryId = categoryId;
     this.rating = rating;
     this.reviewCount = reviewCount;
+    this.category = category; // ✅ THIS WAS MISSING
   }
 
   get defaultVariant() {

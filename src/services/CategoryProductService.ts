@@ -21,20 +21,25 @@ function mapProduct(dto: ProductDTO): Product {
     dto.id,
     dto.name,
     dto.description,
-    dto.category.id,
-    dto.images,
-    dto.variants.map(mapVariant)
+    dto.category?.id ?? 0, // ✅ always use category.id
+    dto.images || [],
+    dto.variants?.map(mapVariant) || [],
+    0, // rating
+    0, // reviewCount
+    dto.category // ✅ pass full category object
   );
 }
-
 export async function getCategoryProducts(
   categoryId: number,
   skip: number,
   top: number
 ) {
   const res = await fetchProductsByCategory(categoryId, skip, top);
+
+  const list = res.successData || [];
+
   return {
-    products: res.successData.map(mapProduct),
-    total: res.successData.total,
+    products: list.map(mapProduct),
+    total: list.length, // ✅ correct
   };
 }

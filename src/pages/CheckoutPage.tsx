@@ -69,7 +69,6 @@ export default function CheckoutPage() {
         alert("Server failed to create customer profile.");
       }
     } catch (error) {
-      console.error("Creation Error:", error);
       alert("Error connecting to server.");
     } finally {
       setLoading(false);
@@ -107,7 +106,6 @@ export default function CheckoutPage() {
         alert("Order placed, but payment link generation failed.");
       }
     } catch (err) {
-      console.error("Order error:", err);
     } finally {
       setLoading(false);
     }

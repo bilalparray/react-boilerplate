@@ -4,19 +4,25 @@ import { useCategoryProducts } from "../hooks/useCategoryProducts";
 import { ProductCard } from "../components/Product/ProductCard";
 
 export default function CategoryPage() {
-  const { categoryId } = useParams();
-  const id = Number(categoryId);
+  const { id } = useParams();
+  const categoryId = Number(id);
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
-  const { products, total, loading } = useCategoryProducts(id, page, pageSize);
+  const { products, total, loading } = useCategoryProducts(
+    categoryId,
+    page,
+    pageSize
+  );
 
   const totalPages = Math.ceil(total / pageSize);
-
+  const categoryName = products.length > 0 ? products[0].category?.name : "";
+  // alert(products[0].category);
+  // alert(categoryName);
   return (
     <div className="container py-5">
-      <h3 className="fw-bold mb-4">Category</h3>
+      <h3 className="fw-bold mb-4">{categoryName}</h3>
 
       <div className="d-flex justify-content-end mb-4">
         <select
