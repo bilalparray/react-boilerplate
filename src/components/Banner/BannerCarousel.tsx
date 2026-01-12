@@ -106,6 +106,20 @@ export function BannerCarousel() {
           />
         ))}
       </div>
+      {/* Glass notch + scroll indicator */}
+      <div className="glass-notch">
+        <div
+          className="scroll-indicator"
+          onClick={() => {
+            window.scrollBy({
+              top: window.innerHeight * 0.6,
+              behavior: "smooth",
+            });
+          }}>
+          <span className="arrow">⌄</span>
+          <span className="arrow delay">⌄</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -76,3 +76,70 @@
     animation: none; /* disable heavy zoom on mobile */
   }
 }
+/* -------- Glass notch -------- */
+
+.glass-notch {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top-left-radius: 1000px;
+  border-top-right-radius: 1000px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: none;
+  z-index: 20;
+}
+
+/* -------- Floating circle -------- */
+
+.scroll-indicator {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #0f3d2e, #0b1c17);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* -------- Arrow animation -------- */
+
+.arrow {
+  position: absolute;
+  font-size: 22px;
+  color: #facc15;
+  animation: arrowMove 1.8s ease-in-out infinite;
+}
+
+.arrow.delay {
+  animation-delay: 0.9s;
+  opacity: 0.4;
+}
+
+@keyframes arrowMove {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
