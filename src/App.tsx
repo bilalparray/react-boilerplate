@@ -31,6 +31,7 @@ import MyOrders from "./pages/MyOrders";
 import CategoryPage from "./pages/Category";
 import AdminProducts from "./pages/admin/Products/AdminProducts";
 import AdminProductForm from "./pages/admin/Products/AdminProductForm";
+import ThankYou from "./pages/Thankyou";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<ThankYou />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
