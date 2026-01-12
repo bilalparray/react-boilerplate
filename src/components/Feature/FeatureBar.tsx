@@ -2,51 +2,42 @@ import type { FC } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./FeatureBar.css";
 
-interface Feature {
-  icon: string;
-  title: string;
-  subtitle: string;
-}
+const features = [
+  {
+    icon: "bi-globe",
+    title: "Worldwide Delivery",
+    subtitle: "Ships to 180+ countries",
+  },
+  {
+    icon: "bi-headset",
+    title: "24×7 Support",
+    subtitle: "Real humans, not bots",
+  },
+  {
+    icon: "bi-percent",
+    title: "Seasonal Offers",
+    subtitle: "Festival & bulk discounts",
+  },
+  {
+    icon: "bi-shield-check",
+    title: "Secure Checkout",
+    subtitle: "PCI-DSS compliant",
+  },
+];
 
 export const FeatureBar: FC = () => {
-  const features: Feature[] = [
-    {
-      icon: "bi-truck",
-      title: "Worldwide Delivery",
-      subtitle: "Fast & reliable shipping",
-    },
-    {
-      icon: "bi-clock",
-      title: "24×7 Support",
-      subtitle: "We are always here to help",
-    },
-    {
-      icon: "bi-megaphone",
-      title: "Festive Offers",
-      subtitle: "Up to 50% seasonal discounts",
-    },
-    {
-      icon: "bi-credit-card",
-      title: "Secure Payments",
-      subtitle: "All major cards & UPI supported",
-    },
-  ];
-
   return (
-    <section className="feature-section">
+    <section className="feature-rail">
       <div className="container">
-        <div className="row g-4">
-          {features.map((item, index) => (
-            <div key={index} className="col-12 col-md-6 col-lg-3">
-              <div className="feature-card">
-                <div className="feature-icon">
-                  <i className={`bi ${item.icon}`}></i>
-                </div>
-
-                <div className="feature-text">
-                  <h6>{item.title}</h6>
-                  <p>{item.subtitle}</p>
-                </div>
+        <div className="feature-track">
+          {features.map((f, i) => (
+            <div key={i} className="feature-pill">
+              <div className="icon-wrap">
+                <i className={`bi ${f.icon}`} />
+              </div>
+              <div className="text-wrap">
+                <div className="title">{f.title}</div>
+                <div className="subtitle">{f.subtitle}</div>
               </div>
             </div>
           ))}

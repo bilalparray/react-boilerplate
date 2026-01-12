@@ -50,6 +50,17 @@
   color: #d62828;
   font-weight: 700;
   font-size: 1.1rem;
+
+  /* visibility fix */
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  /* soft lift */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+
+  display: inline-block;
+  line-height: 1;
 }
 
 .promo-btn {
@@ -62,7 +73,9 @@
   transition: 0.3s;
   font-size: 12px;
 }
-
+.promo-btn i {
+  color: white !important;
+}
 .promo-btn:hover {
   background: #0e5e78;
 }

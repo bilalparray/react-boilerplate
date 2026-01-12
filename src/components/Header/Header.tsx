@@ -90,9 +90,9 @@ export function Header() {
           <span className="mp-brand">Alpine</span>
         </Link>
 
-        <div className="mp-search">
-          <input placeholder="Search for products..." />
-          <button onClick={() => navigate("/shop")}>
+        <div className="mp-search" onClick={() => navigate("/shop")}>
+          <input placeholder="Search for products..." readOnly />
+          <button>
             <i className="bi bi-search"></i>
           </button>
         </div>
