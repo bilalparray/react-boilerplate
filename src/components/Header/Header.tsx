@@ -1,300 +1,169 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useCartStore } from "../../store/useCartStore";
 import { useCategories } from "../../hooks/useCategories";
 import "./Header.css";
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
-  const { cartCount, wishlistCount } = useCartStore();
-  const { cartItems, increaseQty, decreaseQty, removeFromCart } =
-    useCartStore();
   const navigate = useNavigate();
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const {
+    cartCount,
+    wishlistCount,
+    cartItems,
+    increaseQty,
+    decreaseQty,
+    removeFromCart,
+  } = useCartStore();
   const { categories } = useCategories();
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
 
-  return (
-    <header className="w-100">
-      {/* Top Ribbon */}
-      <div
-        className="w-100 py-2"
-        style={{
-          background: "linear-gradient(90deg, #0f3d2e, #1f6f50)",
-          color: "#eaf7f1",
-          fontSize: "14px",
-        }}>
-        <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-          {/* Left: Store info */}
-          <div className="d-flex flex-wrap gap-3 align-items-center">
-            <span>
-              <i className="bi bi-geo-alt-fill me-1"></i>
-              Kashmir, India
-            </span>
-
-            <span>
-              <i className="bi bi-telephone-fill me-1"></i>
-              +91 98765 43210
-            </span>
-
-            <span>
-              <i className="bi bi-envelope-fill me-1"></i>
-              support@alpine.com
-            </span>
-          </div>
-
-          {/* Right: Brand message + Social */}
-          <div className="d-flex align-items-center gap-3">
-            <span className="d-none d-md-inline">
-              Pure Kashmiri produce • Farm-to-Home • No middlemen
-            </span>
-
-            <div className="d-flex gap-3 fs-6">
-              <i className="bi bi-facebook"></i>
-              <i className="bi bi-instagram"></i>
-              <i className="bi bi-youtube"></i>
-              <i className="bi bi-twitter-x"></i>
-            </div>
-          </div>
-        </div>
+  /* ================= MOBILE ================= */
+  const MobileHeader = () => (
+    <div className="d-lg-none">
+      <div className="mp-sale-bar">
+        Sale ends: 671 Days 18 Hours 14 Minutes 55 Sec.
       </div>
 
-      {/* Sticky Header */}
-      <div
-        className="bg-white border-bottom"
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-          padding: scrolled ? "6px 0" : "16px 0",
-          transition: "all 0.3s ease",
-          boxShadow: scrolled ? "0 10px 30px rgba(0,0,0,0.08)" : "none",
-        }}>
-        <div className="container d-flex align-items-center justify-content-between">
-          {/* Brand */}
-          <Link
-            to="/"
-            className="d-flex align-items-center gap-3 text-decoration-none">
-            <img
-              src="/logo.png"
-              alt="Alpine"
-              style={{
-                height: scrolled ? "36px" : "46px",
-                borderRadius: "50%",
-                transition: "all 0.3s ease",
-              }}
-            />
-            <div>
-              <div
-                className="fw-bold"
-                style={{ fontSize: "20px", color: "#1f2937" }}>
-                Alpine
-              </div>
-              {!scrolled && (
-                <div className="small text-muted">Foods from the Valley</div>
-              )}
-            </div>
+      <div className="mp-mobile-top">
+        <Link to="/" className="d-flex align-items-center gap-2">
+          <img src="/logo.png" className="mp-logo" />
+          <span className="fw-bold">Alpine</span>
+        </Link>
+
+        <div className="d-flex align-items-center gap-3">
+          <button className="icon-btn" onClick={() => navigate("/shop")}>
+            <i className="bi bi-search"></i>
+          </button>
+
+          <Link to="/wishlist" className="position-relative icon-btn">
+            <i className="bi bi-heart"></i>
+            {wishlistCount > 0 && (
+              <span className="mp-badge">{wishlistCount}</span>
+            )}
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav
-            className="d-none d-lg-flex align-items-center"
-            style={{ gap: scrolled ? "2.5rem" : "4rem" }}>
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `fw-semibold text-decoration-none ${
-                  isActive ? "text-success" : "text-dark"
-                }`
-              }>
-              Home
-            </NavLink>
+          <button
+            className="position-relative icon-btn"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#cartDrawer">
+            <i className="bi bi-cart"></i>
+            {cartCount > 0 && <span className="mp-badge">{cartCount}</span>}
+          </button>
+        </div>
+      </div>
 
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                `fw-semibold text-decoration-none ${
-                  isActive ? "text-success" : "text-dark"
-                }`
-              }>
-              Shop
-            </NavLink>
+      <div className="mp-mobile-browse">
+        <button
+          className="mp-browse-btn"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mobileMenu">
+          <i className="bi bi-grid"></i> Browse Categories
+        </button>
 
-            {/* Categories Dropdown */}
-            <div className="dropdown">
-              <NavLink
-                to="/categories"
-                className={({ isActive }) =>
-                  `fw-semibold text-decoration-none dropdown-toggle ${
-                    isActive ? "text-success" : "text-dark"
-                  }`
-                }
-                data-bs-toggle="dropdown">
-                Categories
-              </NavLink>
+        <button
+          className="mp-hamburger"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mobileMenu">
+          <i className="bi bi-list"></i>
+        </button>
+      </div>
+    </div>
+  );
 
-              <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                {categories.map((cat) => (
-                  <li key={cat.slug}>
-                    <NavLink
-                      to={`/category/${cat.id}`}
-                      className="dropdown-item">
-                      {cat.name}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                `fw-semibold text-decoration-none ${
-                  isActive ? "text-success" : "text-dark"
-                }`
-              }>
-              About Us
-            </NavLink>
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                `fw-semibold text-decoration-none ${
-                  isActive ? "text-success" : "text-dark"
-                }`
-              }>
-              Contact
-            </NavLink>
-          </nav>
-
-          {/* Right Cluster */}
-          <div className="d-flex align-items-center gap-4">
-            <Link to="/shop" className="d-flex align-items-center">
-              <div className="position-relative">
-                <i className="bi bi-search fs-5"></i>
-              </div>
-            </Link>
-            <Link to="/wishlist" className="d-flex align-items-center">
-              <div className="position-relative">
-                <i className="bi bi-heart fs-5"></i>
-                {wishlistCount > 0 && (
-                  <span className="badge bg-success position-absolute top-0 start-100 translate-middle">
-                    {wishlistCount}
-                  </span>
-                )}
-              </div>
-            </Link>
-            <div
-              className="position-relative cursor-pointer"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#cartDrawer"
-              role="button">
-              <i className="bi bi-cart fs-5"></i>
-
-              {cartCount > 0 && (
-                <span className="badge bg-success position-absolute top-0 start-100 translate-middle">
-                  {cartCount}
-                </span>
-              )}
-            </div>
-            <Link to="/myorders" className="d-flex align-items-center">
-              <div className="position-relative">
-                <i className="bi bi-bag-fill fs-5"></i>
-              </div>
-            </Link>
-            <button
-              className="btn d-lg-none"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#mobileMenu">
-              <i className="bi bi-list fs-2"></i>
-            </button>
+  /* ================= DESKTOP ================= */
+  const DesktopHeader = () => (
+    <div className="d-none d-lg-block">
+      <div className="mp-top-bar">
+        <div className="container d-flex justify-content-between">
+          <div>Kashmir, India • +91 98765 43210 • support@alpine.com</div>
+          <div className="d-flex gap-3">
+            <i className="bi bi-facebook"></i>
+            <i className="bi bi-instagram"></i>
+            <i className="bi bi-youtube"></i>
           </div>
         </div>
       </div>
 
-      {/* Mobile Offcanvas */}
-      <div className="offcanvas offcanvas-end" id="mobileMenu">
-        {/* Header */}
-        <div
-          className="offcanvas-header border-bottom"
-          style={{ background: "#F9FAFB" }}>
-          <div className="d-flex align-items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="Alpine"
-              style={{ height: "42px", borderRadius: "50%" }}
-            />
-            <div>
-              <div className="fw-bold" style={{ color: "#1f2937" }}>
-                Alpine
-              </div>
-              <div className="small text-muted">Foods from the Valley</div>
-            </div>
-          </div>
+      <div className="mp-main-header container">
+        <Link to="/" className="d-flex align-items-center gap-3">
+          <img src="/logo.png" className="mp-logo" />
+          <span className="mp-brand">Alpine</span>
+        </Link>
 
+        <div className="mp-search">
+          <input placeholder="Search for products..." />
+          <button onClick={() => navigate("/shop")}>
+            <i className="bi bi-search"></i>
+          </button>
+        </div>
+
+        <div className="mp-icons">
+          <Link to="/myorders">
+            <i className="bi bi-person"></i>
+          </Link>
+
+          <Link to="/wishlist" className="position-relative">
+            <i className="bi bi-heart"></i>
+            {wishlistCount > 0 && (
+              <span className="mp-badge">{wishlistCount}</span>
+            )}
+          </Link>
+
+          <button
+            className="icon-btn position-relative"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#cartDrawer">
+            <i className="bi bi-cart"></i>
+            {cartCount > 0 && <span className="mp-badge">{cartCount}</span>}
+          </button>
+        </div>
+      </div>
+
+      <div className="mp-nav container">
+        <button
+          className="mp-browse-btn"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mobileMenu">
+          <i className="bi bi-grid"></i> Browse Categories
+        </button>
+
+        <div className="mp-links">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/shop">Shop</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
+          <NavLink to="/about">About us</NavLink>
+        </div>
+
+        <div className="mp-help">Need help? +91 98765 43210</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <header>
+      <MobileHeader />
+      <DesktopHeader />
+
+      {/* Mobile Menu */}
+      <div className="offcanvas offcanvas-end" id="mobileMenu">
+        <div className="offcanvas-header">
+          <h5>Menu</h5>
           <button className="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-
-        {/* Body */}
-        <div className="offcanvas-body p-0" style={{ background: "#ffffff" }}>
-          {/* Menu */}
-          <nav className="d-flex flex-column">
-            <NavLink to="/" className="mobile-link">
-              <i className="bi bi-house"></i> Home
+        <div className="offcanvas-body">
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/shop">Shop</NavLink>
+          <h6 className="mt-3">Categories</h6>
+          {categories.map((c) => (
+            <NavLink key={c.id} to={`/category/${c.id}`}>
+              {c.name}
             </NavLink>
-
-            <NavLink to="/shop" className="mobile-link">
-              <i className="bi bi-bag"></i> Shop
-            </NavLink>
-
-            <div
-              className="px-4 pt-4 pb-2 fw-bold small"
-              style={{ color: "#6B7280" }}>
-              Categories
-            </div>
-
-            {categories.map((cat) => (
-              <NavLink
-                key={cat.slug}
-                to={`/category/${cat.id}`}
-                className="mobile-link ps-5">
-                {cat.name}
-              </NavLink>
-            ))}
-
-            <NavLink to="/story" className="mobile-link">
-              <i className="bi bi-book"></i> Our Story
-            </NavLink>
-
-            <NavLink to="/contact" className="mobile-link">
-              <i className="bi bi-telephone"></i> Contact
-            </NavLink>
-          </nav>
-
-          {/* Account & Cart */}
-          <div className="p-4 border-top mt-3">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <span className="fw-semibold">Wishlist</span>
-              <span className="badge bg-success">{wishlistCount}</span>
-            </div>
-
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <span className="fw-semibold">Cart</span>
-              <span className="badge bg-success">{cartCount}</span>
-            </div>
-            <button
-              className="btn btn-success w-100 rounded-pill"
-              onClick={() => navigate("/myorders")}>
-              <i className="bi bi-person me-2"></i>
-              My Account
-            </button>
-          </div>
+          ))}
         </div>
       </div>
+
+      {/* Cart */}
+      {/* Cart */}
       <div
         className="offcanvas offcanvas-end"
         tabIndex={-1}
@@ -319,6 +188,7 @@ export function Header() {
             </div>
           ) : (
             <>
+              {/* Items */}
               <div className="flex-grow-1 overflow-auto p-3">
                 {cartItems.map((item) => (
                   <div
@@ -343,7 +213,6 @@ export function Header() {
                       <div className="d-flex align-items-center gap-3 mt-2">
                         <div className="fw-bold">₹{item.price}</div>
 
-                        {/* Qty controls */}
                         <div className="d-flex border rounded-pill overflow-hidden">
                           <button
                             className="btn px-2"
@@ -364,7 +233,6 @@ export function Header() {
                       </div>
                     </div>
 
-                    {/* Remove */}
                     <button
                       onClick={() =>
                         removeFromCart(item.productId, item.variantId)
@@ -382,14 +250,9 @@ export function Header() {
                   <span className="fw-semibold">Subtotal</span>
                   <span className="fw-bold">₹{total.toFixed(2)}</span>
                 </div>
+
                 <button
-                  className="btn btn-success w-50 py-3 rounded-pill"
-                  data-bs-dismiss="offcanvas"
-                  onClick={() => navigate("/cart")}>
-                  View Cart
-                </button>
-                <button
-                  className="btn btn-success w-50 py-3 rounded-pill"
+                  className="btn btn-success w-100 py-3 rounded-pill"
                   data-bs-dismiss="offcanvas"
                   onClick={() => navigate("/checkout")}>
                   Proceed to Checkout

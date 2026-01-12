@@ -3,3 +3,265 @@ a {
   color: black !important;
   cursor: pointer;
 }
+/* ===============================
+   ROOT
+================================ */
+:root {
+  --mp-green: #1fbf75;
+  --mp-blue: #1e7da1;
+  --mp-dark: #0f172a;
+  --mp-gray: #6b7280;
+  --mp-border: #e5e7eb;
+}
+
+/* ===============================
+   COMMON
+================================ */
+header {
+  width: 100%;
+  background: white;
+  z-index: 1000;
+}
+
+.mp-logo {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+}
+
+.mp-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--mp-green);
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+/* ===============================
+   SALE BAR (Mobile)
+================================ */
+.mp-sale-bar {
+  background: #1e7da1;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  padding: 6px;
+}
+
+/* ===============================
+   MOBILE HEADER
+================================ */
+.mp-mobile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mp-border);
+}
+
+.mp-mobile-top i {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.mp-mobile-browse {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--mp-border);
+}
+
+.mp-browse-btn {
+  background: var(--mp-green);
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-hamburger {
+  background: none;
+  border: none;
+  font-size: 26px;
+}
+
+/* ===============================
+   DESKTOP TOP BAR
+================================ */
+.mp-top-bar {
+  background: #0f3d2e;
+  color: white;
+  font-size: 13px;
+  padding: 6px 0;
+}
+
+/* ===============================
+   DESKTOP MAIN HEADER
+================================ */
+.mp-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.mp-brand {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--mp-dark);
+}
+
+.mp-search {
+  display: flex;
+  width: 50%;
+  border: 1px solid var(--mp-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mp-search input {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  outline: none;
+}
+
+.mp-search button {
+  background: var(--mp-blue);
+  border: none;
+  color: white;
+  padding: 0 18px;
+}
+
+.mp-icons {
+  display: flex;
+  gap: 20px;
+  font-size: 20px;
+}
+
+/* ===============================
+   DESKTOP NAV BAR
+================================ */
+.mp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-top: 1px solid var(--mp-border);
+}
+
+.mp-links {
+  display: flex;
+  gap: 30px;
+}
+
+.mp-links a {
+  font-weight: 600;
+  color: var(--mp-dark);
+  text-decoration: none;
+}
+
+.mp-links a:hover {
+  color: var(--mp-green);
+}
+
+.mp-help {
+  font-weight: 700;
+  color: var(--mp-dark);
+}
+
+/* ===============================
+   OFFCANVAS MOBILE MENU
+================================ */
+#mobileMenu .offcanvas-body a {
+  display: block;
+  padding: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--mp-border);
+  text-decoration: none;
+  color: var(--mp-dark);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (min-width: 992px) {
+  .mp-mobile-top,
+  .mp-mobile-browse,
+  .mp-sale-bar {
+    display: none;
+  }
+}
+/* -------------------------------
+   Icon button wrapper
+-------------------------------- */
+.icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+  color: #0f172a;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.icon-btn i {
+  font-size: 22px;
+}
+
+/* -------------------------------
+   Floating green counter
+-------------------------------- */
+.mp-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 20px;
+  height: 20px;
+  background: #22c55e; /* Marketpro green */
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 0 0 2px #fff;
+  pointer-events: none;
+}
+
+/* -------------------------------
+   Hover style (Marketpro feel)
+-------------------------------- */
+.icon-btn:hover i,
+.icon-btn:hover {
+  color: #22c55e;
+}
+
+/* -------------------------------
+   Icon spacing row
+-------------------------------- */
+.mp-icons {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* -------------------------------
+   Clickable links
+-------------------------------- */
+.mp-icons a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+}
