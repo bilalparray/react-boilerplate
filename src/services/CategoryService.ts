@@ -6,5 +6,6 @@ export async function getCategories() {
     id: c.id,
     name: c.name,
     slug: c.slug,
+    image: c.category_icon_base64,
   }));
 }

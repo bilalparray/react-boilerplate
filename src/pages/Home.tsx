@@ -1,5 +1,6 @@
 import { BannerCarousel } from "../components/Banner/BannerCarousel";
 import { BestSelling } from "../components/BestSelling/BestSelling";
+import CategoryCarousel from "../components/Category/CategoryCarousel";
 
 import { FeatureBar } from "../components/Feature/FeatureBar";
 import { ProductsGrid } from "../components/Product/ProductGrid/ProductGrid";
@@ -13,6 +14,7 @@ export default function Home() {
       <BannerCarousel />
       <FeatureBar />
       <DryFruitPromoGrid />
+      <CategoryCarousel />
       <BestSelling />
       <ProductsGrid />
       <CustomerTestimonials />
