@@ -8,7 +8,7 @@ export const environment = {
   enableResponseCacheProcessing: true,
   applicationVersion: "1.0.1",
   // apiBaseUrl: "http://reg-api.renosoftwares.com/",
-  apiBaseUrl: "https://api.wildvalleyfoods.in/api/v1",
+  apiBaseUrl: "http://13.235.53.15:8081/api/v1",
 
   apiDefaultTimeout: 1,
   renoWebsiteDownloadPageLink:

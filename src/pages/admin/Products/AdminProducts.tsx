@@ -92,13 +92,12 @@ export default function AdminProducts() {
           + Add Product
         </button>
       </div>
-
+      {loading && (
+        <div className="p-5 text-center position-absolute w-75 h-100 bg-light">
+          <div className="spinner-border text-primary" />
+        </div>
+      )}
       <table className="table table-bordered align-middle">
-        {loading && (
-          <div className="p-5 text-center position-absolute w-75 h-100 bg-light">
-            <div className="spinner-border text-primary" />
-          </div>
-        )}
         <thead className="table-light">
           <tr>
             <th>Image</th>
