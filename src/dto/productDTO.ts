@@ -7,6 +7,11 @@ export interface ProductDTO {
   currency: string;
   isBestSelling: boolean;
   images: string[];
+  richDescription: string;
+  isFeatured: boolean;
+  categoryId: number;
+  hsnCode: string;
+  taxRate: number;
   category: {
     id: number;
     name: string;

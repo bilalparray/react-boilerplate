@@ -13,8 +13,9 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const pageSize = 20;
+  const pageSize = 5;
   const navigate = useNavigate();
 
   /* Load product count once */
@@ -30,30 +31,55 @@ export default function AdminProducts() {
   useEffect(() => {
     const skip = (page - 1) * pageSize;
 
-    fetchProducts(skip, pageSize).then((res) => {
-      if (!res.isError && res.successData) {
-        setProducts(res.successData);
-      } else {
-        setProducts([]);
-      }
-    });
+    setLoading(true);
+
+    fetchProducts(skip, pageSize)
+      .then((res) => {
+        if (!res.isError && res.successData) {
+          setProducts(res.successData);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [page]);
 
   const totalPages = Math.ceil(total / pageSize);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this product?")) return;
+    setLoading(true);
 
     await deleteProduct(id);
-    setProducts((p) => p.filter((x) => x.id !== id));
-    setTotal((t) => t - 1);
+
+    setTotal((t) => {
+      const newTotal = t - 1;
+      const maxPage = Math.max(1, Math.ceil(newTotal / pageSize));
+
+      if (page > maxPage) {
+        setPage(maxPage);
+      }
+
+      return newTotal;
+    });
+
+    const skip = (page - 1) * pageSize;
+    const res = await fetchProducts(skip, pageSize);
+    if (!res.isError && res.successData) {
+      setProducts(res.successData);
+    }
+
+    setLoading(false);
   };
 
   const handleBestSeller = async (id: number, value: boolean) => {
+    setLoading(true);
     await toggleBestSeller(id, value);
+
     setProducts((p) =>
       p.map((x) => (x.id === id ? { ...x, isBestSelling: value } : x))
     );
+
+    setLoading(false);
   };
 
   return (
@@ -62,12 +88,17 @@ export default function AdminProducts() {
         <h4>Products</h4>
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/products/create")}>
+          onClick={() => navigate("/products/create")}>
           + Add Product
         </button>
       </div>
 
       <table className="table table-bordered align-middle">
+        {loading && (
+          <div className="p-5 text-center position-absolute w-75 h-100 bg-light">
+            <div className="spinner-border text-primary" />
+          </div>
+        )}
         <thead className="table-light">
           <tr>
             <th>Image</th>
@@ -112,7 +143,7 @@ export default function AdminProducts() {
 
               <td>
                 <button
-                  onClick={() => navigate(`/admin/products/edit/${p.id}`)}
+                  onClick={() => navigate(`/products/edit/${p.id}`)}
                   className="btn btn-sm btn-outline-primary me-2">
                   Edit
                 </button>
