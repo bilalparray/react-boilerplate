@@ -29,6 +29,8 @@ import ReviewList from "./pages/admin/reviews/ReviewList";
 import ContactUsList from "./pages/admin/contactus/ContactUsList";
 import MyOrders from "./pages/MyOrders";
 import CategoryPage from "./pages/Category";
+import AdminProducts from "./pages/admin/Products/AdminProducts";
+import AdminProductForm from "./pages/admin/Products/AdminProductForm";
 
 export default function App() {
   return (
@@ -70,6 +72,9 @@ export default function App() {
           <Route path="/videos" element={<VideoList />} />
           <Route path="/reviews" element={<ReviewList />} />
           <Route path="/contactus" element={<ContactUsList />} />
+          <Route path="/products" element={<AdminProducts />} />
+          <Route path="/products/create" element={<AdminProductForm />} />
+          <Route path="/products/edit/:id" element={<AdminProductForm />} />
         </Route>
       </Route>
     </Routes>
