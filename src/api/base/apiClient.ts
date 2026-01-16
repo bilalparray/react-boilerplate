@@ -28,12 +28,13 @@ export async function apiPost<T>(
     return unauthorizedResponse<T>();
   }
 
-  return httpClient.post<any, ApiResponse<T>>(url, data);
+  const isFormData = data instanceof FormData;
+
+  return httpClient.post<any, ApiResponse<T>>(url, data, {
+    headers: isFormData ? undefined : { "Content-Type": "application/json" },
+  });
 }
 
-/* ----------------------------------------------------
-   PUT
----------------------------------------------------- */
 export async function apiPut<T>(
   url: string,
   data: any,
@@ -43,7 +44,11 @@ export async function apiPut<T>(
     return unauthorizedResponse<T>();
   }
 
-  return httpClient.put<any, ApiResponse<T>>(url, data);
+  const isFormData = data instanceof FormData;
+
+  return httpClient.put<any, ApiResponse<T>>(url, data, {
+    headers: isFormData ? undefined : { "Content-Type": "application/json" },
+  });
 }
 
 /* ----------------------------------------------------

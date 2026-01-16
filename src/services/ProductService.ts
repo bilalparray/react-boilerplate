@@ -4,6 +4,7 @@ import {
   fetchProduct,
   fetchProductCount,
 } from "../api/product.api";
+import { fetchRelatedProducts } from "../api/related-products.api";
 import type { ProductDTO } from "../dto/productDTO";
 import { Product } from "../models/Product";
 import { ProductVariant } from "../models/ProductVaraint";
@@ -37,9 +38,8 @@ export async function getProduct(productId: number): Promise<Product> {
   const dto = response.successData; // Assuming the data is in the `data` property of the response
   if (dto != null) {
     return mapProduct(dto);
-  } else {
-    throw new Error("Data is null");
   }
+  throw new Error("Product not found");
 }
 export async function getProductCount(): Promise<number> {
   const res = await fetchProductCount();
@@ -47,7 +47,11 @@ export async function getProductCount(): Promise<number> {
 }
 export async function getBestSellingProducts(): Promise<Product[]> {
   const dtos = await fetchBestSellingProducts();
-  return dtos.map(mapProduct);
+  return dtos.successData.map(mapProduct);
+}
+export async function getRelatedProducts(id: number): Promise<Product[]> {
+  const dtos = await fetchRelatedProducts(id);
+  return dtos.successData.map(mapProduct);
 }
 export async function getPaginatedProducts(skip: number, top: number) {
   const response = await fetchPaginatedProducts(skip, top);

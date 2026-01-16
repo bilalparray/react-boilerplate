@@ -1,196 +1,157 @@
 import { useState } from "react";
-import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import "./DashboardSidebar.css";
 
-const theme = {
-  bg: "#020617",
-  panel: "#020617",
-  hover: "#1e293b",
-  active: "#0f172a",
-  text: "#e5e7eb",
-  muted: "#94a3b8",
-  accent: "#38bdf8",
-  border: "#1e293b",
-};
+interface MenuItem {
+  path: string;
+  label: string;
+  icon: string;
+}
 
-const Section = ({ title }: { title: string }) => (
-  <div
-    style={{
-      padding: "16px 20px 6px",
-      fontSize: 11,
-      fontWeight: 600,
-      letterSpacing: "0.08em",
-      color: theme.muted,
-      textTransform: "uppercase",
-    }}>
-    {title}
-  </div>
-);
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
+const menuSections: MenuSection[] = [
+  {
+    title: "Dashboard",
+    items: [
+      { path: "/dashboard", label: "Dashboard", icon: "bi-speedometer2" },
+    ],
+  },
+  {
+    title: "Sales & Orders",
+    items: [
+      { path: "/orders", label: "Orders", icon: "bi-bag-check" },
+      { path: "/invoices", label: "Invoices", icon: "bi-receipt" },
+      { path: "/customers", label: "Customers", icon: "bi-people" },
+    ],
+  },
+  {
+    title: "Products",
+    items: [
+      { path: "/products", label: "Products", icon: "bi-box-seam" },
+      { path: "/categories", label: "Categories", icon: "bi-grid" },
+      { path: "/units", label: "Units", icon: "bi-rulers" },
+    ],
+  },
+  {
+    title: "Website Resources",
+    items: [
+      { path: "/banners", label: "Banners", icon: "bi-image" },
+      { path: "/testimonials", label: "Testimonials", icon: "bi-chat-quote" },
+      { path: "/videos", label: "Videos", icon: "bi-play-circle" },
+    ],
+  },
+  {
+    title: "Other",
+    items: [
+      { path: "/reviews", label: "Reviews", icon: "bi-star" },
+      { path: "/contactus", label: "Contact Us", icon: "bi-envelope" },
+    ],
+  },
+];
 
 export default function DashboardSidebar() {
   const [toggled, setToggled] = useState(false);
-  const [broken, setBroken] = useState(false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const closeOnMobile = () => {
-    if (broken) setToggled(false);
+    if (window.innerWidth < 768) {
+      setToggled(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/auth/login", { replace: true });
+  };
+
+  const isActive = (path: string) => {
+    if (path === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(path);
   };
 
   return (
     <>
-      {/* Mobile top bar */}
-      {broken && (
+      {/* Mobile Overlay */}
+      {toggled && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "56px",
-            zIndex: 1200,
-            background: "#ffffff",
-            display: "flex",
-            alignItems: "center",
-            padding: "0 16px",
-            borderBottom: "1px solid #e5e7eb",
-          }}>
-          <button
-            className="btn btn-outline-dark"
-            onClick={() => setToggled((t) => !t)}>
-            ☰
-          </button>
-          <span style={{ marginLeft: 12, fontWeight: 600 }}>Alpine</span>
-        </div>
+          className="sidebar-overlay"
+          onClick={() => setToggled(false)}
+        />
       )}
 
-      <Sidebar
-        breakPoint="md"
-        toggled={toggled}
-        onBackdropClick={() => setToggled(false)}
-        onBreakPoint={setBroken}
-        backgroundColor={theme.bg}
-        rootStyles={{
-          color: theme.text,
-          borderRight: `1px solid ${theme.border}`,
-          height: "100vh",
-          maxHeight: "100vh",
-        }}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            paddingTop: broken ? "56px" : "0",
-          }}>
-          {/* Brand */}
-          <div
-            style={{
-              padding: "16px 20px",
-              borderBottom: `1px solid ${theme.border}`,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}>
-            <img src="/logo.png" style={{ width: 32, height: 32 }} />
-            <span style={{ fontSize: 18, fontWeight: 600 }}>Alpine</span>
-          </div>
-
-          {/* Menu */}
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            <Menu
-              menuItemStyles={{
-                root: { fontSize: 14, fontWeight: 500 },
-                button: {
-                  padding: "12px 16px",
-                  margin: "6px 10px",
-                  borderRadius: "10px",
-                  color: theme.text,
-                  "&:hover": {
-                    backgroundColor: theme.hover,
-                    color: theme.accent,
-                  },
-                  [`&.${menuClasses.active}`]: {
-                    backgroundColor: theme.active,
-                    color: theme.accent,
-                  },
-                },
-                subMenuContent: { backgroundColor: theme.panel },
-              }}>
-              {/* SALES */}
-              <Section title="Dashboard" />
-              <MenuItem
-                component={<NavLink to="/dashboard" />}
-                onClick={closeOnMobile}>
-                Dashboard
-              </MenuItem>
-              <Section title="Sales & Orders" />
-              <MenuItem
-                component={<NavLink to="/orders" />}
-                onClick={closeOnMobile}>
-                Orders
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/invoices" />}
-                onClick={closeOnMobile}>
-                Invoices
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/customers" />}
-                onClick={closeOnMobile}>
-                Customers
-              </MenuItem>
-
-              {/* PRODUCTS */}
-              <Section title="Products" />
-              <MenuItem
-                component={<NavLink to="/products" />}
-                onClick={closeOnMobile}>
-                Products
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/categories" />}
-                onClick={closeOnMobile}>
-                Categories
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/units" />}
-                onClick={closeOnMobile}>
-                Units
-              </MenuItem>
-
-              {/* WEBSITE */}
-              <Section title="Website Resources" />
-              <MenuItem
-                component={<NavLink to="/banners" />}
-                onClick={closeOnMobile}>
-                Banners
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/testimonials" />}
-                onClick={closeOnMobile}>
-                Testimonials
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/videos" />}
-                onClick={closeOnMobile}>
-                Videos
-              </MenuItem>
-
-              {/* OTHER */}
-              <Section title="Other" />
-              <MenuItem
-                component={<NavLink to="/reviews" />}
-                onClick={closeOnMobile}>
-                Reviews
-              </MenuItem>
-              <MenuItem
-                component={<NavLink to="/contactus" />}
-                onClick={closeOnMobile}>
-                Contact Us
-              </MenuItem>
-            </Menu>
-          </div>
+      {/* Mobile Top Bar */}
+      <div className="mobile-top-bar">
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setToggled(!toggled)}
+          aria-label="Toggle menu">
+          <i className={`bi ${toggled ? "bi-x-lg" : "bi-list"}`}></i>
+        </button>
+        <div className="mobile-brand">
+          <img src="/logo.png" alt="Alpine" />
+          <span>Alpine</span>
         </div>
-      </Sidebar>
+        <button className="mobile-logout-btn" onClick={handleLogout}>
+          <i className="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <aside className={`admin-sidebar ${toggled ? "open" : ""}`}>
+        {/* Brand */}
+        <div className="sidebar-brand">
+          <img src="/logo.png" alt="Alpine" />
+          <span className="brand-name">Alpine</span>
+          <button
+            className="sidebar-close-btn"
+            onClick={() => setToggled(false)}
+            aria-label="Close sidebar">
+            <i className="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="sidebar-nav">
+          {menuSections.map((section, sectionIndex) => (
+            <div key={sectionIndex} className="nav-section">
+              <div className="nav-section-title">{section.title}</div>
+              <div className="nav-items">
+                {section.items.map((item) => {
+                  const active = isActive(item.path);
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      className={`nav-item ${active ? "active" : ""}`}
+                      onClick={closeOnMobile}>
+                      <div className="nav-item-content">
+                        <i className={`bi ${item.icon} nav-icon`}></i>
+                        <span className="nav-label">{item.label}</span>
+                      </div>
+                      {active && <div className="nav-indicator"></div>}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+
+        {/* Footer */}
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
     </>
   );
 }

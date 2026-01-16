@@ -9,16 +9,12 @@ export function getCategoryCount() {
 }
 
 export function createCategory(payload: any) {
-  return apiPost("admin/createcategory", {
-    reqData: payload,
-  });
+  return apiPost("admin/createcategory", payload, true);
 }
 
 export function deleteCategory(id: number) {
   return apiDelete(`/admin/deletecategoryById/${id}`);
 }
-export function updateCategory(id: number, payload: any) {
-  const form = new FormData();
-  form.append("reqData", JSON.stringify(payload));
-  return apiPut(`/admin/updatecategoryById/${id}`, form);
+export function updateCategory(id: number, formData: FormData) {
+  return apiPut(`/admin/updatecategoryById/${id}`, formData, true);
 }

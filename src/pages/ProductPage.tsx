@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { useProduct } from "../hooks/useProduct";
 import { useProductRating } from "../hooks/useProductRating";
@@ -7,23 +7,60 @@ import { RatingStars } from "../components/Ratings/RatingStars";
 import "./ProductPage.css";
 import { WriteReviewModal } from "../components/Ratings/WriteReviewModal";
 import { Product3DImage } from "../components/Product3DImage";
+import { ProductCard } from "../components/Product/ProductCard";
+import { useRelatedProduct } from "../hooks/useRelatedProduct";
+import { toast } from "react-toastify";
 
 export default function ProductPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { product, loading } = useProduct(Number(id));
   const [showReviewModal, setShowReviewModal] = useState(false);
   const { rating, count, reviews, refresh } = useProductRating(Number(id));
 
   const { addToCart, addToWishlist, wishlistItems } = useCartStore();
-
+  const { relatedProducts } = useRelatedProduct(Number(id));
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [tab, setTab] = useState<"desc" | "specs" | "reviews">("desc");
 
-  if (loading) return <div className="container py-5">Loading…</div>;
-  if (!product) return <div className="container py-5">Product not found</div>;
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  if (loading) {
+    return (
+      <div className="product-page-loading">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className="mt-3 text-muted">Loading product details...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="product-page-error">
+        <div className="error-content">
+          <i className="bi bi-exclamation-triangle-fill error-icon"></i>
+          <h3 className="error-title">Product Not Found</h3>
+          <p className="error-text">The product you're looking for doesn't exist.</p>
+          <button className="btn btn-primary" onClick={() => navigate("/shop")}>
+            <i className="bi bi-arrow-left me-2"></i>
+            Back to Shop
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const variant = product.variants[selectedVariantIndex];
 
@@ -32,6 +69,11 @@ export default function ProductPage() {
   );
 
   const handleAddToCart = () => {
+    if (!variant.isInStock) {
+      toast.warning("This product is currently out of stock");
+      return;
+    }
+
     for (let i = 0; i < qty; i++) {
       addToCart({
         productId: product.id,
@@ -46,220 +88,385 @@ export default function ProductPage() {
       });
     }
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    toast.success(`${qty} item(s) added to cart`);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist) {
+      toast.info("Removed from wishlist");
+    } else {
+      toast.success("Added to wishlist");
+    }
+    addToWishlist({
+      productId: product.id,
+      variantId: variant.id,
+      name: product.name,
+      image: product.images[0],
+      price: variant.price,
+      comparePrice: variant.comparePrice,
+      weight: variant.weight,
+      unit: variant.unit.symbol,
+      stock: variant.stock,
+    });
   };
 
   return (
-    <div className="container py-5">
-      <div className="row g-5">
-        {/* IMAGE GALLERY */}
-        <div className="col-md-6">
-          <div className="border rounded-4 p-3 product-3d-container">
-            <Product3DImage image={product.images[activeImage]} />
-          </div>
-          <div className="d-flex gap-3 mt-3 justify-content-center">
-            {product.images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                onClick={() => setActiveImage(i)}
-                className="rounded-3"
-                style={{
-                  width: "70px",
-                  height: "70px",
-                  objectFit: "cover",
-                  cursor: "pointer",
-                  border:
-                    i === activeImage
-                      ? "2px solid #16a34a"
-                      : "1px solid #e5e7eb",
-                }}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="product-page">
+      <div className="product-container">
+        {/* Breadcrumb */}
+        <nav className="product-breadcrumb">
+          <button className="breadcrumb-link" onClick={() => navigate("/shop")}>
+            <i className="bi bi-house me-1"></i>
+            Shop
+          </button>
+          <i className="bi bi-chevron-right breadcrumb-separator"></i>
+          {product.category && (
+            <>
+              <span className="breadcrumb-text">{product.category.name}</span>
+              <i className="bi bi-chevron-right breadcrumb-separator"></i>
+            </>
+          )}
+          <span className="breadcrumb-text">{product.name}</span>
+        </nav>
 
-        {/* PRODUCT INFO */}
-        <div className="col-md-6">
-          <div className="product-meta-box">
-            <div className="d-flex justify-content-between">
-              <div>
-                <h2 className="fw-bold">{product.name}</h2>
-                <div className="text-muted small">
-                  Seller: Wild Valley Foods
-                </div>
+        <div className="product-grid">
+          {/* Image Gallery */}
+          <div className="product-images">
+            <div className="product-main-image">
+              <div className="product-image-container">
+                <Product3DImage image={product.images[activeImage]} />
               </div>
+              {product.isBestSelling && (
+                <div className="best-seller-badge">
+                  <i className="bi bi-star-fill me-1"></i>
+                  Best Seller
+                </div>
+              )}
+            </div>
+            {product.images.length > 1 && (
+              <div className="product-thumbnails">
+                {product.images.map((img, i) => (
+                  <div
+                    key={i}
+                    className={`thumbnail-item ${i === activeImage ? "active" : ""}`}
+                    onClick={() => setActiveImage(i)}>
+                    <img src={img} alt={`${product.name} view ${i + 1}`} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
+          {/* Product Info */}
+          <div className="product-info">
+            <div className="product-header">
+              <h1 className="product-title">{product.name}</h1>
               <button
-                onClick={() =>
-                  addToWishlist({
-                    productId: product.id,
-                    variantId: variant.id,
-                    name: product.name,
-                    image: product.images[0],
-                    price: variant.price,
-                    comparePrice: variant.comparePrice,
-                    weight: variant.weight,
-                    unit: variant.unit.symbol,
-                    stock: variant.stock,
-                  })
-                }
-                className="btn btn-light rounded-circle shadow-sm">
-                <i
-                  className={`bi ${
-                    isInWishlist ? "bi-heart-fill text-danger" : "bi-heart"
-                  }`}
-                />
+                className={`wishlist-btn ${isInWishlist ? "active" : ""}`}
+                onClick={handleWishlistToggle}
+                aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}>
+                <i className={`bi ${isInWishlist ? "bi-heart-fill" : "bi-heart"}`}></i>
               </button>
             </div>
 
-            <div className="mt-2">
+            <div className="product-rating">
               <RatingStars rating={rating} count={count} />
-            </div>
-
-            <div className="price-box mt-3">
-              ₹{variant.price}
-              {variant.comparePrice > variant.price && (
-                <span className="old-price ms-2">₹{variant.comparePrice}</span>
+              {count > 0 && (
+                <span className="rating-text">
+                  ({count} {count === 1 ? "review" : "reviews"})
+                </span>
               )}
             </div>
 
-            <div className="mt-2 fw-semibold text-success">
-              {variant.isInStock ? "In Stock" : "Out of Stock"}
+            <div className="product-price-section">
+              <div className="product-price">
+                {formatCurrency(variant.price)}
+              </div>
+              {variant.comparePrice > variant.price && (
+                <div className="product-compare-price">
+                  <span className="compare-price">{formatCurrency(variant.comparePrice)}</span>
+                  <span className="discount-badge">
+                    {Math.round(((variant.comparePrice - variant.price) / variant.comparePrice) * 100)}% OFF
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="product-stock">
+              {variant.isInStock ? (
+                <div className="stock-badge in-stock">
+                  <i className="bi bi-check-circle-fill me-1"></i>
+                  In Stock ({variant.stock} available)
+                </div>
+              ) : (
+                <div className="stock-badge out-of-stock">
+                  <i className="bi bi-x-circle-fill me-1"></i>
+                  Out of Stock
+                </div>
+              )}
             </div>
 
             {/* Variants */}
-            <div className="mt-4">
-              <div className="fw-semibold mb-2">Choose Variant</div>
-              <div className="variant-grid">
-                {product.variants.map((v, i) => (
-                  <button
-                    key={v.id}
-                    onClick={() => {
-                      setSelectedVariantIndex(i);
-                      setQty(1);
-                    }}
-                    className={`variant-chip ${
-                      i === selectedVariantIndex ? "active" : ""
-                    }`}>
-                    {v.displayWeight}
-                  </button>
-                ))}
+            {product.variants.length > 1 && (
+              <div className="product-variants">
+                <label className="variants-label">
+                  <i className="bi bi-box-seam me-2"></i>
+                  Select Variant
+                </label>
+                <div className="variants-grid">
+                  {product.variants.map((v, i) => (
+                    <button
+                      key={v.id}
+                      onClick={() => {
+                        setSelectedVariantIndex(i);
+                        setQty(1);
+                      }}
+                      className={`variant-btn ${i === selectedVariantIndex ? "active" : ""} ${
+                        !v.isInStock ? "disabled" : ""
+                      }`}
+                      disabled={!v.isInStock}>
+                      {v.displayWeight}
+                      {!v.isInStock && (
+                        <span className="variant-stock-badge">Out of Stock</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-
-            {/* Quantity + Cart */}
-            <div className="d-flex align-items-center gap-3 mt-4">
-              <div className="qty-box">
-                <button onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
-                <span>{qty}</span>
-                <button
-                  onClick={() => setQty(Math.min(variant.stock, qty + 1))}>
-                  +
-                </button>
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                disabled={!variant.isInStock}
-                className="btn btn-warning flex-fill fw-semibold py-3 rounded-pill">
-                {added ? "✔ Added" : "Add to Cart"}
-              </button>
-            </div>
-
-            {/* Feature Icons */}
-            <div className="feature-list mt-4">
-              <div>🌱 Vegetarian</div>
-              <div>🚚 Fast Delivery</div>
-              <div>♻️ Non Returnable</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TABS */}
-      <div className="mt-5">
-        <div className="d-flex gap-4 border-bottom pb-2">
-          {["desc", "specs", "reviews"].map((t) => (
-            <button
-              key={t}
-              className={`btn p-0 ${
-                tab === t ? "fw-bold text-success" : "text-muted"
-              }`}
-              onClick={() => setTab(t as any)}>
-              {t === "desc"
-                ? "Product Description"
-                : t === "specs"
-                ? "Specifications"
-                : "Ratings & Reviews"}
-            </button>
-          ))}
-        </div>
-
-        {tab === "desc" && (
-          <p className="mt-4 text-muted">{product.description}</p>
-        )}
-
-        {tab === "specs" && (
-          <table className="table mt-4">
-            <tbody>
-              <tr>
-                <th>SKU</th>
-                <td>{product.id}</td>
-              </tr>
-              <tr>
-                <th>Weight</th>
-                <td>{variant.displayWeight}</td>
-              </tr>
-              <tr>
-                <th>Availability</th>
-                <td>{variant.isInStock ? "In Stock" : "Out of Stock"}</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-
-        {tab === "reviews" && (
-          <div className="mt-4">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <RatingStars rating={rating} count={count} />
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setShowReviewModal(true)}>
-                Write a Review
-              </button>
-            </div>
-
-            {reviews.length === 0 && (
-              <p className="text-muted">No reviews yet</p>
             )}
 
-            {reviews.map((r) => (
-              <div key={r.id} className="border-bottom py-3">
-                <div className="d-flex justify-content-between">
-                  <div className="fw-semibold">{r.name}</div>
-                  <small className="text-muted">
-                    {new Date(r.createdOnUTC).toLocaleDateString()}
-                  </small>
+            {/* Quantity & Add to Cart */}
+            <div className="product-actions">
+              <div className="quantity-selector">
+                <label className="quantity-label">
+                  <i className="bi bi-123 me-2"></i>
+                  Quantity
+                </label>
+                <div className="qty-controls">
+                  <button
+                    className="qty-btn"
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    disabled={qty <= 1}>
+                    <i className="bi bi-dash"></i>
+                  </button>
+                  <span className="qty-value">{qty}</span>
+                  <button
+                    className="qty-btn"
+                    onClick={() => setQty(Math.min(variant.stock, qty + 1))}
+                    disabled={qty >= variant.stock || !variant.isInStock}>
+                    <i className="bi bi-plus"></i>
+                  </button>
                 </div>
-
-                <div className="mb-1">
-                  <RatingStars rating={r.rating} count={1} />
-                </div>
-
-                <p className="mb-0 text-muted">{r.comment}</p>
               </div>
-            ))}
+
+              <button
+                className={`btn-add-to-cart ${added ? "added" : ""}`}
+                onClick={handleAddToCart}
+                disabled={!variant.isInStock}>
+                {added ? (
+                  <>
+                    <i className="bi bi-check-circle-fill me-2"></i>
+                    Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-cart-plus me-2"></i>
+                    Add to Cart
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Product Features */}
+            <div className="product-features">
+              <div className="feature-item">
+                <i className="bi bi-truck feature-icon"></i>
+                <div>
+                  <div className="feature-title">Free Shipping</div>
+                  <div className="feature-desc">On orders above ₹500</div>
+                </div>
+              </div>
+              <div className="feature-item">
+                <i className="bi bi-arrow-repeat feature-icon"></i>
+                <div>
+                  <div className="feature-title">Easy Returns</div>
+                  <div className="feature-desc">7-day return policy</div>
+                </div>
+              </div>
+              <div className="feature-item">
+                <i className="bi bi-shield-check feature-icon"></i>
+                <div>
+                  <div className="feature-title">Secure Payment</div>
+                  <div className="feature-desc">100% secure transactions</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="product-tabs-section">
+          <div className="product-tabs">
+            <button
+              className={`tab-btn ${tab === "desc" ? "active" : ""}`}
+              onClick={() => setTab("desc")}>
+              <i className="bi bi-file-text me-2"></i>
+              Description
+            </button>
+            <button
+              className={`tab-btn ${tab === "specs" ? "active" : ""}`}
+              onClick={() => setTab("specs")}>
+              <i className="bi bi-list-check me-2"></i>
+              Specifications
+            </button>
+            <button
+              className={`tab-btn ${tab === "reviews" ? "active" : ""}`}
+              onClick={() => setTab("reviews")}>
+              <i className="bi bi-star me-2"></i>
+              Reviews ({count})
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {tab === "desc" && (
+              <div className="tab-panel">
+                <h3 className="tab-panel-title">Product Description</h3>
+                <p className="tab-panel-text">{product.description || "No description available."}</p>
+              </div>
+            )}
+
+            {tab === "specs" && (
+              <div className="tab-panel">
+                <h3 className="tab-panel-title">Specifications</h3>
+                <div className="specs-table">
+                  <div className="spec-row">
+                    <div className="spec-label">SKU</div>
+                    <div className="spec-value">#{product.id}</div>
+                  </div>
+                  <div className="spec-row">
+                    <div className="spec-label">Weight</div>
+                    <div className="spec-value">{variant.displayWeight}</div>
+                  </div>
+                  <div className="spec-row">
+                    <div className="spec-label">Unit</div>
+                    <div className="spec-value">{variant.unit.symbol}</div>
+                  </div>
+                  <div className="spec-row">
+                    <div className="spec-label">Availability</div>
+                    <div className="spec-value">
+                      {variant.isInStock ? (
+                        <span className="spec-badge in-stock">In Stock</span>
+                      ) : (
+                        <span className="spec-badge out-of-stock">Out of Stock</span>
+                      )}
+                    </div>
+                  </div>
+                  {product.category && (
+                    <div className="spec-row">
+                      <div className="spec-label">Category</div>
+                      <div className="spec-value">{product.category.name}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {tab === "reviews" && (
+              <div className="tab-panel">
+                <div className="reviews-header">
+                  <div className="reviews-summary">
+                    <div className="reviews-rating">
+                      <span className="rating-number">{rating.toFixed(1)}</span>
+                      <RatingStars rating={rating} count={1} />
+                      <span className="reviews-count-text">
+                        Based on {count} {count === 1 ? "review" : "reviews"}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    className="btn-write-review"
+                    onClick={() => setShowReviewModal(true)}>
+                    <i className="bi bi-pencil-square me-2"></i>
+                    Write a Review
+                  </button>
+                </div>
+
+                {reviews.length === 0 ? (
+                  <div className="reviews-empty">
+                    <i className="bi bi-chat-left-text"></i>
+                    <p>No reviews yet. Be the first to review this product!</p>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setShowReviewModal(true)}>
+                      Write First Review
+                    </button>
+                  </div>
+                ) : (
+                  <div className="reviews-list">
+                    {reviews.map((r) => (
+                      <div key={r.id} className="review-item">
+                        <div className="review-header">
+                          <div className="review-author">
+                            <div className="review-avatar">
+                              <i className="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                              <div className="review-name">{r.name}</div>
+                              <div className="review-date">
+                                {new Date(r.createdOnUTC).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="review-rating">
+                            <RatingStars rating={r.rating} count={1} />
+                          </div>
+                        </div>
+                        {r.comment && (
+                          <div className="review-comment">{r.comment}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div className="related-products-section">
+            <div className="section-header">
+              <h2 className="section-title">
+                <i className="bi bi-grid-3x3-gap me-2"></i>
+                Related Products
+              </h2>
+            </div>
+            <div className="related-products-grid">
+              {relatedProducts.map((p) => (
+                <div key={p.id} className="related-product-item">
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
+
+      {/* Review Modal */}
       {showReviewModal && (
         <WriteReviewModal
           productId={product.id}
           onClose={() => setShowReviewModal(false)}
           onSuccess={() => {
-            refresh(); // reload rating
-            alert("Review submitted successfully");
+            refresh();
+            toast.success("Review submitted successfully!");
+            setShowReviewModal(false);
           }}
         />
       )}

@@ -21,15 +21,14 @@ export async function fetchCategoryCount(): Promise<number> {
   return intResponse.intResponse;
 }
 
-export async function addCategory(data: any) {
-  const res = await createCategory(data);
-  return res.successData;
+export function addCategory(formData: FormData) {
+  return createCategory(formData);
 }
 
 export async function removeCategory(id: number) {
   const res = await deleteCategory(id);
   return res.successData;
 }
-export function editCategory(id: number, payload: any) {
-  return updateCategory(id, payload);
+export function editCategory(id: number, formData: FormData) {
+  return updateCategory(id, formData);
 }

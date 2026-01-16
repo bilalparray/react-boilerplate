@@ -18,8 +18,7 @@ export default function CategoryPage() {
 
   const totalPages = Math.ceil(total / pageSize);
   const categoryName = products.length > 0 ? products[0].category?.name : "";
-  // alert(products[0].category);
-  // alert(categoryName);
+
   return (
     <div className="container py-5">
       <h3 className="fw-bold mb-4">{categoryName}</h3>

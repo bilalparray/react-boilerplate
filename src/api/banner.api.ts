@@ -18,21 +18,13 @@ export function fetchBannerCount() {
 }
 
 /* Create */
-export function createBanner(payload: any) {
-  return apiPost(
-    "/banner/create",
-    {
-      reqData: payload,
-    },
-    true
-  );
+export function createBanner(formData: FormData) {
+  return apiPost("/banner/create", formData, true);
 }
 
 /* Update */
-export function updateBanner(id: number, payload: any) {
-  return apiPut(`/banner/update/${id}`, {
-    reqData: payload,
-  });
+export function updateBanner(id: number, formData: FormData) {
+  return apiPut(`/banner/update/${id}`, formData, true);
 }
 
 /* Delete */

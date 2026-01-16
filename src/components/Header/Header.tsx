@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCartStore } from "../../store/useCartStore";
 import { useCategories } from "../../hooks/useCategories";
 import "./Header.css";
+import { useEffect, useRef, useState } from "react";
 
 export function Header() {
   const navigate = useNavigate();
@@ -14,9 +15,59 @@ export function Header() {
     removeFromCart,
   } = useCartStore();
   const { categories } = useCategories();
+  const [showCat, setShowCat] = useState(false);
+  const [showCatMobile, setShowCatMobile] = useState(false);
 
   const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const catRef = useRef<HTMLDivElement>(null);
+  const catRefMob = useRef<HTMLDivElement>(null);
+  const go = (url: string) => {
+    navigate(url);
+    return;
+  };
+  const goToCategory = (url: string) => {
+    // First let the tap complete
+    requestAnimationFrame(() => {
+      navigate(url);
+    });
 
+    // Then close the dropdown AFTER navigation is queued
+    setTimeout(() => {
+      setShowCat(false);
+      setShowCatMobile(false);
+    }, 0);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (catRef.current && !catRef.current.contains(e.target as Node)) {
+        setShowCat(false);
+      }
+    }
+
+    if (showCat) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCat]);
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (catRefMob.current && !catRefMob.current.contains(e.target as Node)) {
+        setShowCatMobile(false);
+      }
+    }
+
+    if (showCatMobile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCatMobile]);
   /* ================= MOBILE ================= */
   const MobileHeader = () => (
     <div className="d-lg-none">
@@ -32,11 +83,13 @@ export function Header() {
 
         <div className="d-flex align-items-center gap-3">
           <button className="icon-btn" onClick={() => navigate("/shop")}>
-            <i className="bi bi-search"></i>
+            <i className="bi bi-search desktop-icons"></i>
           </button>
-
+          <Link to="/myorders">
+            <i className="bi bi-bag desktop-icons"></i>
+          </Link>
           <Link to="/wishlist" className="position-relative icon-btn">
-            <i className="bi bi-heart"></i>
+            <i className="bi bi-heart desktop-icons"></i>
             {wishlistCount > 0 && (
               <span className="mp-badge">{wishlistCount}</span>
             )}
@@ -55,10 +108,24 @@ export function Header() {
       <div className="mp-mobile-browse">
         <button
           className="mp-browse-btn"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#mobileMenu">
+          onClick={() => setShowCatMobile((v) => !v)}>
           <i className="bi bi-grid"></i> Browse Categories
+          <i className="bi bi-chevron-down"></i>
         </button>
+        {showCatMobile && (
+          <div ref={catRefMob} className="mp-cat-dropdown">
+            {categories.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => goToCategory(`/category/${c.id}`)}
+                className="mp-cat-item">
+                <img src={c.image} alt={c.name} />
+                <span>{c.name}</span>
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            ))}
+          </div>
+        )}
 
         <button
           className="mp-hamburger"
@@ -97,13 +164,13 @@ export function Header() {
           </button>
         </div>
 
-        <div className="mp-icons">
+        <div className="mp-icons ">
           <Link to="/myorders">
-            <i className="bi bi-person"></i>
+            <i className="bi bi-bag desktop-icons"></i>
           </Link>
 
           <Link to="/wishlist" className="position-relative">
-            <i className="bi bi-heart"></i>
+            <i className="bi bi-heart desktop-icons"></i>
             {wishlistCount > 0 && (
               <span className="mp-badge">{wishlistCount}</span>
             )}
@@ -120,12 +187,23 @@ export function Header() {
       </div>
 
       <div className="mp-nav container">
-        <button
-          className="mp-browse-btn"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#mobileMenu">
+        <button className="mp-browse-btn" onClick={() => setShowCat((v) => !v)}>
           <i className="bi bi-grid"></i> Browse Categories
+          <i className="bi bi-chevron-down"></i>
         </button>
+        {showCat && (
+          <div ref={catRef} className="mp-cat-dropdown">
+            {categories.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => goToCategory(`/category/${c.id}`)}
+                className="mp-cat-item">
+                <img src={c.image} alt={c.name} />
+                <span>{c.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mp-links">
           <NavLink to="/">Home</NavLink>
@@ -147,18 +225,39 @@ export function Header() {
       {/* Mobile Menu */}
       <div className="offcanvas offcanvas-end" id="mobileMenu">
         <div className="offcanvas-header">
-          <h5>Menu</h5>
+          <h5 className="fw-bold">Menu</h5>
           <button className="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div className="offcanvas-body">
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/shop">Shop</NavLink>
-          <h6 className="mt-3">Categories</h6>
-          {categories.map((c) => (
-            <NavLink key={c.id} to={`/category/${c.id}`}>
-              {c.name}
-            </NavLink>
-          ))}
+
+        <div className="offcanvas-body mobile-menu">
+          <div className="menu-section">
+            <button data-bs-dismiss="offcanvas" onClick={() => go("/")}>
+              Home
+            </button>
+            <button data-bs-dismiss="offcanvas" onClick={() => go("/shop")}>
+              Shop
+            </button>
+            <button data-bs-dismiss="offcanvas" onClick={() => go("/contact")}>
+              Contact
+            </button>
+            <button data-bs-dismiss="offcanvas" onClick={() => go("/about")}>
+              About
+            </button>
+          </div>
+
+          <h6 className="menu-title">Categories</h6>
+
+          <div className="menu-section">
+            {categories.map((c) => (
+              <button
+                data-bs-dismiss="offcanvas"
+                key={c.id}
+                onClick={() => go(`/category/${c.id}`)}>
+                <span>{c.name}</span>
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -250,9 +349,14 @@ export function Header() {
                   <span className="fw-semibold">Subtotal</span>
                   <span className="fw-bold">₹{total.toFixed(2)}</span>
                 </div>
-
                 <button
-                  className="btn btn-success w-100 py-3 rounded-pill"
+                  className="btn btn-success w-50 py-3 rounded-pill"
+                  data-bs-dismiss="offcanvas"
+                  onClick={() => navigate("/cart")}>
+                  View Cart
+                </button>
+                <button
+                  className="btn btn-success w-50 py-3 rounded-pill"
                   data-bs-dismiss="offcanvas"
                   onClick={() => navigate("/checkout")}>
                   Proceed to Checkout

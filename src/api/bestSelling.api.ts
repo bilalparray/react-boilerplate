@@ -1,8 +1,6 @@
-export async function fetchBestSellingProducts() {
-  const res = await fetch(
-    "https://api.wildvalleyfoods.in/api/v1/product/isBestSelling"
-  );
+import { apiGet } from "./base/apiClient";
 
-  const json = await res.json();
-  return json.successData; // same shape as product list
+export function fetchBestSellingProducts() {
+  return apiGet<any>(`
+product/isBestSelling`);
 }

@@ -1,14 +1,23 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import DashboardSidebar from "../pages/admin/Dashboard/DashboardSidebar";
+import AdminTopNav from "../components/admin/nav/AdminTopNav";
+import "./AdminLayout.css";
 
 export default function AdminLayout() {
+  const { pathname } = useLocation();
+  const page = pathname.split("/")[1];
+
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div className="admin-layout">
       <DashboardSidebar />
 
-      <main style={{ flex: 1, overflowY: "auto" }}>
-        <Outlet /> {/* or your routes */}
-      </main>
+      <div className="admin-content">
+        {/* <AdminTopNav  title={page.toUpperCase()} /> */}
+
+        <main className="admin-main">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

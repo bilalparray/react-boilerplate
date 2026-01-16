@@ -1,27 +1,25 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAdminBanners } from "../../../hooks/useBanners";
+import { toast } from "react-toastify";
+import "./BannerList.css";
 
 const BANNER_TYPES = ["Slider", "ShortAd", "LongAd", "Sales", "Voucher"];
 
+const BANNER_TYPE_COLORS: Record<string, string> = {
+  Slider: "type-slider",
+  ShortAd: "type-short",
+  LongAd: "type-long",
+  Sales: "type-sales",
+  Voucher: "type-voucher",
+};
+
 export default function BannerList() {
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const {
-    banners,
-    total,
-    loading,
-    actionLoading,
-    error,
-    create,
-    update,
-    remove,
-  } = useAdminBanners(page, pageSize);
-
-  const totalPages = Math.ceil(total / pageSize);
+  const { banners, total, loading, actionLoading, error, create, update, remove } =
+    useAdminBanners(1, 100);
 
   const [show, setShow] = useState(false);
   const [editing, setEditing] = useState<any>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -33,18 +31,12 @@ export default function BannerList() {
     image: null as File | null,
   });
 
-  /* ---------------- Base64 conversion ---------------- */
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  const formRef = useRef<HTMLFormElement>(null);
 
   /* ---------------- Open modal ---------------- */
   const openCreate = () => {
     setEditing(null);
+    setImagePreview(null);
     setForm({
       title: "",
       description: "",
@@ -59,6 +51,7 @@ export default function BannerList() {
 
   const openEdit = (b: any) => {
     setEditing(b);
+    setImagePreview(b.image_base64 || null);
     setForm({
       title: b.title || "",
       description: b.description || "",
@@ -71,250 +64,579 @@ export default function BannerList() {
     setShow(true);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setForm({ ...form, image: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   /* ---------------- Save ---------------- */
   const save = async () => {
-    let image_base64 = "";
-
-    if (form.image) {
-      image_base64 = await fileToBase64(form.image);
+    if (!formRef.current?.checkValidity()) {
+      formRef.current?.reportValidity();
+      return;
     }
 
-    const payload = {
+    if (!form.image && !editing) {
+      toast.error("Image is required");
+      return;
+    }
+
+    const reqData = {
       title: form.title,
       description: form.description,
       link: form.link,
       ctaText: form.ctaText,
       bannerType: form.bannerType,
       isVisible: form.isVisible,
-      image_base64,
     };
 
-    if (editing) await update(editing.id, payload);
-    else await create(payload);
+    const formData = new FormData();
+    formData.append("reqData", JSON.stringify(reqData));
+    if (form.image) {
+      formData.append("imagePath", form.image);
+    }
 
-    if (!error) setShow(false);
+    try {
+      if (editing) {
+        await update(editing.id, formData);
+        if (!error) {
+          toast.success("Banner updated successfully");
+          setShow(false);
+        }
+      } else {
+        await create(formData);
+        if (!error) {
+          toast.success("Banner created successfully");
+          setShow(false);
+        }
+      }
+    } catch (err) {
+      // Error handled by hook
+    }
+  };
+
+  const deleteRow = async (id: number) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this banner? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    await remove(id);
+    if (!error) {
+      toast.success("Banner deleted successfully");
+    }
+  };
+
+  const getBannerTypeClass = (type: string) => {
+    return BANNER_TYPE_COLORS[type] || "type-default";
   };
 
   return (
-    <div className="container py-5">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="fw-bold">Banners</h3>
-        <button className="btn btn-success" onClick={openCreate}>
-          + Add Banner
+    <div className="banners-page">
+      {/* Page Header */}
+      <div className="banners-header">
+        <div>
+          <h2 className="banners-title">Banners Management</h2>
+          <p className="banners-subtitle">
+            Manage promotional banners and advertisements
+          </p>
+        </div>
+        <div className="banners-stats">
+          <div className="stat-item">
+            <span className="stat-label">Total Banners</span>
+            <span className="stat-value">{total}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions Bar */}
+      <div className="actions-bar">
+        <button className="btn btn-primary btn-add" onClick={openCreate}>
+          <i className="bi bi-plus-circle-fill me-2"></i>
+          Add New Banner
         </button>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      {/* Table */}
-      {loading ? (
-        <div className="text-center py-5">Loading…</div>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-hover align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>#</th>
-                <th>Preview</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>CTA</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {banners.map((b, i) => (
-                <tr key={b.id}>
-                  <td>{(page - 1) * pageSize + i + 1}</td>
-                  <td>
-                    <img
-                      src={b.image_base64}
-                      style={{
-                        width: 70,
-                        height: 45,
-                        objectFit: "cover",
-                        borderRadius: 6,
-                      }}
-                    />
-                  </td>
-                  <td className="fw-semibold">{b.title}</td>
-                  <td>
-                    <span className="badge bg-primary">{b.bannerType}</span>
-                  </td>
-                  <td>{b.ctaText}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        b.isVisible ? "bg-success" : "bg-secondary"
-                      }`}>
-                      {b.isVisible ? "Visible" : "Hidden"}
-                    </span>
-                  </td>
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => openEdit(b)}>
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      disabled={actionLoading}
-                      onClick={() => remove(b.id)}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Error Display */}
+      {error && (
+        <div className="alert alert-danger alert-custom" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          {error}
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="d-flex justify-content-center gap-2 mt-4">
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setPage(i + 1)}
-            className={`btn ${
-              page === i + 1 ? "btn-success" : "btn-outline-secondary"
-            }`}>
-            {i + 1}
-          </button>
-        ))}
+      {/* Banners Table - Desktop */}
+     
+      <div className="banners-table-card">
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3 text-muted">Loading banners...</p>
+          </div>
+        ) : banners.length === 0 ? (
+          <div className="empty-state">
+            <i className="bi bi-image empty-icon"></i>
+            <h5 className="empty-title">No banners found</h5>
+            <p className="empty-text">
+              Get started by creating your first promotional banner
+            </p>
+            <button className="btn btn-primary" onClick={openCreate}>
+              <i className="bi bi-plus-circle me-1"></i>
+              Create Banner
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table View */}
+            <div className="table-responsive d-none d-md-block">
+              <table className="table banners-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Preview</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>CTA Text</th>
+                    <th>Link</th>
+                    <th>Status</th>
+                    <th className="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {banners.map((b: any, i: number) => (
+                    <tr key={b.id} className="banner-row">
+                      <td>
+                        <div className="banner-number">{i + 1}</div>
+                      </td>
+                      <td>
+                        <div className="banner-preview-wrapper">
+                          {b.image_base64 ? (
+                            <img
+                              src={b.image_base64}
+                              alt={b.title}
+                              className="banner-preview"
+                            />
+                          ) : (
+                            <div className="banner-preview-placeholder">
+                              <i className="bi bi-image"></i>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="banner-title">{b.title}</div>
+                        {b.description && (
+                          <small className="text-muted d-block mt-1">
+                            {b.description.length > 50
+                              ? `${b.description.substring(0, 50)}...`
+                              : b.description}
+                          </small>
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={`banner-type-badge ${getBannerTypeClass(
+                            b.bannerType
+                          )}`}>
+                          {b.bannerType}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="banner-cta">
+                          {b.ctaText || (
+                            <span className="text-muted">No CTA</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="banner-link">
+                          {b.link ? (
+                            <a
+                              href={b.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="link-preview">
+                              <i className="bi bi-link-45deg me-1"></i>
+                              View Link
+                            </a>
+                          ) : (
+                            <span className="text-muted">No link</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        {b.isVisible ? (
+                          <span className="status-badge status-visible">
+                            <i className="bi bi-eye-fill me-1"></i>
+                            Visible
+                          </span>
+                        ) : (
+                          <span className="status-badge status-hidden">
+                            <i className="bi bi-eye-slash-fill me-1"></i>
+                            Hidden
+                          </span>
+                        )}
+                      </td>
+                      <td className="text-end">
+                        <div className="action-buttons">
+                          <button
+                            className="btn btn-sm btn-edit"
+                            onClick={() => openEdit(b)}
+                            disabled={actionLoading}>
+                            <i className="bi bi-pencil-fill me-1"></i>
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-sm btn-delete"
+                            onClick={() => deleteRow(b.id)}
+                            disabled={actionLoading}>
+                            <i className="bi bi-trash-fill me-1"></i>
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="banners-mobile d-md-none">
+              {banners.map((b: any, i: number) => (
+                <div key={b.id} className="banner-card-mobile">
+                  {/* Banner Image Preview */}
+                  <div className="banner-preview-mobile-wrapper">
+                    {b.image_base64 ? (
+                      <img
+                        src={b.image_base64}
+                        alt={b.title}
+                        className="banner-preview-mobile"
+                      />
+                    ) : (
+                      <div className="banner-preview-placeholder-mobile">
+                        <i className="bi bi-image"></i>
+                        <p>No Image</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Banner Info */}
+                  <div className="banner-card-content">
+                    <div className="banner-card-header-mobile">
+                      <div className="banner-title-mobile">{b.title}</div>
+                      <div className="banner-header-badges">
+                        <span
+                          className={`banner-type-badge-mobile ${getBannerTypeClass(
+                            b.bannerType
+                          )}`}>
+                          {b.bannerType}
+                        </span>
+                        {b.isVisible ? (
+                          <span className="status-badge-mobile status-visible">
+                            <i className="bi bi-eye-fill me-1"></i>
+                            Visible
+                          </span>
+                        ) : (
+                          <span className="status-badge-mobile status-hidden">
+                            <i className="bi bi-eye-slash-fill me-1"></i>
+                            Hidden
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="banner-card-body">
+                      {b.description && (
+                        <div className="banner-info-row">
+                          <span className="info-label">
+                            <i className="bi bi-text-paragraph me-1"></i>
+                            Description
+                          </span>
+                          <span className="info-value">{b.description}</span>
+                        </div>
+                      )}
+
+                      {b.ctaText && (
+                        <div className="banner-info-row">
+                          <span className="info-label">
+                            <i className="bi bi-cursor me-1"></i>
+                            CTA Text
+                          </span>
+                          <span className="info-value">{b.ctaText}</span>
+                        </div>
+                      )}
+
+                      {b.link && (
+                        <div className="banner-info-row">
+                          <span className="info-label">
+                            <i className="bi bi-link-45deg me-1"></i>
+                            Link
+                          </span>
+                          <a
+                            href={b.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link-preview-mobile">
+                            {b.link.length > 35
+                              ? `${b.link.substring(0, 35)}...`
+                              : b.link}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="banner-card-footer">
+                      <button
+                        className="btn btn-outline-primary btn-sm flex-fill me-2"
+                        onClick={() => openEdit(b)}
+                        disabled={actionLoading}>
+                        <i className="bi bi-pencil-fill me-1"></i>
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-outline-danger btn-sm flex-fill"
+                        onClick={() => deleteRow(b.id)}
+                        disabled={actionLoading}>
+                        <i className="bi bi-trash-fill me-1"></i>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
+      
 
       {/* Modal */}
       {show && (
         <div
-          className="modal fade show d-block"
-          style={{ background: "rgba(0,0,0,.6)" }}>
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content rounded-4">
-              <div className="modal-header bg-dark text-white">
-                <h5 className="fw-bold">
-                  {editing ? "Edit Banner" : "Add Banner"}
-                </h5>
-                <button
-                  className="btn-close btn-close-white"
-                  onClick={() => setShow(false)}
-                />
-              </div>
+          className="modal-overlay"
+          onClick={() => !actionLoading && setShow(false)}>
+          <div
+            className="modal-content-custom"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-custom">
+              <h5 className="modal-title-custom">
+                <i className="bi bi-image me-2"></i>
+                {editing ? "Edit Banner" : "Create New Banner"}
+              </h5>
+              <button
+                className="btn-close-custom"
+                onClick={() => !actionLoading && setShow(false)}
+                disabled={actionLoading}>
+                <i className="bi bi-x-lg"></i>
+              </button>
+            </div>
 
-              <div className="modal-body">
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold">Title</label>
-                    <input
-                      className="form-control"
-                      value={form.title}
-                      onChange={(e) =>
-                        setForm({ ...form, title: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold">
-                      Banner Type
-                    </label>
-                    <select
-                      className="form-select"
-                      value={form.bannerType}
-                      onChange={(e) =>
-                        setForm({ ...form, bannerType: e.target.value })
-                      }>
-                      {BANNER_TYPES.map((t) => (
-                        <option key={t}>{t}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="col-md-12">
-                    <label className="form-label fw-semibold">
-                      Description
-                    </label>
-                    <textarea
-                      className="form-control"
-                      rows={3}
-                      value={form.description}
-                      onChange={(e) =>
-                        setForm({ ...form, description: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold">Link</label>
-                    <input
-                      className="form-control"
-                      value={form.link}
-                      onChange={(e) =>
-                        setForm({ ...form, link: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold">CTA Text</label>
-                    <input
-                      className="form-control"
-                      value={form.ctaText}
-                      onChange={(e) =>
-                        setForm({ ...form, ctaText: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label fw-semibold">Image</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      accept="image/*"
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          image: e.target.files?.[0] || null,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div className="col-md-6 d-flex align-items-end">
-                    <div className="form-check form-switch">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={form.isVisible}
-                        onChange={(e) =>
-                          setForm({ ...form, isVisible: e.target.checked })
-                        }
+            <form
+              ref={formRef}
+              className="modal-body-custom"
+              onSubmit={(e) => {
+                e.preventDefault();
+                save();
+              }}>
+              {/* Image Preview */}
+              <div className="form-group-image">
+                <label className="form-label-custom">
+                  <i className="bi bi-image me-1"></i>
+                  Banner Image <span className="required">*</span>
+                </label>
+                <div className="image-upload-wrapper">
+                  {imagePreview ? (
+                    <div className="image-preview-container">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="image-preview"
                       />
-                      <label className="form-check-label">
-                        Show this banner
-                      </label>
+                      <button
+                        type="button"
+                        className="btn-remove-image"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setForm({ ...form, image: null });
+                        }}>
+                        <i className="bi bi-x-circle-fill"></i>
+                      </button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="image-upload-placeholder">
+                      <i className="bi bi-cloud-upload"></i>
+                      <p>Click to upload or drag and drop</p>
+                      <small>PNG, JPG up to 5MB</small>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    className="image-input"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={actionLoading}
+                    required={!editing}
+                  />
                 </div>
               </div>
 
-              <div className="modal-footer">
+              {/* Title */}
+              <div className="form-group">
+                <label className="form-label-custom">
+                  <i className="bi bi-type me-1"></i>
+                  Title <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control-custom"
+                  placeholder="Enter banner title"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  disabled={actionLoading}
+                  required
+                />
+              </div>
+
+              {/* Banner Type */}
+              <div className="form-group">
+                <label className="form-label-custom">
+                  <i className="bi bi-tag-fill me-1"></i>
+                  Banner Type <span className="required">*</span>
+                </label>
+                <select
+                  className="form-control-custom"
+                  value={form.bannerType}
+                  onChange={(e) =>
+                    setForm({ ...form, bannerType: e.target.value })
+                  }
+                  disabled={actionLoading}
+                  required>
+                  {BANNER_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Description */}
+              <div className="form-group">
+                <label className="form-label-custom">
+                  <i className="bi bi-text-paragraph me-1"></i>
+                  Description <span className="required">*</span>
+                </label>
+                <textarea
+                  className="form-control-custom"
+                  placeholder="Enter banner description"
+                  rows={4}
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  disabled={actionLoading}
+                  required
+                />
+              </div>
+
+              {/* Link & CTA Row */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label-custom">
+                    <i className="bi bi-link-45deg me-1"></i>
+                    Link <span className="required">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    className="form-control-custom"
+                    placeholder="https://example.com"
+                    value={form.link}
+                    onChange={(e) => setForm({ ...form, link: e.target.value })}
+                    disabled={actionLoading}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label-custom">
+                    <i className="bi bi-cursor me-1"></i>
+                    CTA Text <span className="required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control-custom"
+                    placeholder="Shop Now, Learn More, etc."
+                    value={form.ctaText}
+                    onChange={(e) =>
+                      setForm({ ...form, ctaText: e.target.value })
+                    }
+                    disabled={actionLoading}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Visibility Toggle */}
+              <div className="form-group-checkbox">
+                <div className="checkbox-wrapper">
+                  <input
+                    type="checkbox"
+                    className="form-check-input-custom"
+                    id="isVisible"
+                    checked={form.isVisible}
+                    onChange={(e) =>
+                      setForm({ ...form, isVisible: e.target.checked })
+                    }
+                    disabled={actionLoading}
+                  />
+                  <label className="form-check-label-custom" htmlFor="isVisible">
+                    <i className="bi bi-eye-fill me-2"></i>
+                    Make banner visible on website
+                  </label>
+                </div>
+              </div>
+
+              <div className="modal-footer-custom">
                 <button
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShow(false)}>
+                  type="button"
+                  className="btn btn-secondary btn-cancel"
+                  onClick={() => setShow(false)}
+                  disabled={actionLoading}>
                   Cancel
                 </button>
                 <button
-                  className="btn btn-success"
-                  disabled={actionLoading}
-                  onClick={save}>
-                  {actionLoading ? "Saving…" : editing ? "Update" : "Create"}
+                  type="submit"
+                  className="btn btn-primary btn-save"
+                  disabled={actionLoading}>
+                  {actionLoading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"></span>
+                      {editing ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-check-lg me-1"></i>
+                      {editing ? "Update Banner" : "Create Banner"}
+                    </>
+                  )}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

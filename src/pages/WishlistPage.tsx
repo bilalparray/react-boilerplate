@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useCartStore } from "../store/useCartStore";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function WishlistPage() {
   const { wishlistItems, addToCart, removeFromWishlist } = useCartStore();
@@ -15,7 +16,7 @@ export default function WishlistPage() {
   const shareProduct = (product: any) => {
     const url = `${window.location.origin}/product/${product.productId}`;
     navigator.clipboard.writeText(url);
-    alert("Product link copied");
+    toast.success("Product link copied");
   };
 
   return (

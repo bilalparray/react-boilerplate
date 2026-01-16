@@ -6,8 +6,10 @@ export const fetchProducts = (skip = 0, top = 20) =>
 
 export const fetchProduct = (id: number) => apiGet(`/product/${id}`);
 
-export const createProduct = (form: FormData) =>
-  apiPost("/admin/product/createproduct", form);
+export const createProduct = async (form: FormData) => {
+  const res = await apiPost("/admin/product/createproduct", form);
+  return res;
+};
 export const getCount = () => apiGet<any>("/product/count");
 export const updateProduct = (id: number, form: FormData) =>
   apiPut(`/admin/product/updateproductById/${id}`, form);

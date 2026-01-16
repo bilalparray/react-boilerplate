@@ -1,73 +1,227 @@
-# React + TypeScript + Vite
+Alpine Commerce Platform – Technical Documentation
+1. System Overview
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Alpine is a full-stack e-commerce platform built for selling premium Kashmiri dry fruits, oils, and organic food products.
 
-Currently, two official plugins are available:
+The system consists of:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Layer	Technology
+Frontend (Store)	React + TypeScript
+Admin Dashboard	React + TypeScript
+Backend API	Node.js + Express
+Database	PostgreSQL (via Sequelize ORM)
+Payments	Razorpay
+Media	Image uploads + Base64 encoding
+Auth	JWT token based
+2. High-Level Architecture
+Browser (Customer / Admin)
+        |
+        ▼
+React Frontend (Store / Admin)
+        |
+        ▼
+REST API (Node + Express)
+        |
+        ▼
+PostgreSQL Database
+        |
+        ▼
+Razorpay Payment Gateway
 
-## React Compiler
+3. Core Domain Model
+Category
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Represents a product group (e.g. Dry Fruits, Oils, Grains)
 
-## Expanding the ESLint configuration
+Field	Type
+id	number
+name	string
+description	string
+category_icon	file
+sequence	number
+Product
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+A product is a container for variants.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Field	Type
+id	number
+name	string
+description	text
+richDescription	text
+itemId	SKU prefix
+currency	string
+isBestSelling	boolean
+hsnCode	string
+taxRate	number
+categoryId	FK
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Each product belongs to one category and has many variants.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ProductVariant
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Each purchasable unit (500g, 1kg, etc)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Field	Type
+id	number
+productId	FK
+unitValueId	FK
+quantity	number
+price	decimal
+comparePrice	decimal
+sku	string
+stock	integer
+barcode	string
+discount	%
+isDefaultVariant	boolean
+isActive	boolean
+razorpayItemId	string
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Only variants are sold — products are containers.
+
+UnitValue
+
+Used for weight/packaging.
+
+id	name	symbol
+1	Kilogram	Kg
+2	Gram	g
+3	Litre	L
+Image
+
+Stores product images.
+
+| id | imagePath | productId |
+
+Images are stored on disk, returned to frontend as Base64.
+
+4. Payment Architecture
+
+Each product variant has a Razorpay Item.
+
+When creating a variant:
+
+Variant → Razorpay Item
+Price → Razorpay Amount
+
+
+When ordering:
+
+Order → Razorpay Payment Link → User Redirected → Payment → Callback
+
+
+This ensures:
+
+Correct tax
+
+Correct SKU
+
+Accurate billing
+
+5. Checkout Flow
+Cart
+  ↓
+Customer selects / creates address
+  ↓
+Order is created
+  ↓
+Razorpay Payment Link generated
+  ↓
+User redirected to Razorpay
+  ↓
+Payment success
+  ↓
+Thank-You page
+
+6. Admin Panel Capabilities
+Product Management
+
+Admin can:
+
+Create product
+
+Upload images
+
+Add multiple variants
+
+Set default variant
+
+Set price, stock, SKU
+
+Toggle Best Seller
+
+Delete product or variant
+
+Category Management
+
+Admin can:
+
+Create category
+
+Upload icon
+
+Set display order
+
+Unit Management
+
+Admin can:
+
+Add new units (Kg, g, L, etc)
+
+7. Product APIs
+API	Purpose
+POST /createproduct	Create product with variants
+PUT /updateproductById/:id	Update product
+DELETE /deleteproductById/:id	Delete product
+GET /product/:id	Get product
+GET /product/ByCategoryId/:id	Products by category
+GET /product/count	Product count
+PUT /bestselling/state/:id	Toggle bestseller
+8. Frontend State Architecture
+Store	Purpose
+useCartStore	Cart & wishlist
+useCheckoutStore	Address & customer
+useAuthStore	Admin login
+useCategories	Categories
+9. Pagination Strategy
+
+Backend uses:
+
+skip = (page - 1) * pageSize
+top = pageSize
+
+
+Frontend calculates:
+
+totalPages = Math.ceil(total / pageSize)
+
+10. Security Model
+Feature	Implementation
+Login	JWT
+Admin routes	Token + Role
+Razorpay	Server-side
+File upload	Multer + validation
+11. Why this Architecture is Correct
+
+This system follows enterprise-grade commerce design:
+
+Product ≠ Variant (industry standard)
+
+Razorpay per-variant pricing
+
+Category-based indexing
+
+Review aggregation
+
+Scalable pagination
+
+Secure file uploads
+
+This is the same structure used by:
+
+Amazon
+
+Flipkart
+
+Shopify
+
+BigBasket

@@ -1,20 +1,24 @@
 .hero-wrap {
   width: 100%;
-  background: linear-gradient(135deg, #ecfeff, #f0fdf4);
+  /* background: #e9ffff; */
   padding: 40px 20px;
+
+  box-shadow: #0f172a;
+  border-radius: 1.5rem !important;
 }
 
 .hero-container {
   max-width: 1200px;
   margin: auto;
-  background: #eafffb;
+  background: #e9ffff;
   border-radius: 32px;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   align-items: center;
-  padding: 50px;
+  padding: 50px 80px;
   position: relative;
   overflow: hidden;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 /* LEFT SIDE */
@@ -101,6 +105,7 @@
   font-size: 26px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   cursor: pointer;
+  z-index: 999;
 }
 
 .hero-nav.left {

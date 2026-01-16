@@ -32,53 +32,68 @@ import CategoryPage from "./pages/Category";
 import AdminProducts from "./pages/admin/Products/AdminProducts";
 import AdminProductForm from "./pages/admin/Products/AdminProductForm";
 import ThankYou from "./pages/Thankyou";
+import { ToastContainer } from "react-toastify";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
 export default function App() {
   return (
-    <Routes>
-      {/* PUBLIC SITE */}
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/product/:id" element={<ProductPage />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/checkout/success" element={<ThankYou />} />
-        <Route path="/wishlist" element={<WishlistPage />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/myorders" element={<MyOrders />} />
-        <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
-        <Route path="/category/:id" element={<CategoryPage />} />
-      </Route>
-
-      {/* AUTH */}
-      <Route path="/auth/login" element={<Login />} />
-
-      {/* ADMIN */}
-      <Route element={<RequireAuth role="Admin" />}>
-        <Route element={<AdminLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailsPage />} />
-          <Route path="/orders/:id/invoice" element={<InvoicePage />} />
-          <Route path="/invoices" element={<InvoicesPage />} />
-          <Route path="/invoices/:id" element={<InvoicePage />} />
-          <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/units" element={<UnitList />} />
-          <Route path="/banners" element={<BannerList />} />
-          <Route path="/testimonials" element={<TestimonialList />} />
-          <Route path="/videos" element={<VideoList />} />
-          <Route path="/reviews" element={<ReviewList />} />
-          <Route path="/contactus" element={<ContactUsList />} />
-          <Route path="/products" element={<AdminProducts />} />
-          <Route path="/products/create" element={<AdminProductForm />} />
-          <Route path="/products/edit/:id" element={<AdminProductForm />} />
+    <>
+      <ScrollToTop />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
+      <Routes>
+        {/* PUBLIC SITE */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/success" element={<ThankYou />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/myorders" element={<MyOrders />} />
+          <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
+          <Route path="/category/:id" element={<CategoryPage />} />
         </Route>
-      </Route>
-    </Routes>
+
+        {/* AUTH */}
+        <Route path="/auth/login" element={<Login />} />
+
+        {/* ADMIN */}
+        <Route element={<RequireAuth role="Admin" />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailsPage />} />
+            <Route path="/orders/:id/invoice" element={<InvoicePage />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/invoices/:id" element={<InvoicePage />} />
+            <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/units" element={<UnitList />} />
+            <Route path="/banners" element={<BannerList />} />
+            <Route path="/testimonials" element={<TestimonialList />} />
+            <Route path="/videos" element={<VideoList />} />
+            <Route path="/reviews" element={<ReviewList />} />
+            <Route path="/contactus" element={<ContactUsList />} />
+            <Route path="/products" element={<AdminProducts />} />
+            <Route path="/products/create" element={<AdminProductForm />} />
+            <Route path="/products/edit/:id" element={<AdminProductForm />} />
+          </Route>
+        </Route>
+      </Routes>
+    </>
   );
 }

@@ -10,8 +10,6 @@ export async function getRazorpayKey() {
 
 export async function placeOrder(payload: any) {
   const res = await placeOrderApi(payload);
-  alert(JSON.stringify(res));
-
   return res;
 }
 

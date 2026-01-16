@@ -8,17 +8,16 @@ export const environment = {
   enableResponseCacheProcessing: true,
   applicationVersion: "1.0.1",
   // apiBaseUrl: "http://reg-api.renosoftwares.com/",
-  apiBaseUrl: "http://13.235.53.15:8081/api/v1",
+  // apiBaseUrl: "http://13.235.53.15:8081/api/v1",
   // apiBaseUrl: "https://api.wildvalleyfoods.in/api/v1",
-  // apiBaseUrl: "http://localhost:8081/api/v1",
+  apiBaseUrl: "http://localhost:8081/api/v1",
 
   apiDefaultTimeout: 1,
-  renoWebsiteDownloadPageLink:
-    "https://renosoftwares.com/apps/download/boiler-plate",
-  downloadAppURL: "https://renosoftwares.com/apps/download/boiler-plate", //update with your app url
+  renoWebsiteDownloadPageLink: "https://siffrum.com/apps/download/boiler-plate",
+  downloadAppURL: "https://siffrum.com/apps/download/boiler-plate", //update with your app url
   applicationName: "boiler plate",
   appIdentifierForBackend: "/boiler-plate",
-  appID: "com.renosoftwares.boilerplate", // update with your app id
+  appID: "com.siffrum.boilerplate", // update with your app id
   companyCode: "Company_Code", // update with your company code
   indexedDBName: "boiler-plate", // update with your app name
   indexedDBVersion: 1,
@@ -44,9 +43,8 @@ export const environment = {
       roletype: "5",
       userName: "boiler_plate_Automation_Admin",
       password: "boilerPlatePwd",
-      privacyUrl:
-        "https://renosoftwares.com/products/boiler-plate/privacypolicy",
-      aboutUrl: "https://renosoftwares.com/products/boiler-plate",
+      privacyUrl: "https://siffrum.com/products/boiler-plate/privacypolicy",
+      aboutUrl: "https://siffrum.com/products/boiler-plate",
     },
     GoogleAds: {
       showAds: true,

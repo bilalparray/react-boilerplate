@@ -14,6 +14,7 @@ type Props = {
 export function ProductCard({ product }: Props) {
   const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } =
     useCartStore();
+  const [added, setAdded] = useState(false);
 
   const { rating, count } = useProductRating(product.id);
 
@@ -67,6 +68,11 @@ export function ProductCard({ product }: Props) {
       unit: variant.unit.symbol,
       stock: variant.stock,
     });
+    setAdded(true);
+
+    setTimeout(() => {
+      setAdded(false);
+    }, 1200);
   }
 
   return (
@@ -90,16 +96,15 @@ export function ProductCard({ product }: Props) {
 
       {/* BODY */}
       <div className="pc-body">
-        <p className="pc-brand">By Lucky Supermarket</p>
+        <p className="pc-brand">By Alpine</p>
         <Link to={`/product/${product.id}`}>
           <h3 className="pc-title">{product.name}</h3>
         </Link>
+        <div className="description">
+          <p>{product.description.slice(0, 100)}</p>
+        </div>
         <div className="pc-rating">
-          {count > 0 ? (
-            <RatingStars rating={rating} count={count} />
-          ) : (
-            "No reviews"
-          )}
+          <RatingStars rating={rating} count={count} />
         </div>
 
         <div className="pc-price">
@@ -129,8 +134,20 @@ export function ProductCard({ product }: Props) {
         disabled={!variant.isInStock}
         onClick={handleAddToCart}
         className="pc-cart">
-        <i className="bi bi-cart"></i>
-        {variant.isInStock ? "Add To Cart" : "Out of Stock"}
+        {added ? (
+          <>
+            <i
+              className="bi bi-check-circle-fill"
+              style={{ color: "#16a34a" }}
+            />
+            Added
+          </>
+        ) : (
+          <>
+            <i className="bi bi-cart"></i>
+            {variant.isInStock ? "Add To Cart" : "Out of Stock"}
+          </>
+        )}
       </button>
     </div>
   );

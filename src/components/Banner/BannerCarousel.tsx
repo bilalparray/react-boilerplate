@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useBanners } from "../../hooks/useBanners";
 import "./BannerCarousel.css";
+import { Link } from "react-router-dom";
 
 export function BannerCarousel() {
   const { banners, loading } = useBanners();
@@ -30,16 +31,13 @@ export function BannerCarousel() {
 
           <h1 className="hero-title">{current.title}</h1>
 
-          <p className="hero-sub">
-            Get fresh Kashmiri produce delivered to your home with express speed
-            and farm-grade quality.
-          </p>
+          <p className="hero-sub">{current.description}</p>
 
           <div className="hero-cta-row">
-            <a href={current.link || "#"} className="hero-btn">
+            <Link to={current.link || "#"} className="hero-btn">
               Explore Shop
-            </a>
-            <span className="hero-price">Starting at ₹160.99</span>
+            </Link>
+            <span className="hero-price">{current.ctaText}</span>
           </div>
         </div>
 

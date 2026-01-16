@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { submitProductReview } from "../../services/reviewService";
+import { toast } from "react-toastify";
 
 type Props = {
   productId: number;
@@ -15,7 +16,7 @@ export function WriteReviewModal({ productId, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!name || !email || !comment) return alert("Fill all fields");
+    if (!name || !email || !comment) return toast.warning("Fill all fields");
 
     try {
       setLoading(true);
@@ -29,7 +30,7 @@ export function WriteReviewModal({ productId, onClose, onSuccess }: Props) {
       onSuccess();
       onClose();
     } catch {
-      alert("Failed to submit review");
+      toast.warning("Failed to submit review");
     } finally {
       setLoading(false);
     }

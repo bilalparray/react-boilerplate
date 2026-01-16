@@ -169,6 +169,14 @@ export default function MyOrders() {
           <div className="col-md-9">
             {loading ? (
               <div className="text-center py-5">Loading…</div>
+            ) : filtered.length === 0 ? (
+              <div className="card p-5 text-center shadow-sm">
+                <i className="bi bi-bag-x fs-1 text-success mb-3"></i>
+                <h5 className="fw-bold">No orders yet</h5>
+                <p className="text-muted">
+                  We couldn’t find any orders for this email address.
+                </p>
+              </div>
             ) : (
               <>
                 {filtered.map((o) => (

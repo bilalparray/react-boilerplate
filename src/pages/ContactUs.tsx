@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { submitContact } from "../services/contact.service";
 import "./ContactUs.css";
+import { toast } from "react-toastify";
 
 export default function ContactUs() {
   const [form, setForm] = useState({
@@ -13,7 +14,7 @@ export default function ContactUs() {
 
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.description) {
-      alert("Please fill all fields");
+      toast.warning("Please fill all fields");
       return;
     }
 
@@ -23,7 +24,7 @@ export default function ContactUs() {
       setSent(true);
       setForm({ name: "", email: "", description: "" });
     } catch {
-      alert("Failed to send message");
+      toast.warning("Failed to send message");
     } finally {
       setLoading(false);
     }
@@ -60,8 +61,7 @@ export default function ContactUs() {
                 <i className="bi bi-geo-alt me-2"></i> Kashmir, India
               </p>
               <p>
-                <i className="bi bi-envelope me-2"></i>{" "}
-                support@alpine.com
+                <i className="bi bi-envelope me-2"></i> support@alpine.com
               </p>
               <p>
                 <i className="bi bi-phone me-2"></i> +91 98765 43210

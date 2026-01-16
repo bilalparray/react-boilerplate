@@ -6,6 +6,7 @@ import {
   updateUnit,
   deleteUnit,
 } from "../../api/admin/unit.api";
+import { toast } from "react-toastify";
 
 export function useUnits(page: number, pageSize: number) {
   const [units, setUnits] = useState<any[]>([]);
@@ -44,7 +45,12 @@ export function useUnits(page: number, pageSize: number) {
     try {
       setActionLoading(true);
       setError(null);
-      await createUnit(data);
+      const res = await createUnit(data);
+      if (res.isError) {
+        toast.error(res.errorData?.displayMessage || "Create failed");
+      } else {
+        toast.success("Unit created successfully");
+      }
       await load();
     } catch (e: any) {
       setError(e?.errorData?.displayMessage || "Create failed");
@@ -57,7 +63,12 @@ export function useUnits(page: number, pageSize: number) {
     try {
       setActionLoading(true);
       setError(null);
-      await updateUnit(id, data);
+      const res = await updateUnit(id, data);
+      if (res.isError) {
+        toast.error(res.errorData?.displayMessage || "Update failed");
+      } else {
+        toast.success("Unit updated successfully");
+      }
       await load();
     } catch (e: any) {
       setError(e?.errorData?.displayMessage || "Update failed");
@@ -72,9 +83,9 @@ export function useUnits(page: number, pageSize: number) {
       setError(null);
       const res = await deleteUnit(id);
       if (res.isError) {
-        alert(res.errorData?.displayMessage);
+        toast.error(res.errorData?.displayMessage || "Delete failed");
       } else {
-        alert("Unit deleted successfully");
+        toast.success("Unit deleted successfully");
         await load();
       }
     } catch (e: any) {
