@@ -1,0 +1,32 @@
+*****************
+Testing auto trigger on Jenkins when the commit is done on Github.
+*
+*
+*
+*
+*
+Resolving error  of https on first push.
+*
+*
+*
+*
+*
+*
+Still Resolving the same error.
+*
+*
+*
+*
+*
+*
+*
+Showing Demo for auto trigger.
+*
+*
+*
+*
+*
+*
+*
+*
+***************

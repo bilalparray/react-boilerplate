@@ -1,0 +1,32 @@
+# Alpine Ecommerce Backend - Development Dockerfile
+# For local development with hot reload
+
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Create uploads directory
+RUN mkdir -p alpine-uploads
+
+# Expose port
+EXPOSE 8081
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Default command (can be overridden in docker-compose)
+CMD ["npm", "run", "dev"]
+

@@ -1,0 +1,59 @@
+version: '3.8'
+
+# Development Docker Compose Configuration
+# Use: docker-compose -f docker-compose.dev.yml up
+
+services:
+  # PostgreSQL Database for Development
+  postgres:
+    image: postgres:16-alpine
+    container_name: alpine-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-alpine_ecommerce}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - alpine-dev-network
+
+  # Development API (with nodemon for hot reload)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: alpine-api-dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8081}:8081"
+    environment:
+      NODE_ENV: development
+      PORT: 8081
+      BASE_URL: ${BASE_URL:-/api/v1}
+      DB_NAME: ${DB_NAME:-alpine_ecommerce}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules
+      - ./alpine-uploads:/app/alpine-uploads
+    depends_on:
+      - postgres
+    networks:
+      - alpine-dev-network
+    command: npm run dev
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  alpine-dev-network:
+    driver: bridge
+
