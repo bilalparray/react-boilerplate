@@ -4,6 +4,12 @@ import {
   removeCustomer,
 } from "../../../services/admin/customers.service";
 import { toast } from "react-toastify";
+import {
+  exportToPDF,
+  exportToExcel,
+  formatDateForExport,
+} from "../../../utils/exportUtils";
+import type { ExportColumn } from "../../../utils/exportUtils";
 import "./CustomersPage.css";
 
 export default function CustomersPage() {
@@ -74,6 +80,50 @@ export default function CustomersPage() {
     return phone;
   };
 
+  const handleExportPDF = () => {
+    const exportData = customers.map((customer) => ({
+      name: `${customer.firstName || ""} ${customer.lastName || ""}`.trim() || "N/A",
+      email: customer.email || "N/A",
+      phone: formatPhone(customer.contact),
+      address: customer.addresses && customer.addresses.length > 0
+        ? `${customer.addresses[0].addressLine1 || ""}, ${customer.addresses[0].city || ""}, ${customer.addresses[0].state || ""}`.replace(/^,\s*|,\s*$/g, "") || "N/A"
+        : "N/A",
+      totalAddresses: customer.addresses?.length || 0,
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "name", label: "Customer Name" },
+      { key: "email", label: "Email" },
+      { key: "phone", label: "Phone" },
+      { key: "address", label: "Primary Address" },
+      { key: "totalAddresses", label: "Total Addresses" },
+    ];
+
+    exportToPDF(exportData, columns, `customers-${new Date().toISOString().split("T")[0]}`, "Customers List");
+  };
+
+  const handleExportExcel = () => {
+    const exportData = customers.map((customer) => ({
+      name: `${customer.firstName || ""} ${customer.lastName || ""}`.trim() || "N/A",
+      email: customer.email || "N/A",
+      phone: formatPhone(customer.contact),
+      address: customer.addresses && customer.addresses.length > 0
+        ? `${customer.addresses[0].addressLine1 || ""}, ${customer.addresses[0].city || ""}, ${customer.addresses[0].state || ""}`.replace(/^,\s*|,\s*$/g, "") || "N/A"
+        : "N/A",
+      totalAddresses: customer.addresses?.length || 0,
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "name", label: "Customer Name" },
+      { key: "email", label: "Email" },
+      { key: "phone", label: "Phone" },
+      { key: "address", label: "Primary Address" },
+      { key: "totalAddresses", label: "Total Addresses" },
+    ];
+
+    exportToExcel(exportData, columns, `customers-${new Date().toISOString().split("T")[0]}`, "Customers");
+  };
+
   const pages = Math.ceil(total / pageSize);
 
   return (
@@ -86,10 +136,30 @@ export default function CustomersPage() {
             View and manage all your customers
           </p>
         </div>
-        <div className="customers-stats">
-          <div className="stat-item">
-            <span className="stat-label">Total Customers</span>
-            <span className="stat-value">{total}</span>
+        <div className="customers-header-right">
+          <div className="customers-stats">
+            <div className="stat-item">
+              <span className="stat-label">Total Customers</span>
+              <span className="stat-value">{total}</span>
+            </div>
+          </div>
+          <div className="export-buttons">
+            <button
+              className="btn btn-outline-danger btn-export"
+              onClick={handleExportPDF}
+              disabled={loading || customers.length === 0}
+              title="Export to PDF">
+              <i className="bi bi-file-pdf me-2"></i>
+              Export PDF
+            </button>
+            <button
+              className="btn btn-outline-success btn-export"
+              onClick={handleExportExcel}
+              disabled={loading || customers.length === 0}
+              title="Export to Excel">
+              <i className="bi bi-file-excel me-2"></i>
+              Export Excel
+            </button>
           </div>
         </div>
       </div>

@@ -5,6 +5,13 @@ import {
   fetchCustomers,
   updateStatus,
 } from "../../../services/admin/orders.service";
+import {
+  exportToPDF,
+  exportToExcel,
+  formatCurrencyForExport,
+  formatDateForExport,
+} from "../../../utils/exportUtils";
+import type { ExportColumn } from "../../../utils/exportUtils";
 import "./Orders.css";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -118,6 +125,54 @@ export default function OrdersPage() {
     }).format(amount);
   };
 
+  const handleExportPDF = () => {
+    const exportData = orders.map((order) => ({
+      orderId: `#${order.id}`,
+      receipt: order.receipt || "N/A",
+      customer: `${order.customer?.firstName || ""} ${order.customer?.lastName || ""}`.trim() || "N/A",
+      email: order.customer?.email || "N/A",
+      date: formatDateForExport(order.createdAt),
+      amount: formatCurrencyForExport(order.amount),
+      status: STATUS_LABELS[order.status] || order.status,
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "orderId", label: "Order ID" },
+      { key: "receipt", label: "Receipt" },
+      { key: "customer", label: "Customer" },
+      { key: "email", label: "Email" },
+      { key: "date", label: "Date" },
+      { key: "amount", label: "Amount" },
+      { key: "status", label: "Status" },
+    ];
+
+    exportToPDF(exportData, columns, `orders-${new Date().toISOString().split("T")[0]}`, "Orders List");
+  };
+
+  const handleExportExcel = () => {
+    const exportData = orders.map((order) => ({
+      orderId: `#${order.id}`,
+      receipt: order.receipt || "N/A",
+      customer: `${order.customer?.firstName || ""} ${order.customer?.lastName || ""}`.trim() || "N/A",
+      email: order.customer?.email || "N/A",
+      date: formatDateForExport(order.createdAt),
+      amount: formatCurrencyForExport(order.amount),
+      status: STATUS_LABELS[order.status] || order.status,
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "orderId", label: "Order ID" },
+      { key: "receipt", label: "Receipt" },
+      { key: "customer", label: "Customer" },
+      { key: "email", label: "Email" },
+      { key: "date", label: "Date" },
+      { key: "amount", label: "Amount" },
+      { key: "status", label: "Status" },
+    ];
+
+    exportToExcel(exportData, columns, `orders-${new Date().toISOString().split("T")[0]}`, "Orders");
+  };
+
   return (
     <div className="orders-page">
       {/* Page Header */}
@@ -128,10 +183,30 @@ export default function OrdersPage() {
             Manage and track all customer orders
           </p>
         </div>
-        <div className="orders-stats">
-          <div className="stat-item">
-            <span className="stat-label">Total Orders</span>
-            <span className="stat-value">{total}</span>
+        <div className="orders-header-right">
+          <div className="orders-stats">
+            <div className="stat-item">
+              <span className="stat-label">Total Orders</span>
+              <span className="stat-value">{total}</span>
+            </div>
+          </div>
+          <div className="export-buttons">
+            <button
+              className="btn btn-outline-danger btn-export"
+              onClick={handleExportPDF}
+              disabled={loading || orders.length === 0}
+              title="Export to PDF">
+              <i className="bi bi-file-pdf me-2"></i>
+              Export PDF
+            </button>
+            <button
+              className="btn btn-outline-success btn-export"
+              onClick={handleExportExcel}
+              disabled={loading || orders.length === 0}
+              title="Export to Excel">
+              <i className="bi bi-file-excel me-2"></i>
+              Export Excel
+            </button>
           </div>
         </div>
       </div>

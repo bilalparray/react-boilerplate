@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchInvoices } from "../../../services/admin/invoice.service";
+import {
+  exportToPDF,
+  exportToExcel,
+  formatCurrencyForExport,
+  formatDateForExport,
+} from "../../../utils/exportUtils";
+import type { ExportColumn } from "../../../utils/exportUtils";
 import "./InvoicesPage.css";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -93,6 +100,54 @@ export default function InvoicesPage() {
     }).format(amount);
   };
 
+  const handleExportPDF = () => {
+    const exportData = invoices.map((invoice) => ({
+      invoiceNumber: invoice.invoiceNumber || "N/A",
+      orderNumber: invoice.orderNumber || "N/A",
+      date: formatDateForExport(invoice.invoiceDate),
+      customerName: invoice.customerName || "N/A",
+      email: invoice.customerEmail || "N/A",
+      amount: formatCurrencyForExport(invoice.amount || 0),
+      status: STATUS_LABELS[invoice.status] || invoice.status || "N/A",
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "invoiceNumber", label: "Invoice Number" },
+      { key: "orderNumber", label: "Order Number" },
+      { key: "date", label: "Date" },
+      { key: "customerName", label: "Customer Name" },
+      { key: "email", label: "Email" },
+      { key: "amount", label: "Amount" },
+      { key: "status", label: "Status" },
+    ];
+
+    exportToPDF(exportData, columns, `invoices-${new Date().toISOString().split("T")[0]}`, "Invoices List");
+  };
+
+  const handleExportExcel = () => {
+    const exportData = invoices.map((invoice) => ({
+      invoiceNumber: invoice.invoiceNumber || "N/A",
+      orderNumber: invoice.orderNumber || "N/A",
+      date: formatDateForExport(invoice.invoiceDate),
+      customerName: invoice.customerName || "N/A",
+      email: invoice.customerEmail || "N/A",
+      amount: formatCurrencyForExport(invoice.amount || 0),
+      status: STATUS_LABELS[invoice.status] || invoice.status || "N/A",
+    }));
+
+    const columns: ExportColumn[] = [
+      { key: "invoiceNumber", label: "Invoice Number" },
+      { key: "orderNumber", label: "Order Number" },
+      { key: "date", label: "Date" },
+      { key: "customerName", label: "Customer Name" },
+      { key: "email", label: "Email" },
+      { key: "amount", label: "Amount" },
+      { key: "status", label: "Status" },
+    ];
+
+    exportToExcel(exportData, columns, `invoices-${new Date().toISOString().split("T")[0]}`, "Invoices");
+  };
+
   return (
     <div className="invoices-page">
       {/* Page Header */}
@@ -103,10 +158,30 @@ export default function InvoicesPage() {
             View and manage all customer invoices
           </p>
         </div>
-        <div className="invoices-stats">
-          <div className="stat-item">
-            <span className="stat-label">Total Invoices</span>
-            <span className="stat-value">{invoices.length}</span>
+        <div className="invoices-header-right">
+          <div className="invoices-stats">
+            <div className="stat-item">
+              <span className="stat-label">Total Invoices</span>
+              <span className="stat-value">{invoices.length}</span>
+            </div>
+          </div>
+          <div className="export-buttons">
+            <button
+              className="btn btn-outline-danger btn-export"
+              onClick={handleExportPDF}
+              disabled={loading || invoices.length === 0}
+              title="Export to PDF">
+              <i className="bi bi-file-pdf me-2"></i>
+              Export PDF
+            </button>
+            <button
+              className="btn btn-outline-success btn-export"
+              onClick={handleExportExcel}
+              disabled={loading || invoices.length === 0}
+              title="Export to Excel">
+              <i className="bi bi-file-excel me-2"></i>
+              Export Excel
+            </button>
           </div>
         </div>
       </div>

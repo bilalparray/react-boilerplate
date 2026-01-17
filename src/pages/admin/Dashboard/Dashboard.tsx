@@ -6,6 +6,13 @@ import { TopProducts } from "../../../components/admin/dashboard/TopProducts";
 import { DailyVisitors } from "../../../components/admin/dashboard/DailyVisitors";
 import { VisitorsChart } from "../../../components/admin/dashboard/VisitorsChart";
 import { useDashboard } from "../../../hooks/admin/useDashboard";
+import {
+  exportToPDF,
+  exportToExcel,
+  formatCurrencyForExport,
+  formatDateForExport,
+} from "../../../utils/exportUtils";
+import type { ExportColumn } from "../../../utils/exportUtils";
 import "./Dashboard.css";
 
 export default function DashboardPage() {
@@ -52,6 +59,127 @@ export default function DashboardPage() {
     );
   }
 
+  const handleExportPDF = () => {
+    // Prepare dashboard data for export
+    const exportData = [
+      // KPIs Section
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Sales",
+        value: data.kpis.totalSales || "N/A",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Orders",
+        value: data.kpis.totalOrders?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Customers",
+        value: data.kpis.totalCustomers?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Active Users",
+        value: data.kpis.activeUsers?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Pending Orders",
+        value: data.kpis.pendingOrders?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Return Rate",
+        value: data.kpis.returnRate || "N/A",
+      },
+      // Recent Orders
+      ...data.widgets.recentOrders.map((order) => ({
+        section: "Recent Orders",
+        metric: `Order #${order.orderNumber}`,
+        value: `${order.customerName} - ${formatCurrencyForExport(order.amount)} - ${order.status}`,
+      })),
+      // Top Products
+      ...data.widgets.topProducts.map((product) => ({
+        section: "Top Products",
+        metric: product.productName,
+        value: `Qty: ${product.totalQuantity} - Revenue: ${formatCurrencyForExport(product.totalRevenue)}`,
+      })),
+      // Daily Visitors
+      ...data.charts.dailyVisitors.slice(0, 10).map((visitor) => ({
+        section: "Daily Visitors",
+        metric: formatDateForExport(visitor.date),
+        value: `Visitors: ${visitor.visitors} - Page Views: ${visitor.pageViews}`,
+      })),
+    ];
+
+    const columns: ExportColumn[] = [
+      { key: "section", label: "Section" },
+      { key: "metric", label: "Metric" },
+      { key: "value", label: "Value" },
+    ];
+
+    exportToPDF(exportData, columns, `dashboard-${new Date().toISOString().split("T")[0]}`, "Dashboard Report");
+  };
+
+  const handleExportExcel = () => {
+    const exportData = [
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Sales",
+        value: data.kpis.totalSales || "N/A",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Orders",
+        value: data.kpis.totalOrders?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Total Customers",
+        value: data.kpis.totalCustomers?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Active Users",
+        value: data.kpis.activeUsers?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Pending Orders",
+        value: data.kpis.pendingOrders?.toString() || "0",
+      },
+      {
+        section: "Key Performance Indicators",
+        metric: "Return Rate",
+        value: data.kpis.returnRate || "N/A",
+      },
+      ...data.widgets.recentOrders.map((order) => ({
+        section: "Recent Orders",
+        metric: `Order #${order.orderNumber}`,
+        value: `${order.customerName} - ${formatCurrencyForExport(order.amount)} - ${order.status}`,
+      })),
+      ...data.widgets.topProducts.map((product) => ({
+        section: "Top Products",
+        metric: product.productName,
+        value: `Qty: ${product.totalQuantity} - Revenue: ${formatCurrencyForExport(product.totalRevenue)}`,
+      })),
+      ...data.charts.dailyVisitors.slice(0, 10).map((visitor) => ({
+        section: "Daily Visitors",
+        metric: formatDateForExport(visitor.date),
+        value: `Visitors: ${visitor.visitors} - Page Views: ${visitor.pageViews}`,
+      })),
+    ];
+
+    const columns: ExportColumn[] = [
+      { key: "section", label: "Section" },
+      { key: "metric", label: "Metric" },
+      { key: "value", label: "Value" },
+    ];
+
+    exportToExcel(exportData, columns, `dashboard-${new Date().toISOString().split("T")[0]}`, "Dashboard");
+  };
+
   return (
     <div className="dashboard-page">
       {/* Dashboard Header */}
@@ -62,14 +190,32 @@ export default function DashboardPage() {
             Welcome back! Here's what's happening with your store today.
           </p>
         </div>
-        {data.lastUpdated && (
-          <div className="dashboard-updated">
-            <i className="bi bi-clock-history me-2"></i>
-            <span className="updated-text">
-              Last updated: {new Date(data.lastUpdated).toLocaleString()}
-            </span>
+        <div className="dashboard-header-actions">
+          {data.lastUpdated && (
+            <div className="dashboard-updated">
+              <i className="bi bi-clock-history me-2"></i>
+              <span className="updated-text">
+                Last updated: {new Date(data.lastUpdated).toLocaleString()}
+              </span>
+            </div>
+          )}
+          <div className="export-buttons">
+            <button
+              className="btn btn-outline-danger btn-export"
+              onClick={handleExportPDF}
+              title="Export to PDF">
+              <i className="bi bi-file-pdf me-2"></i>
+              Export PDF
+            </button>
+            <button
+              className="btn btn-outline-success btn-export"
+              onClick={handleExportExcel}
+              title="Export to Excel">
+              <i className="bi bi-file-excel me-2"></i>
+              Export Excel
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       {/* KPI Grid */}

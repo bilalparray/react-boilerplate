@@ -71,6 +71,13 @@
   margin: 0;
 }
 
+.dashboard-header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
 .dashboard-updated {
   display: flex;
   align-items: center;
@@ -84,6 +91,58 @@
 
 .updated-text {
   font-weight: 500;
+}
+
+/* Export Buttons */
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s;
+  border: 2px solid;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-export:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-export:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-export.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+  background: white;
+}
+
+.btn-export.btn-outline-danger:hover:not(:disabled) {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-export.btn-outline-success {
+  color: #28a745;
+  border-color: #28a745;
+  background: white;
+}
+
+.btn-export.btn-outline-success:hover:not(:disabled) {
+  background: #28a745;
+  color: white;
 }
 
 /* Dashboard Sections */
