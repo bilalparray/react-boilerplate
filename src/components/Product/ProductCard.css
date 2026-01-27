@@ -155,8 +155,8 @@
 .pc-cart {
   height: 44px;
   border: none;
-  background: #e0f2fe;
-  color: #0284c7;
+  background: var(--mp-primary, #1c1e59);
+  color: #ffffff;
   font-weight: 600;
   font-size: 14px;
   display: flex;
@@ -164,6 +164,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pc-cart:hover:not(:disabled) {
+  background: var(--mp-secondary, #951016);
+  transform: translateY(-1px);
 }
 
 .pc-cart:disabled {

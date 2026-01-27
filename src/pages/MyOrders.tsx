@@ -8,6 +8,7 @@ export default function MyOrders() {
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 5;
+  const [emailError, setEmailError] = useState("");
 
   const { orders, total, loading, error } = useMyOrders(
     submittedEmail,
@@ -20,9 +21,27 @@ export default function MyOrders() {
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<number | null>(null);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const submit = () => {
+    const trimmedEmail = email.trim();
+    
+    if (!trimmedEmail) {
+      setEmailError("Email is required");
+      return;
+    }
+
+    if (!validateEmail(trimmedEmail)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+
+    setEmailError("");
     setPage(1);
-    setSubmittedEmail(email.trim());
+    setSubmittedEmail(trimmedEmail);
   };
 
   /* ---------------- Filtering ---------------- */
@@ -68,14 +87,14 @@ export default function MyOrders() {
   const downloadInvoice = (o: any) => {
     const html = `
       <div style="font-family:Arial;padding:24px">
-        <h2>Wild Valley Foods</h2>
+        <h2>Alpine</h2>
         <p><b>Invoice:</b> myorders_${o.id}</p>
         <p><b>Order:</b> ${o.razorpayOrderId}</p>
         <p><b>Date:</b> ${new Date(o.createdOnUTC).toLocaleString()}</p>
         <hr/>
         ${o.items
-          .map(
-            (i: any) => `
+        .map(
+          (i: any) => `
           <div style="display:flex;justify-content:space-between">
             <div>
               ${i.product.name} (${i.variant.weight}${i.variant.unitSymbol})<br/>
@@ -83,8 +102,8 @@ export default function MyOrders() {
             </div>
             <div>₹${i.total}</div>
           </div>`
-          )
-          .join("")}
+        )
+        .join("")}
         <hr/>
         <p>Subtotal: ₹${o.amount}</p>
         <p>Paid: ₹${o.paid_amount}</p>
@@ -109,11 +128,27 @@ export default function MyOrders() {
       <div className="row g-2 mb-4">
         <div className="col-12 col-md-10">
           <input
-            className="form-control rounded-pill"
+            className={`form-control rounded-pill ${emailError ? "is-invalid" : ""}`}
+            type="email"
             placeholder="Enter your email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) {
+                setEmailError("");
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                submit();
+              }
+            }}
           />
+          {emailError && (
+            <div className="invalid-feedback d-block mt-1 ms-2">
+              {emailError}
+            </div>
+          )}
         </div>
 
         <div className="col-12 col-md-2">
@@ -130,43 +165,44 @@ export default function MyOrders() {
       {submittedEmail && (
         <div className="row">
           {/* Left Filters */}
-          <div className="col-md-3">
-            <div className="card p-3 shadow-sm sticky-top" style={{ top: 80 }}>
-              <h6>Status</h6>
-              {STATUS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStatus(s)}
-                  className={`btn w-100 mb-2 ${
-                    status === s ? "btn-success" : "btn-outline-secondary"
-                  }`}>
-                  {s.toUpperCase()}
-                </button>
-              ))}
+          {orders.length > 0 && (
+            <div className="col-md-3">
+              <div className="card p-3 shadow-sm sticky-top" style={{ top: 80 }}>
+                <h6>Status</h6>
+                {STATUS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setStatus(s)}
+                    className={`btn w-100 mb-2 ${status === s ? "btn-success" : "btn-outline-secondary"
+                      }`}>
+                    {s.toUpperCase()}
+                  </button>
+                ))}
 
-              <hr />
+                <hr />
 
-              <input
-                className="form-control mb-2"
-                placeholder="Search order or product"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+                <input
+                  className="form-control mb-2"
+                  placeholder="Search order or product"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
 
-              <select
-                className="form-select"
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}>
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="high">Total: High → Low</option>
-                <option value="low">Total: Low → High</option>
-              </select>
+                <select
+                  className="form-select"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}>
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="high">Total: High → Low</option>
+                  <option value="low">Total: Low → High</option>
+                </select>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Orders */}
-          <div className="col-md-9">
+          <div className={orders.length > 0 ? "col-md-9" : "col-12"}>
             {loading ? (
               <div className="text-center py-5">Loading…</div>
             ) : filtered.length === 0 ? (
@@ -267,9 +303,8 @@ export default function MyOrders() {
                     <button
                       key={i}
                       onClick={() => setPage(i + 1)}
-                      className={`btn btn-sm ${
-                        page === i + 1 ? "btn-success" : "btn-outline-secondary"
-                      }`}>
+                      className={`btn btn-sm ${page === i + 1 ? "btn-success" : "btn-outline-secondary"
+                        }`}>
                       {i + 1}
                     </button>
                   ))}

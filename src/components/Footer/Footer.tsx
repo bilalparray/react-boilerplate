@@ -47,11 +47,23 @@ export function Footer() {
             <div className="mt-4">
               <h6>Follow Us</h6>
               <div className="d-flex gap-3 fs-5">
-                <i className="bi bi-facebook"></i>
-                <i className="bi bi-linkedin"></i>
-                <i className="bi bi-instagram"></i>
-                <i className="bi bi-youtube"></i>
-                <i className="bi bi-twitter-x"></i>
+                <a
+                  target="_blank"
+                  href="https://www.facebook.com/people/Alpine-Saffron/61579678294409/#">
+                  <i className="bi bi-facebook"></i>
+                </a>
+                <a
+                  target="_blank"
+                  href="https://www.instagram.com/alpine_saffron24/">
+                  {" "}
+                  <i className="bi bi-instagram"></i>
+                </a>
+                <a
+                  target="_blank"
+                  href="https://www.youtube.com/watch?v=4lexVluSDGs">
+                  {" "}
+                  <i className="bi bi-youtube"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -83,21 +95,24 @@ export function Footer() {
             <h5 className="mb-3">Store Info</h5>
 
             <div className="d-flex gap-3 mb-3">
-              <i className="bi bi-geo-alt fs-5 text-success"></i>
+              <i className="bi bi-geo-alt fs-5" style={{ color: "white" }}></i>
               <span className="text-secondary">
-                #262-263, Time Square Empire, SH-42 Mirjapar Highway, Bhuj –
-                Kutch 370001, Jammu And Kashmir, India
+                10, Nh44, Near J&K Bank, Barsoo, Jammu and Kashmir, 192122
               </span>
             </div>
 
             <div className="d-flex gap-3 mb-3">
-              <i className="bi bi-envelope fs-5 text-success"></i>
-              <span className="text-secondary">support@alpine.com</span>
+              <i className="bi bi-envelope fs-5" style={{ color: "white" }}></i>
+              <span className="text-secondary">alpinesaffron24@gmail.com</span>
             </div>
 
             <div className="d-flex gap-3">
-              <i className="bi bi-telephone fs-5 text-success"></i>
-              <span className="text-secondary">+91 96354762034</span>
+              <i
+                className="bi bi-telephone fs-5"
+                style={{ color: "white" }}></i>
+              <span className="text-secondary">
+                +91 9541560938 +917051476537
+              </span>
             </div>
           </div>
         </div>

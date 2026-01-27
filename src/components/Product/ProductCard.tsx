@@ -87,9 +87,8 @@ export function ProductCard({ product }: Props) {
 
         <button className="pc-wish" onClick={handleWishlist}>
           <i
-            className={`bi ${
-              isWishlisted ? "bi-heart-fill text-danger" : "bi-heart"
-            }`}
+            className={`bi ${isWishlisted ? "bi-heart-fill text-danger" : "bi-heart"
+              }`}
           />
         </button>
       </div>
@@ -138,7 +137,7 @@ export function ProductCard({ product }: Props) {
           <>
             <i
               className="bi bi-check-circle-fill"
-              style={{ color: "#16a34a" }}
+              style={{ color: "#ffffff" }}
             />
             Added
           </>

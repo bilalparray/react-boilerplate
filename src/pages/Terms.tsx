@@ -17,7 +17,7 @@ export default function Terms() {
       </div>
 
       <div className="container py-5">
-        <h3 className="fw-bold">Wild Valley Foods Terms of Service</h3>
+        <h3 className="fw-bold"> Alpine Saffron Terms of Service</h3>
 
         <p className="text-muted mt-3">
           By accessing or using our website, you agree to be bound by these
@@ -51,8 +51,8 @@ export default function Terms() {
 
         <h5 className="fw-bold mt-4">5. Limitation of Liability</h5>
         <p className="text-muted">
-          Wild Valley Foods shall not be liable for any indirect or
-          consequential damages arising from the use of our products.
+          Alpine Saffron shall not be liable for any indirect or consequential
+          damages arising from the use of our products.
         </p>
 
         <h5 className="fw-bold mt-4">6. Governing Law</h5>

@@ -1,5 +1,8 @@
 // helpers/paymentLink.helper.js
 import razorpay from "../route/customer/razorpay.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 /**
  * Generate payment link for an order
@@ -8,6 +11,18 @@ import razorpay from "../route/customer/razorpay.js";
  * @param {number} amount - Order amount
  * @returns {Promise<Object>} Razorpay payment link response
  */
+
+// Resolve callback URL based on NODE_ENV
+const isProduction = process.env.NODE_ENV === "production";
+
+const CALLBACK_URL = isProduction
+  ? process.env.CALL_BACK_URL_PROD
+  : process.env.CALL_BACK_URL_Dev;
+
+if (!CALLBACK_URL) {
+  throw new Error("CALL_BACK_URL_PROD or CALL_BACK_URL_Dev is not defined in environment variables");
+}
+
 export const generateOrderPaymentLink = async (order, customer, amount) => {
   try {
     // Calculate expire_by as current time + 16 minutes (to ensure it's at least 15 minutes in future)
@@ -17,8 +32,7 @@ export const generateOrderPaymentLink = async (order, customer, amount) => {
     const options = {
       amount: Math.round(amount * 100), // Convert to paise for Razorpay
       currency: "INR",
-      // callback_url:"https://wildvalleyfoods.in/home" ,
-      callback_url:"http://localhost:4200/checkout/success" ,
+      callback_url: `${CALLBACK_URL}/checkout/success`,
       callback_method: "get",
       customer: {
         id: customer.razorpayCustomerId
@@ -41,12 +55,15 @@ export const generateOrderPaymentLink = async (order, customer, amount) => {
       difference_minutes: (expireBy - currentTimeInSeconds) / 60
     });
 
+    console.log("🧭 NODE_ENV:", process.env.NODE_ENV);
+    console.log("🔁 Using CALLBACK URL:", options.callback_url);
+
     const paymentLink = await razorpay.paymentLink.create(options);
     return paymentLink;
-    
+
   } catch (error) {
     console.error("❌ PAYMENT LINK GENERATION ERROR:", error);
-    
+
     // Better error message with specific details
     if (error.statusCode === 400 && error.error?.description) {
       throw new Error(`Payment gateway error: ${error.error.description}`);

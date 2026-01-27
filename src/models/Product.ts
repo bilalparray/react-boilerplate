@@ -4,6 +4,7 @@ export class Product {
   id: number;
   name: string;
   description: string;
+  richDescription?: string;
   categoryId: number;
   images: string[];
   variants: ProductVariant[];
@@ -22,7 +23,8 @@ export class Product {
     rating = 0,
     reviewCount = 0,
     isBestSelling = false,
-    category?: { id: number; name: string }
+    category?: { id: number; name: string },
+    richDescription?: string
   ) {
     this.id = id;
     this.name = name;
@@ -34,5 +36,6 @@ export class Product {
     this.reviewCount = reviewCount;
     this.isBestSelling = isBestSelling;
     this.category = category;
+    this.richDescription = richDescription;
   }
 }

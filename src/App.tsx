@@ -32,6 +32,7 @@ import CategoryPage from "./pages/Category";
 import AdminProducts from "./pages/admin/Products/AdminProducts";
 import AdminProductForm from "./pages/admin/Products/AdminProductForm";
 import ThankYou from "./pages/Thankyou";
+import NotFound from "./pages/NotFound";
 import { ToastContainer } from "react-toastify";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
@@ -66,6 +67,8 @@ export default function App() {
           <Route path="/myorders" element={<MyOrders />} />
           <Route path="/refund-policy" element={<ReturnExchangePolicy />} />
           <Route path="/category/:id" element={<CategoryPage />} />
+          {/* 404 - Catch all route */}
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* AUTH */}

@@ -107,9 +107,7 @@ export default function InvoicePage() {
             <i className="bi bi-printer me-2"></i>
             Print
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => window.print()}>
+          <button className="btn btn-primary" onClick={() => window.print()}>
             <i className="bi bi-download me-2"></i>
             Download PDF
           </button>
@@ -125,8 +123,10 @@ export default function InvoicePage() {
               <i className="bi bi-receipt-cutoff"></i>
             </div>
             <div>
-              <h1 className="invoice-company-name">Alpine Commerce</h1>
-              <p className="invoice-company-tagline">Premium Kashmiri Products</p>
+              <h1 className="invoice-company-name"> Alpine Saffron Commerce</h1>
+              <p className="invoice-company-tagline">
+                Premium Kashmiri Products
+              </p>
             </div>
           </div>
           <div className="invoice-header-right">

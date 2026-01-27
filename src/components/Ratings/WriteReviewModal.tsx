@@ -16,7 +16,15 @@ export function WriteReviewModal({ productId, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!name || !email || !comment) return toast.warning("Fill all fields");
+    if (!name || !email || !comment) {
+      return toast.warning("Fill all fields");
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return toast.warning("Please enter a valid email");
+    }
 
     try {
       setLoading(true);

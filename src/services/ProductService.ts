@@ -29,7 +29,12 @@ function mapProduct(dto: ProductDTO): Product {
     dto.description,
     dto.category.id,
     dto.images,
-    dto.variants.map(mapVariant)
+    dto.variants.map(mapVariant),
+    0,
+    0,
+    dto.isBestSelling,
+    dto.category,
+    dto.richDescription
   );
 }
 

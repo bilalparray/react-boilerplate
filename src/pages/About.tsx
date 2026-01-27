@@ -4,7 +4,7 @@ export default function AboutUs() {
       {/* HERO */}
       <div
         className="about-hero d-flex align-items-center"
-        style={{ backgroundColor: "#0f1418", padding: "80px 0" }}>
+        style={{ backgroundColor: "#1c1e59", padding: "80px 0" }}>
         <div className="container text-white">
           <h1 className="display-4 fw-bold">Alpine</h1>
           <p className="lead">
@@ -17,16 +17,16 @@ export default function AboutUs() {
       <div className="container py-5">
         <div className="row g-5 align-items-center">
           <div className="col-md-6">
-            <img src="/logo.png" className="img-fluid rounded-4 shadow" />
+            <img src="/alpine.png" className="img-fluid rounded-4 shadow" />
           </div>
 
           <div className="col-md-6">
             <h2 className="fw-bold">Our Story</h2>
             <p className="text-muted mt-3">
-              Alpine was created with a simple mission — bring authentic,
-              unprocessed, and ethically sourced food to modern homes. We work
-              directly with farmers and producers who respect nature, soil, and
-              tradition.
+              Alpine Saffron was created with a simple mission — bring
+              authentic, unprocessed, and ethically sourced food to modern
+              homes. We work directly with farmers and producers who respect
+              nature, soil, and tradition.
             </p>
             <p className="text-muted">
               In a world full of artificial flavors and shortcuts, we choose
@@ -116,9 +116,24 @@ export default function AboutUs() {
         <div className="container text-center">
           <h2 className="fw-bold">Taste the Difference</h2>
           <p className="mt-3">
-            Join thousands of families who trust Alpine for purity and quality.
+            Join thousands of families who trust Alpine Saffron for purity and
+            quality.
           </p>
-          <a href="/shop" className="btn btn-light fw-semibold px-4 py-2 mt-3">
+          <a
+            href="/shop"
+            className="btn fw-semibold px-4 py-2 mt-3 about-shop-btn"
+            style={{
+              backgroundColor: "#951016",
+              color: "white",
+              border: "none",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#1c1e59")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#951016")
+            }>
             Shop Now
           </a>
         </div>

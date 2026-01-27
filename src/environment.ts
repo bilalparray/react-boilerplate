@@ -10,10 +10,10 @@ export const environment = {
   // apiBaseUrl: "http://reg-api.renosoftwares.com/",
   // apiBaseUrl: "http://13.235.53.15:8081/api/v1",
   // apiBaseUrl: "https://api.wildvalleyfoods.in/api/v1",
-  apiBaseUrl: "http://localhost:8081/api/v1",
-
+  apiBaseUrl: "http://13.235.53.15:8081/api/v1",
+  whatsappNumber: "+917051476537",
   apiDefaultTimeout: 1,
-  renoWebsiteDownloadPageLink: "https://siffrum.com/apps/download/boiler-plate",
+
   downloadAppURL: "https://siffrum.com/apps/download/boiler-plate", //update with your app url
   applicationName: "boiler plate",
   appIdentifierForBackend: "/boiler-plate",
@@ -34,28 +34,7 @@ export const environment = {
         "719831808823-r5uh237fc2d6f27pg6p4spq5pce8rfc5.apps.googleusercontent.com",
       scopes: ["profile", "email"],
     },
-    RenoInformation: {
-      showRenoAds: true,
-      adShuffleTime: 5000,
-      // accessToken: "",
-      apiUrl: "",
-      anyOtherProp: "",
-      roletype: "5",
-      userName: "boiler_plate_Automation_Admin",
-      password: "boilerPlatePwd",
-      privacyUrl: "https://siffrum.com/products/boiler-plate/privacypolicy",
-      aboutUrl: "https://siffrum.com/products/boiler-plate",
-    },
-    GoogleAds: {
-      showAds: true,
-      showAdMobBannerAds: true,
-      showRewardedVideoAd: true,
-      showInterstitialAd: true,
-      adMobRewardVideoId: "ca-app-pub-3940256099942544/5224354917",
-      admobAppId: "ca-app-pub-3940256099942544~9257395921",
-      admobBannerAdUnitId: "ca-app-pub-3940256099942544/9214589741",
-      admobInterstitialAdID: "ca-app-pub-3940256099942544/1033173712",
-    },
+
     OtherIntegrations: {
       props: "",
     },

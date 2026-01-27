@@ -23,6 +23,7 @@ const createOrderRecordModel = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: "ProductVariants", key: "id" },
+        onDelete: "CASCADE",
         comment: 'References ProductVariant instead of Product',
       },
       productId: {

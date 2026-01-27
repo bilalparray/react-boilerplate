@@ -17,7 +17,7 @@
   align-items: center;
   padding: 50px 80px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .hero-badge {
-  color: #10b981;
+  color: var(--mp-primary, #1c1e59);
   font-weight: 600;
   font-size: 14px;
   display: block;
@@ -39,7 +39,7 @@
   font-size: 3.2rem;
   line-height: 1.15;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--mp-primary, #1c1e59);
   margin-bottom: 18px;
 }
 
@@ -57,13 +57,13 @@
 }
 
 .hero-btn {
-  background: #0f766e;
+  background: var(--mp-primary, #1c1e59);
   color: white;
   padding: 14px 28px;
   border-radius: 999px;
   text-decoration: none;
   font-weight: 600;
-  box-shadow: 0 10px 30px rgba(15, 118, 110, 0.35);
+  box-shadow: 0 10px 30px rgba(28, 30, 89, 0.35);
   transition: 0.3s;
 }
 
@@ -73,7 +73,7 @@
 
 .hero-price {
   font-weight: 600;
-  color: #ef4444;
+  color: var(--mp-secondary, #951016);
 }
 
 /* RIGHT IMAGE */
@@ -114,6 +114,122 @@
 
 .hero-nav.right {
   right: 18px;
+}
+
+/* SCROLL DOWN BUTTON */
+.hero-scroll-down {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  margin-left: -28px; /* Half of width (56px / 2) for perfect centering */
+  background: linear-gradient(135deg, var(--mp-primary, #1c1e59) 0%, var(--mp-secondary, #951016) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow:
+    0 8px 24px rgba(28, 30, 89, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  transform: translateX(0);
+  transform: translate(-50%);
+  /* if not on center remove this above line musaib */
+}
+
+.hero-scroll-down:hover {
+  transform: scale(1.15);
+  box-shadow:
+    0 12px 32px rgba(28, 30, 89, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-scroll-down:active {
+  transform: scale(1.05);
+}
+
+.scroll-down-icon {
+  position: relative;
+  z-index: 2;
+  color: white;
+  animation: bounceDown 2s infinite;
+}
+
+.scroll-down-arrow {
+  position: absolute;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.4);
+  animation: bounceDownDelayed 2s infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.scroll-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(28, 30, 89, 0.3);
+  animation: pulseRing 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes bounceDown {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(6px);
+  }
+  60% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes bounceDownDelayed {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translate(-50%, calc(-50% + 0px));
+  }
+  40% {
+    transform: translate(-50%, calc(-50% + 10px));
+  }
+  60% {
+    transform: translate(-50%, calc(-50% + 5px));
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
 }
 
 /* LOADING */
@@ -158,5 +274,17 @@
 
   .hero-image {
     max-width: 85%;
+  }
+
+  .hero-scroll-down {
+    width: 52px;
+    height: 52px;
+    bottom: 20px;
+  }
+
+  .scroll-down-icon svg,
+  .scroll-down-arrow svg {
+    width: 20px;
+    height: 20px;
   }
 }

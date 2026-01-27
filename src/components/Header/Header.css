@@ -14,9 +14,11 @@ a {
    ROOT
 ================================ */
 :root {
-  --mp-green: #1fbf75;
-  --mp-blue: #1e7da1;
-  --mp-dark: #0f172a;
+  --mp-primary: #1c1e59;
+  --mp-secondary: #951016;
+  --mp-green: #1c1e59; /* Keep for backward compatibility, using primary */
+  --mp-blue: #951016; /* Keep for backward compatibility, using secondary */
+  --mp-dark: #1c1e59;
   --mp-gray: #6b7280;
   --mp-border: #e5e7eb;
 }
@@ -36,6 +38,9 @@ header {
   object-fit: contain;
 }
 .mp-mobile-top span {
+  color: rgb(255, 255, 255);
+}
+.brand{
   color: black !important;
 }
 .offcanvas-body a {
@@ -57,7 +62,7 @@ header {
    SALE BAR (Mobile)
 ================================ */
 .mp-sale-bar {
-  background: #1e7da1;
+  background: var(--mp-secondary);
   color: white;
   font-size: 12px;
   text-align: center;
@@ -88,9 +93,11 @@ header {
 }
 
 .mp-browse-btn {
-  background: var(--mp-green);
+  background: transparent;
   border: none;
-  color: white;
+  border-left: 1px solid var(--mp-border);
+  border-right: 1px solid var(--mp-border);
+  color: black;
   padding: 10px 14px;
   border-radius: 6px;
   font-weight: 600;
@@ -109,7 +116,7 @@ header {
    DESKTOP TOP BAR
 ================================ */
 .mp-top-bar {
-  background: #0f3d2e;
+  background: var(--mp-primary);
   color: white;
   font-size: 13px;
   padding: 6px 0;
@@ -170,6 +177,17 @@ header {
   border-top: 1px solid var(--mp-border);
 }
 
+.mp-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  position: relative;
+}
+
+.mp-browse-wrapper {
+  position: relative;
+}
+
 .mp-links {
   display: flex;
   gap: 30px;
@@ -182,12 +200,19 @@ header {
 }
 
 .mp-links a:hover {
-  color: var(--mp-green);
+  color: var(--mp-primary);
+}
+
+.mp-links a.active {
+  color: var(--mp-secondary) !important;
 }
 
 .mp-help {
   font-weight: 700;
-  color: var(--mp-dark);
+  color: white;
+  background: var(--mp-green);
+  padding: 10px 14px;
+  border-radius: 0;
 }
 
 /* ===============================
@@ -264,7 +289,7 @@ header {
   padding: 0;
   position: relative;
   cursor: pointer;
-  color: #0f172a;
+  color: var(--mp-primary);
   font-size: 22px;
   line-height: 1;
 }
@@ -282,7 +307,7 @@ header {
   right: -10px;
   min-width: 20px;
   height: 20px;
-  background: #22c55e; /* Marketpro green */
+  background: var(--mp-secondary);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -300,7 +325,7 @@ header {
 -------------------------------- */
 .icon-btn:hover i,
 .icon-btn:hover {
-  color: #22c55e;
+  color: var(--mp-primary);
 }
 
 /* -------------------------------
@@ -336,12 +361,21 @@ header {
   top: 100%;
   left: 0;
   width: 320px;
+  max-height: 400px;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   padding: 8px 0;
   z-index: 1000;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.mp-cat-dropdown::-webkit-scrollbar {
+  display: none;
 }
 
 /* ===== CATEGORY ITEM BUTTON ===== */
@@ -393,9 +427,20 @@ header {
     width: 200px;
     left: 0;
     right: 0;
+    max-height: 300px;
     border-radius: 3;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     top: 30%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera on mobile */
+  .mp-cat-dropdown::-webkit-scrollbar {
+    display: none;
   }
 
   .mp-cat-item {
@@ -416,6 +461,63 @@ header {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ===============================
+   STICKY NAVIGATION BAR
+================================ */
+.mp-sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+.mp-sticky-nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-top: 1px solid var(--mp-border);
+}
+
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===============================
+   STICKY NAVIGATION BAR - MOBILE
+================================ */
+.mp-sticky-nav-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+.mp-sticky-nav-mobile-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--mp-border);
+  gap: 12px;
 }
 
 .mp-cat-item {

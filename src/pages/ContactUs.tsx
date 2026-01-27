@@ -50,7 +50,7 @@ export default function ContactUs() {
         <div className="row g-5">
           {/* Info */}
           <div className="col-md-5">
-            <h3 className="fw-bold">Wild Valley Foods</h3>
+            <h3 className="fw-bold">Alpine</h3>
             <p className="text-muted mt-3">
               Have a question about our products, shipping, or orders? Our
               support team is ready to help you.
@@ -58,13 +58,16 @@ export default function ContactUs() {
 
             <div className="mt-4">
               <p>
-                <i className="bi bi-geo-alt me-2"></i> Kashmir, India
+                <i className="bi bi-geo-alt me-2"></i>10, Nh44, Near J&K Bank,
+                Barsoo, Jammu and Kashmir, 192122
               </p>
               <p>
-                <i className="bi bi-envelope me-2"></i> support@alpine.com
+                <i className="bi bi-envelope me-2"></i>{" "}
+                alpinesaffron24@gmail.com
               </p>
               <p>
-                <i className="bi bi-phone me-2"></i> +91 98765 43210
+                <i className="bi bi-phone me-2"></i> +91 9541560938
+                +917051476537
               </p>
             </div>
           </div>

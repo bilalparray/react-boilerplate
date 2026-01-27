@@ -1,85 +1,29 @@
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: alpine-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAME:-alpine_ecommerce}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
-    ports:
-      - "${DB_PORT:-5432}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - alpine-network
-
-  # Alpine Ecommerce Backend API
   api:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: alpine-api
     restart: unless-stopped
+
+    env_file:
+      - .env
+
     ports:
-      - "${PORT:-8081}:8081"
+      - "8081:8081"
+
     environment:
-      NODE_ENV: development
       PORT: 8081
-      BASE_URL: ${BASE_URL:-/api/v1}
-      # Database connection
-      DB_NAME: ${DB_NAME:-alpine_ecommerce}
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASS: ${DB_PASS:-postgres}
-      DB_HOST: postgres
-      DB_PORT: 5432
-      # Or use DATABASE_URL if preferred
-      # DATABASE_URL: postgres://${DB_USER:-postgres}:${DB_PASS:-postgres}@postgres:5432/${DB_NAME:-alpine_ecommerce}
-      # JWT Configuration
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
-      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      # Razorpay Configuration
-      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
-      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
-      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET}
-      # Email Configuration
-      EMAIL_HOST: ${EMAIL_HOST}
-      EMAIL_PORT: ${EMAIL_PORT:-587}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASS: ${EMAIL_PASS}
-      EMAIL_FROM: ${EMAIL_FROM}
-      # API Base URL
-      API_BASE_URL: ${API_BASE_URL:-http://localhost:8081}
+      BASE_URL: /api/v1
+      JWT_EXPIRES_IN: 24h
+      JWT_REFRESH_EXPIRES_IN: 7d
+
     volumes:
-      # Mount uploads directory for persistence
-      - ./alpine-uploads:/app/alpine-uploads
-      # Optional: Mount .env file (or use environment variables above)
-      # - ./.env:/app/.env:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - /var/www/alpine-uploads:/var/www/alpine-uploads
+
     networks:
       - alpine-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/api/v1/docs"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-volumes:
-  postgres_data:
-    driver: local
 
 networks:
   alpine-network:
-    driver: bridge
-
+    external: true

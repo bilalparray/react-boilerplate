@@ -95,7 +95,7 @@ export default function DashboardSidebar() {
           <i className={`bi ${toggled ? "bi-x-lg" : "bi-list"}`}></i>
         </button>
         <div className="mobile-brand">
-          <img src="/logo.png" alt="Alpine" />
+          <img src="/alpine.png" alt="Alpine" />
           <span>Alpine</span>
         </div>
         <button className="mobile-logout-btn" onClick={handleLogout}>
@@ -107,7 +107,7 @@ export default function DashboardSidebar() {
       <aside className={`admin-sidebar ${toggled ? "open" : ""}`}>
         {/* Brand */}
         <div className="sidebar-brand">
-          <img src="/logo.png" alt="Alpine" />
+          <img src="/alpine.png" alt="Alpine" />
           <span className="brand-name">Alpine</span>
           <button
             className="sidebar-close-btn"

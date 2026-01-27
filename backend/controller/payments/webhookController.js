@@ -2,6 +2,7 @@ import express from "express";
 import crypto from "crypto";
 import { Order, Payment, WebhookLog, OrderRecord, ProductVariant } from "../../db/dbconnection.js";
 import { sendSuccess, sendError } from "../../Helper/response.helper.js";
+import { reduceStockForOrder, restoreStockForOrder, handleOrderStatusTransition } from "../../Helper/stockManagement.helper.js";
 
 const router = express.Router();
 
@@ -239,6 +240,8 @@ async function handlePaymentCaptured(eventPayload, event) {
 
     // 🔒 Update order only once
     if (!["paid", "flagged"].includes(order.status)) {
+      const oldStatus = order.status;
+      
       await order.update({
         paymentId: razorpayPaymentId,
         status: orderStatus,
@@ -247,9 +250,28 @@ async function handlePaymentCaptured(eventPayload, event) {
         lastModifiedBy: null
       });
 
-      // 📦 Reduce inventory only when order is paid
+      // ✅ Handle stock management based on status transition
+      // Only reduce stock when order transitions to "paid"
       if (orderStatus === "paid") {
-        await reduceVariantInventory(order.id);
+        try {
+          const stockResult = await reduceStockForOrder(
+            order.id,
+            orderStatus,
+            {
+              paymentId: razorpayPaymentId,
+              razorpayOrderId,
+              webhookEvent: event,
+              isAmountValid,
+            }
+          );
+          
+          if (!stockResult.success && stockResult.errors) {
+            console.error("⚠️ Stock reduction completed with warnings:", stockResult.errors);
+          }
+        } catch (stockErr) {
+          console.error("❌ Error reducing stock in webhook:", stockErr);
+          // Don't fail webhook processing if stock reduction fails
+        }
       }
     }
 
@@ -270,6 +292,7 @@ async function handlePaymentCaptured(eventPayload, event) {
 
 /**
  * Handle payment.failed event
+ * ✅ Restores stock if order was previously paid
  */
 async function handlePaymentFailed(eventPayload) {
   try {
@@ -284,10 +307,30 @@ async function handlePaymentFailed(eventPayload) {
     });
 
     if (order && order.status !== "failed") {
+      const oldStatus = order.status;
+      
       await order.update({
         status: "failed",
         lastModifiedBy: null
       });
+
+      // ✅ Restore stock if order was previously paid
+      if (oldStatus === "paid") {
+        try {
+          await restoreStockForOrder(
+            order.id,
+            "failed",
+            {
+              paymentId: paymentEntity.id,
+              razorpayOrderId,
+              webhookEvent: "payment.failed",
+              reason: "Payment failed after being paid",
+            }
+          );
+        } catch (stockErr) {
+          console.error("❌ Error restoring stock for failed payment:", stockErr);
+        }
+      }
     }
 
     return { processed: true, message: "Payment failure recorded" };
@@ -318,54 +361,11 @@ async function handlePaymentAuthorized(eventPayload) {
   }
 }
 
-/**
- * Reduce inventory for all variants in an order
- * REFACTOR: Inventory reduces per variant, not product
- */
-async function reduceVariantInventory(orderId) {
-  try {
-    // Fetch all order records with variant info
-    const orderRecords = await OrderRecord.findAll({
-      where: { orderId },
-      include: [
-        {
-          model: ProductVariant,
-          as: "variant",
-          required: true
-        }
-      ]
-    });
-
-    // Reduce stock for each variant
-    for (const record of orderRecords) {
-      const variant = record.variant;
-      if (!variant) {
-        console.warn(`⚠️ Variant not found for order record ${record.id}`);
-        continue;
-      }
-
-      const quantityOrdered = Number(record.quantity) || 0;
-      const currentStock = Number(variant.stock) || 0;
-
-      if (currentStock < quantityOrdered) {
-        console.error(`❌ Insufficient stock for variant ${variant.id} (${variant.sku}). Current: ${currentStock}, Ordered: ${quantityOrdered}`);
-        // Still reduce what we can, but log the error
-        await variant.update({ stock: 0 });
-      } else {
-        const newStock = currentStock - quantityOrdered;
-        await variant.update({ stock: newStock });
-        console.log(`✅ Reduced stock for variant ${variant.id} (${variant.sku}): ${currentStock} → ${newStock}`);
-      }
-    }
-  } catch (err) {
-    console.error("❌ Error reducing variant inventory:", err);
-    throw err;
-  }
-}
+// Stock management functions removed - now using stockManagement.helper.js
 
 /**
  * Handle refund processed event
- * REFACTOR: Refunds restore correct variant stock
+ * ✅ Restores stock when order is fully refunded
  */
 async function handleRefundProcessed(eventPayload) {
   try {
@@ -402,15 +402,31 @@ async function handleRefundProcessed(eventPayload) {
     const newStatus = isFullRefund ? "refunded" : "partially_refunded";
     
     if (order.status !== "refunded" && order.status !== "partially_refunded") {
+      const oldStatus = order.status;
+      
       await order.update({
         status: newStatus,
         lastModifiedBy: null // System update
       });
 
-      // REFACTOR: Restore inventory per variant when refund is processed
-      // Only restore if it's a full refund (for partial refunds, you might want different logic)
-      if (isFullRefund) {
-        await restoreVariantInventory(order.id);
+      // ✅ Restore stock when order is refunded (full refund only)
+      // For partial refunds, you may want different logic (e.g., restore partial quantity)
+      if (isFullRefund && oldStatus === "paid") {
+        try {
+          await restoreStockForOrder(
+            order.id,
+            newStatus,
+            {
+              paymentId: razorpayPaymentId,
+              refundId: razorpayRefundId,
+              refundAmount,
+              webhookEvent: event,
+              isFullRefund,
+            }
+          );
+        } catch (stockErr) {
+          console.error("❌ Error restoring stock for refund:", stockErr);
+        }
       }
     }
 
@@ -424,45 +440,6 @@ async function handleRefundProcessed(eventPayload) {
   } catch (err) {
     console.error("❌ Error handling refund processed:", err);
     return { processed: false, error: err.message };
-  }
-}
-
-/**
- * Restore inventory for all variants in an order (for refunds)
- * REFACTOR: Refunds restore correct variant stock
- */
-async function restoreVariantInventory(orderId) {
-  try {
-    // Fetch all order records with variant info
-    const orderRecords = await OrderRecord.findAll({
-      where: { orderId },
-      include: [
-        {
-          model: ProductVariant,
-          as: "variant",
-          required: true
-        }
-      ]
-    });
-
-    // Restore stock for each variant
-    for (const record of orderRecords) {
-      const variant = record.variant;
-      if (!variant) {
-        console.warn(`⚠️ Variant not found for order record ${record.id}`);
-        continue;
-      }
-
-      const quantityToRestore = Number(record.quantity) || 0;
-      const currentStock = Number(variant.stock) || 0;
-      const newStock = currentStock + quantityToRestore;
-
-      await variant.update({ stock: newStock });
-      console.log(`✅ Restored stock for variant ${variant.id} (${variant.sku}): ${currentStock} → ${newStock}`);
-    }
-  } catch (err) {
-    console.error("❌ Error restoring variant inventory:", err);
-    throw err;
   }
 }
 

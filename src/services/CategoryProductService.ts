@@ -26,7 +26,9 @@ function mapProduct(dto: ProductDTO): Product {
     dto.variants?.map(mapVariant) || [],
     0, // rating
     0, // reviewCount
-    dto.category // ✅ pass full category object
+    dto.isBestSelling || false,
+    dto.category, // ✅ pass full category object
+    dto.richDescription
   );
 }
 export async function getCategoryProducts(

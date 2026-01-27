@@ -4,7 +4,7 @@ export default function ThankYou() {
       style={{
         minHeight: "100vh",
         background:
-          "linear-gradient(135deg, #0f172a 0%, #020617 60%, #020617 100%)",
+          "linear-gradient(135deg, #1c1e59 0%, #0d0e2e 60%, #0d0e2e 100%)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -26,7 +26,7 @@ export default function ThankYou() {
             width: "90px",
             height: "90px",
             borderRadius: "50%",
-            background: "#22c55e",
+            background: "#1c1e59",
             margin: "0 auto 20px",
             display: "flex",
             alignItems: "center",
@@ -42,7 +42,7 @@ export default function ThankYou() {
           style={{
             fontSize: "28px",
             fontWeight: 700,
-            color: "#0f172a",
+            color: "#1c1e59",
             marginBottom: "10px",
           }}>
           Payment Successful
@@ -75,7 +75,7 @@ export default function ThankYou() {
               fontSize: "16px",
               fontWeight: 600,
               marginBottom: "12px",
-              color: "#0f172a",
+              color: "#1c1e59",
             }}>
             What happens next
           </h3>
@@ -108,13 +108,16 @@ export default function ThankYou() {
             style={{
               flex: 1,
               textDecoration: "none",
-              background: "#2563eb",
+              background: "#1c1e59",
               color: "#ffffff",
               padding: "14px",
               borderRadius: "8px",
               fontWeight: 600,
               textAlign: "center",
-            }}>
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#951016"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#1c1e59"}>
             Continue Shopping
           </a>
 
@@ -123,13 +126,22 @@ export default function ThankYou() {
             style={{
               flex: 1,
               textDecoration: "none",
-              background: "#218f12",
-              color: "#0f172a",
+              background: "transparent",
+              color: "#1c1e59",
               padding: "14px",
               borderRadius: "8px",
               fontWeight: 600,
               textAlign: "center",
-              border: "1px solid #e2e8f0",
+              border: "2px solid #1c1e59",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#1c1e59";
+              e.currentTarget.style.color = "#ffffff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#1c1e59";
             }}>
             View Order
           </a>

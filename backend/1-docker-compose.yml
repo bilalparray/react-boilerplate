@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alpine-api
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      NODE_ENV: development
+      PORT: 8081
+      BASE_URL: /api/v1
+
+      # Existing Postgres
+      DB_NAME: alpine_ecommerce
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_HOST: postgres_db_root
+      DB_PORT: 5432
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRES_IN: 24h
+      JWT_REFRESH_EXPIRES_IN: 7d
+
+    volumes:
+      - ./alpine-uploads:/app/alpine-uploads
+
+    networks:
+      - alpine-network
+
+networks:
+  alpine-network:
+    external: true
+

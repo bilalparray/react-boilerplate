@@ -3,6 +3,8 @@
   width: 100%;
   padding: 40px 0;
   background: #ffffff;
+  display: flex;
+  justify-content: center;
 }
 
 .slider {
@@ -62,7 +64,7 @@
   font-size: 18px;
   font-weight: 600;
   margin-top: 14px;
-  color: #0f172a;
+  color: var(--mp-primary, #1c1e59);
 }
 
 .cat-count {
@@ -90,9 +92,9 @@
 }
 
 .nav-btn:hover {
-  background: #16a34a;
+  background: var(--mp-primary, #1c1e59);
   color: white;
-  border-color: #16a34a;
+  border-color: var(--mp-primary, #1c1e59);
 }
 
 .nav-btn.left {

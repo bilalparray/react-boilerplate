@@ -6,7 +6,6 @@ import { useProductRating } from "../hooks/useProductRating";
 import { RatingStars } from "../components/Ratings/RatingStars";
 import "./ProductPage.css";
 import { WriteReviewModal } from "../components/Ratings/WriteReviewModal";
-import { Product3DImage } from "../components/Product3DImage";
 import { ProductCard } from "../components/Product/ProductCard";
 import { useRelatedProduct } from "../hooks/useRelatedProduct";
 import { toast } from "react-toastify";
@@ -18,13 +17,14 @@ export default function ProductPage() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const { rating, count, reviews, refresh } = useProductRating(Number(id));
 
-  const { addToCart, addToWishlist, wishlistItems } = useCartStore();
+  const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } = useCartStore();
   const { relatedProducts } = useRelatedProduct(Number(id));
   const [activeImage, setActiveImage] = useState(0);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [tab, setTab] = useState<"desc" | "specs" | "reviews">("desc");
+  const [expandedDesc, setExpandedDesc] = useState<string | null>(null);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -94,21 +94,22 @@ export default function ProductPage() {
 
   const handleWishlistToggle = () => {
     if (isInWishlist) {
+      removeFromWishlist(product.id, variant.id);
       toast.info("Removed from wishlist");
     } else {
+      addToWishlist({
+        productId: product.id,
+        variantId: variant.id,
+        name: product.name,
+        image: product.images[0],
+        price: variant.price,
+        comparePrice: variant.comparePrice,
+        weight: variant.weight,
+        unit: variant.unit.symbol,
+        stock: variant.stock,
+      });
       toast.success("Added to wishlist");
     }
-    addToWishlist({
-      productId: product.id,
-      variantId: variant.id,
-      name: product.name,
-      image: product.images[0],
-      price: variant.price,
-      comparePrice: variant.comparePrice,
-      weight: variant.weight,
-      unit: variant.unit.symbol,
-      stock: variant.stock,
-    });
   };
 
   return (
@@ -135,7 +136,11 @@ export default function ProductPage() {
           <div className="product-images">
             <div className="product-main-image">
               <div className="product-image-container">
-                <Product3DImage image={product.images[activeImage]} />
+                <img
+                  src={product.images[activeImage]}
+                  alt={product.name}
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
               </div>
               {product.isBestSelling && (
                 <div className="best-seller-badge">
@@ -169,6 +174,12 @@ export default function ProductPage() {
                 <i className={`bi ${isInWishlist ? "bi-heart-fill" : "bi-heart"}`}></i>
               </button>
             </div>
+
+            {product.description && (
+              <div className="product-description">
+                <p>{product.description}</p>
+              </div>
+            )}
 
             <div className="product-rating">
               <RatingStars rating={rating} count={count} />
@@ -222,9 +233,7 @@ export default function ProductPage() {
                         setSelectedVariantIndex(i);
                         setQty(1);
                       }}
-                      className={`variant-btn ${i === selectedVariantIndex ? "active" : ""} ${
-                        !v.isInStock ? "disabled" : ""
-                      }`}
+                      className={`variant-btn ${i === selectedVariantIndex ? "active" : ""} ${!v.isInStock ? "disabled" : ""}`}
                       disabled={!v.isInStock}>
                       {v.displayWeight}
                       {!v.isInStock && (
@@ -277,28 +286,44 @@ export default function ProductPage() {
                 )}
               </button>
             </div>
+          </div>
 
-            {/* Product Features */}
-            <div className="product-features">
-              <div className="feature-item">
-                <i className="bi bi-truck feature-icon"></i>
-                <div>
-                  <div className="feature-title">Free Shipping</div>
-                  <div className="feature-desc">On orders above ₹500</div>
+          {/* Seller Information & Services */}
+          <div className="seller-services-section">
+            <div className="seller-header">
+              <div className="seller-brand">
+                <i className="bi bi-shop"></i>
+                <span>by Alpine</span>
+              </div>
+              <button className="btn-view-store" onClick={() => navigate("/shop")}>VIEW STORE</button>
+            </div>
+            <div className="services-list">
+              <div className="service-item">
+                <i className="bi bi-truck service-icon"></i>
+                <div className="service-content">
+                  <div className="service-title">Fast Delivery</div>
+                  <div className="service-desc">Lightning-fast shipping, guaranteed.</div>
                 </div>
               </div>
-              <div className="feature-item">
-                <i className="bi bi-arrow-repeat feature-icon"></i>
-                <div>
-                  <div className="feature-title">Easy Returns</div>
-                  <div className="feature-desc">7-day return policy</div>
+              <div className="service-item">
+                <i className="bi bi-check-circle service-icon"></i>
+                <div className="service-content">
+                  <div className="service-title">Pickup available at Shop location</div>
+                  <div className="service-desc">Usually ready in 24 hours</div>
                 </div>
               </div>
-              <div className="feature-item">
-                <i className="bi bi-shield-check feature-icon"></i>
-                <div>
-                  <div className="feature-title">Secure Payment</div>
-                  <div className="feature-desc">100% secure transactions</div>
+              <div className="service-item">
+                <i className="bi bi-credit-card service-icon"></i>
+                <div className="service-content">
+                  <div className="service-title">Payment</div>
+                  <div className="service-desc">Payment upon receipt of goods, Payment by card in the department, Google Pay, Online card.</div>
+                </div>
+              </div>
+              <div className="service-item">
+                <i className="bi bi-box-arrow-up service-icon"></i>
+                <div className="service-content">
+                  <div className="service-title">Packaging</div>
+                  <div className="service-desc">Research & development value proposition graphical user interface investor.</div>
                 </div>
               </div>
             </div>
@@ -331,8 +356,59 @@ export default function ProductPage() {
           <div className="tab-content">
             {tab === "desc" && (
               <div className="tab-panel">
-                <h3 className="tab-panel-title">Product Description</h3>
-                <p className="tab-panel-text">{product.description || "No description available."}</p>
+                <h3 className="tab-panel-title">Product Information</h3>
+                <div className="description-accordion">
+                  {product.description && (
+                    <div className="desc-item">
+                      <button
+                        className={`desc-header ${expandedDesc === "overview" ? "expanded" : ""}`}
+                        onClick={() =>
+                          setExpandedDesc(expandedDesc === "overview" ? null : "overview")
+                        }>
+                        <span className="desc-title">
+                          <i className="bi bi-info-circle me-2"></i>
+                          Overview
+                        </span>
+                        <i
+                          className={`bi bi-chevron-${expandedDesc === "overview" ? "up" : "down"}`}></i>
+                      </button>
+                      {expandedDesc === "overview" && (
+                        <div className="desc-content">
+                          <p className="desc-text">{product.description}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {product.richDescription && (
+                    <div className="desc-item">
+                      <button
+                        className={`desc-header ${expandedDesc === "details" ? "expanded" : ""}`}
+                        onClick={() =>
+                          setExpandedDesc(expandedDesc === "details" ? null : "details")
+                        }>
+                        <span className="desc-title">
+                          <i className="bi bi-file-text me-2"></i>
+                          Detailed Description
+                        </span>
+                        <i
+                          className={`bi bi-chevron-${expandedDesc === "details" ? "up" : "down"}`}></i>
+                      </button>
+                      {expandedDesc === "details" && (
+                        <div className="desc-content">
+                          <div
+                            className="desc-rich-text"
+                            dangerouslySetInnerHTML={{ __html: product.richDescription }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!product.description && !product.richDescription && (
+                    <p className="tab-panel-text">No description available.</p>
+                  )}
+                </div>
               </div>
             )}
 

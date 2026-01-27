@@ -34,11 +34,23 @@ export default function Shop() {
     }
 
     if (sort === "price-asc") {
-      list.sort((a, b) => a.defaultVariant.price - b.defaultVariant.price);
+      list.sort((a, b) => {
+        const variantA = a.variants.find((v) => v.isDefault) || a.variants[0];
+        const variantB = b.variants.find((v) => v.isDefault) || b.variants[0];
+        const priceA = variantA?.price || 0;
+        const priceB = variantB?.price || 0;
+        return priceA - priceB;
+      });
     }
 
     if (sort === "price-desc") {
-      list.sort((a, b) => b.defaultVariant.price - a.defaultVariant.price);
+      list.sort((a, b) => {
+        const variantA = a.variants.find((v) => v.isDefault) || a.variants[0];
+        const variantB = b.variants.find((v) => v.isDefault) || b.variants[0];
+        const priceA = variantA?.price || 0;
+        const priceB = variantB?.price || 0;
+        return priceB - priceA;
+      });
     }
 
     return list;

@@ -47,11 +47,11 @@
   width: 58px;
   height: 58px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #0f3d2e, #1f6f50);
+  background: linear-gradient(145deg, var(--mp-primary, #1c1e59), var(--mp-secondary, #951016));
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 30px rgba(31, 111, 80, 0.45);
+  box-shadow: 0 10px 30px rgba(28, 30, 89, 0.45);
   flex-shrink: 0;
 }
 
@@ -63,7 +63,7 @@
 .text-wrap .title {
   font-size: 17px;
   font-weight: 700;
-  color: #0f3d2e;
+  color: var(--mp-primary, #1c1e59);
 }
 
 .text-wrap .subtitle {

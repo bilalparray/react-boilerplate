@@ -1,4 +1,121 @@
 /* ───────────────────────────────────────── */
+/* Color Variables */
+:root {
+  --mp-primary: #1c1e59;
+  --mp-secondary: #951016;
+}
+:root {
+  --heading-font: "Outfit", sans-serif;
+  --heading-font-alt: "Quicksand", sans-serif;
+  --body-font: "Inter", sans-serif;
+  --script-font: "Dancing Script", cursive;
+}
+
+body {
+  font-family: var(--body-font);
+  line-height: 1.6;
+  color: #111;
+}
+
+/* Primary headings */
+h1, h2, h3 {
+  font-family: var(--heading-font);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Secondary headings */
+h4, h5, h6 {
+  font-family: var(--heading-font-alt);
+  font-weight: 500;
+}
+
+/* Text elements - inherit body font */
+p, span, div, li, td, th, label, small, strong, b, em, i {
+  font-family: var(--body-font);
+}
+
+/* Buttons */
+button, .btn, input[type="button"], input[type="submit"], input[type="reset"] {
+  font-family: var(--body-font) !important;
+}
+
+/* Form inputs */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]), 
+textarea, 
+select {
+  font-family: var(--body-font) !important;
+}
+
+/* Links */
+a {
+  font-family: var(--body-font);
+}
+
+/* Bootstrap components */
+.navbar, .nav-link, .dropdown-menu, .dropdown-item, 
+.card, .card-title, .card-text, .alert, .badge, 
+.form-control, .form-label, .form-select, .list-group-item {
+  font-family: var(--body-font);
+}
+
+/* Table elements */
+table, thead, tbody, tr, td, th {
+  font-family: var(--body-font);
+}
+
+/* Accent text only */
+.font-script {
+  font-family: var(--script-font);
+}
+
+/* ───────────────────────────────────────── */
+/* Bootstrap Success Button Override */
+.btn-success,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background-color: var(--mp-primary) !important;
+  border-color: var(--mp-primary) !important;
+}
+
+.btn-outline-success {
+  color: var(--mp-primary) !important;
+  border-color: var(--mp-primary) !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+  background-color: var(--mp-primary) !important;
+  border-color: var(--mp-primary) !important;
+  color: white !important;
+}
+
+.text-success,
+.text-success i,
+i.text-success {
+  color: var(--mp-primary) !important;
+}
+
+.bg-success {
+  background-color: var(--mp-primary) !important;
+}
+
+/* Bootstrap Primary Button Override */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--mp-primary) !important;
+  border-color: var(--mp-primary) !important;
+}
+
+.text-primary {
+  color: var(--mp-primary) !important;
+}
+
+/* ───────────────────────────────────────── */
 /* Footer links */
 .footer-link {
   color: #d1d5db;
@@ -6,11 +123,11 @@
 }
 
 .footer-link:hover {
-  color: #f59e0b;
+  color: var(--mp-secondary);
 }
 a {
   text-decoration: none !important;
-  color: red;
+  color: var(--mp-secondary);
 }
 /* ───────────────────────────────────────── */
 /* Desktop Categories Dropdown Animation */
@@ -41,13 +158,13 @@ a {
 }
 
 .dropdown-item:hover {
-  background: #16a34a;
+  background: var(--mp-primary);
   color: white;
 }
 
 .dropdown-item.active,
 .dropdown-item:active {
-  background-color: #16a34a !important;
+  background-color: var(--mp-primary) !important;
   color: white;
 }
 
@@ -79,7 +196,7 @@ a {
 /* Icon style */
 #mobileMenu .mobile-link i {
   font-size: 18px;
-  color: #16a34a;
+  color: var(--mp-primary);
 }
 
 /* Hover state */
@@ -89,8 +206,8 @@ a {
 
 /* Active route */
 #mobileMenu .mobile-link.active {
-  background: rgba(22, 163, 74, 0.12);
-  color: #16a34a;
+  background: rgba(28, 30, 89, 0.12);
+  color: var(--mp-primary);
   font-weight: 600;
 }
 /* ────────────── product card────────────────────────── */
@@ -117,18 +234,18 @@ a {
 }
 
 .add-cart-btn {
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  background: linear-gradient(135deg, var(--mp-primary), var(--mp-secondary));
   color: white;
   border-radius: 14px;
   padding: 12px 16px;
   border: none;
-  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 10px 25px rgba(28, 30, 89, 0.35);
   transition: all 0.25s ease;
 }
 
 .add-cart-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 18px 40px rgba(28, 30, 89, 0.45);
   filter: brightness(1.05);
 }
 

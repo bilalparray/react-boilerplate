@@ -14,7 +14,7 @@
     "servers": [
       {
         "url": "http://13.235.53.15:8081/api/v1",
-        "description": "Development Server"
+        "description": "Production Server"
       }
     ],
     "components": {

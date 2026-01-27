@@ -22,6 +22,7 @@ const app = express();
    ✅ CORS (FIRST — DO NOT MOVE)
 ====================================================== */
 app.use(corsMiddleware);
+app.options("*", corsMiddleware);
 
 /* ======================================================
    🔥 Razorpay Webhook (RAW BODY)

@@ -13,7 +13,8 @@ import {
   getOrderById,
   getOrdersByCustomerId,
   getRazorpayKey,
-  updateOrderStatus
+  updateOrderStatus,
+  validateStock
 } from "../../controller/Order/orderController.js";
 import authenticate from "../../middlewares/auth/auth.js";
 
@@ -140,6 +141,53 @@ router.post("/", createOrder);
  *         $ref: '#/components/responses/BadRequest'
  */
 router.post("/verify", verifyPayment);
+
+/**
+ * @swagger
+ * /api/v1/order/validate-stock:
+ *   post:
+ *     tags:
+ *       - Orders
+ *     summary: Validate stock availability
+ *     description: Checks stock availability for items before adding to cart or creating order
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - reqData
+ *             properties:
+ *               reqData:
+ *                 type: object
+ *                 required:
+ *                   - items
+ *                 properties:
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       required:
+ *                         - productVariantId
+ *                         - quantity
+ *                       properties:
+ *                         productVariantId:
+ *                           type: integer
+ *                         quantity:
+ *                           type: integer
+ *     responses:
+ *       200:
+ *         description: Stock validation completed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ */
+router.post("/validate-stock", validateStock);
 
 /**
  * @swagger

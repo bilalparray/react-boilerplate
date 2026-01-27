@@ -17,11 +17,11 @@ export default function ReturnExchangePolicy() {
       </div>
 
       <div className="container py-5">
-        <h3 className="fw-bold">Wild Valley Foods – Returns & Exchanges</h3>
+        <h3 className="fw-bold"> Alpine Saffron – Returns & Exchanges</h3>
 
         <p className="text-muted mt-3">
-          At Wild Valley Foods, customer satisfaction is our priority. We take
-          great care to ensure every product reaches you in perfect condition.
+          At Alpine, customer satisfaction is our priority. We take great care
+          to ensure every product reaches you in perfect condition.
         </p>
 
         <h5 className="fw-bold mt-4">1. Eligibility for Returns</h5>

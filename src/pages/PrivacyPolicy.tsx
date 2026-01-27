@@ -15,12 +15,12 @@ export default function PrivacyPolicy() {
       </div>
 
       <div className="container py-5">
-        <h3 className="fw-bold">Wild Valley Foods Privacy Policy</h3>
+        <h3 className="fw-bold"> Alpine Saffron Privacy Policy</h3>
 
         <p className="text-muted mt-3">
-          At Wild Valley Foods, we respect your privacy and are committed to
-          protecting your personal information. This policy explains how we
-          collect, use, and protect your data when you use our website.
+          At Alpine, we respect your privacy and are committed to protecting
+          your personal information. This policy explains how we collect, use,
+          and protect your data when you use our website.
         </p>
 
         <h5 className="fw-bold mt-4">1. Information We Collect</h5>

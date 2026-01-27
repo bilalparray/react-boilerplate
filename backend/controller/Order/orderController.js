@@ -5,6 +5,7 @@ import { sendSuccess, sendError } from "../../Helper/response.helper.js";
 import { generateOrderPaymentLink } from "../../Helper/razorpay.payment.helper.js";
 import { convertImageToBase64 } from "../../Helper/multer.helper.js";
 import { Op } from "sequelize";
+import { reduceStockForOrder, restoreStockForOrder, handleOrderStatusTransition } from "../../Helper/stockManagement.helper.js";
 
 /**
  * Get Razorpay Public Key (Secure Endpoint)
@@ -32,89 +33,7 @@ export const getRazorpayKey = async (req, res) => {
   }
 };
 
-/**
- * Reduce inventory for all variants in an order
- * REFACTOR: Inventory reduces per variant, not product
- */
-async function reduceVariantInventory(orderId) {
-  try {
-    // Fetch all order records with variant info
-    const orderRecords = await OrderRecord.findAll({
-      where: { orderId },
-      include: [
-        {
-          model: ProductVariant,
-          as: "variant",
-          required: true
-        }
-      ]
-    });
-
-    // Reduce stock for each variant
-    for (const record of orderRecords) {
-      const variant = record.variant;
-      if (!variant) {
-        console.warn(`⚠️ Variant not found for order record ${record.id}`);
-        continue;
-      }
-
-      const quantityOrdered = Number(record.quantity) || 0;
-      const currentStock = Number(variant.stock) || 0;
-
-      if (currentStock < quantityOrdered) {
-        console.error(`❌ Insufficient stock for variant ${variant.id} (${variant.sku}). Current: ${currentStock}, Ordered: ${quantityOrdered}`);
-        // Still reduce what we can, but log the error
-        await variant.update({ stock: 0 });
-      } else {
-        const newStock = currentStock - quantityOrdered;
-        await variant.update({ stock: newStock });
-        console.log(`✅ Reduced stock for variant ${variant.id} (${variant.sku}): ${currentStock} → ${newStock}`);
-      }
-    }
-  } catch (err) {
-    console.error("❌ Error reducing variant inventory:", err);
-    throw err;
-  }
-}
-
-/**
- * Restore inventory for all variants in an order (for refunds)
- * REFACTOR: Refunds restore correct variant stock
- */
-async function restoreVariantInventory(orderId) {
-  try {
-    // Fetch all order records with variant info
-    const orderRecords = await OrderRecord.findAll({
-      where: { orderId },
-      include: [
-        {
-          model: ProductVariant,
-          as: "variant",
-          required: true
-        }
-      ]
-    });
-
-    // Restore stock for each variant
-    for (const record of orderRecords) {
-      const variant = record.variant;
-      if (!variant) {
-        console.warn(`⚠️ Variant not found for order record ${record.id}`);
-        continue;
-      }
-
-      const quantityToRestore = Number(record.quantity) || 0;
-      const currentStock = Number(variant.stock) || 0;
-      const newStock = currentStock + quantityToRestore;
-
-      await variant.update({ stock: newStock });
-      console.log(`✅ Restored stock for variant ${variant.id} (${variant.sku}): ${currentStock} → ${newStock}`);
-    }
-  } catch (err) {
-    console.error("❌ Error restoring variant inventory:", err);
-    throw err;
-  }
-}
+// Stock management functions removed - now using stockManagement.helper.js
 
 /**
  * Create Order
@@ -459,10 +378,28 @@ export const verifyPayment = async (req, res) => {
       lastModifiedBy: req.user?.id || null
     });
 
-    // REFACTOR: Reduce inventory per variant when payment is verified
+    // ✅ Reduce stock atomically when payment is verified and order is paid
     // Only reduce stock if payment is valid and order status is paid
     if (orderStatus === "paid" && isAmountValid) {
-      await reduceVariantInventory(order.id);
+      try {
+        const stockResult = await reduceStockForOrder(
+          order.id,
+          orderStatus,
+          {
+            paymentId: razorpay_payment_id,
+            verifiedBy: 'client_callback',
+            isAmountValid,
+          }
+        );
+        
+        if (!stockResult.success && stockResult.errors) {
+          console.error("⚠️ Stock reduction completed with warnings:", stockResult.errors);
+        }
+      } catch (stockErr) {
+        console.error("❌ Error reducing stock during payment verification:", stockErr);
+        // Don't fail the payment verification if stock reduction fails
+        // Stock can be adjusted manually later
+      }
     }
 
     // Fetch complete order with items (no need for customer details in verification response)
@@ -806,42 +743,174 @@ export const getOrderById = async (req, res) => {
 /**
  * Update Order Status
  * PUT /api/order/:id/status
- * reqData: { status: "paid" | "failed" | "refunded" | etc. }
+ * reqData: { status: "paid" | "failed" | "refunded" | etc., reason?: string }
+ * 
+ * ✅ Handles stock management based on status transitions:
+ * - Pending/Created -> Paid: Reduces stock
+ * - Paid -> Cancelled/Refunded/Failed: Restores stock
  */
 export const updateOrderStatus = async (req, res) => {
+  const t = await Order.sequelize.transaction();
+  
   try {
     const orderId = parseInt(req.params.id, 10);
     const reqData = req.body.reqData || req.body;
-    const { status } = reqData;
+    const { status, reason } = reqData;
 
     if (!orderId || isNaN(orderId)) {
+      await t.rollback();
       return sendError(res, "Invalid order ID", 400);
     }
 
     const validStatuses = ["created", "paid", "failed", "flagged", "refunded", "partially_refunded", "payment_pending", "shipped", "delivered", "cancelled"];
     if (!status || !validStatuses.includes(status)) {
+      await t.rollback();
       return sendError(res, `Invalid status. Must be one of: ${validStatuses.join(", ")}`, 400);
     }
 
-    const order = await Order.findByPk(orderId);
+    const order = await Order.findByPk(orderId, { transaction: t });
     
     if (!order) {
+      await t.rollback();
       return sendError(res, "Order not found", 404);
     }
 
+    const oldStatus = order.status;
+    const newStatus = status;
+
+    // Update order status
     await order.update({
-      status,
+      status: newStatus,
       lastModifiedBy: req.user?.id || null
-    });
+    }, { transaction: t });
+
+    // ✅ Handle stock management based on status transition
+    let stockResult = null;
+    try {
+      stockResult = await handleOrderStatusTransition(
+        orderId,
+        oldStatus,
+        newStatus,
+        {
+          updatedBy: req.user?.id || null,
+          reason: reason || null,
+          updatedVia: 'admin_status_update',
+        }
+      );
+    } catch (stockErr) {
+      console.error("❌ Error handling stock transition:", stockErr);
+      // Log error but don't fail the status update
+      // Stock can be adjusted manually if needed
+    }
+
+    await t.commit();
 
     return sendSuccess(res, {
       message: "Order status updated successfully",
-      order: order
+      order: await Order.findByPk(orderId, {
+        include: [
+          { model: OrderRecord, as: "items" },
+          { model: CustomerDetail, as: "customer" }
+        ]
+      }),
+      stockUpdate: stockResult ? {
+        success: stockResult.success,
+        message: stockResult.message,
+        skipped: stockResult.skipped || false,
+      } : null,
     });
 
   } catch (err) {
+    await t.rollback();
     console.error("❌ UPDATE ORDER STATUS ERROR:", err);
     return sendError(res, err.message || "Failed to update order status", 500);
+  }
+};
+
+/**
+ * Validate Stock Availability
+ * POST /api/order/validate-stock
+ * reqData: { items: [{ productVariantId, quantity }] }
+ * Returns stock availability for each item
+ */
+export const validateStock = async (req, res) => {
+  try {
+    const reqData = req.body.reqData || req.body;
+    const { items } = reqData;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return sendError(res, "Items array is required", 400);
+    }
+
+    const variantIds = items.map(i => i.productVariantId).filter(Boolean);
+    if (variantIds.length !== items.length) {
+      return sendError(res, "All items must have productVariantId", 400);
+    }
+
+    // Fetch variants
+    const variants = await ProductVariant.findAll({
+      where: {
+        id: { [Op.in]: variantIds },
+        isActive: true,
+      },
+      include: [
+        { model: Product, as: "product", attributes: ["id", "name"] },
+        { model: UnitValue, as: "unitValue" },
+      ],
+    });
+
+    const validationResults = items.map(item => {
+      const variant = variants.find(v => v.id === item.productVariantId);
+      const requestedQuantity = Number(item.quantity) || 0;
+
+      if (!variant) {
+        return {
+          productVariantId: item.productVariantId,
+          available: false,
+          error: "Variant not found or inactive",
+          availableStock: 0,
+          requestedQuantity,
+        };
+      }
+
+      const availableStock = Number(variant.stock) || 0;
+      const isAvailable = availableStock >= requestedQuantity;
+
+      // Check min/max order quantity
+      const minOrderQuantity = variant.minOrderQuantity || 1;
+      const maxOrderQuantity = variant.maxOrderQuantity;
+      const isValidQuantity = requestedQuantity >= minOrderQuantity && 
+                             (!maxOrderQuantity || requestedQuantity <= maxOrderQuantity);
+
+      return {
+        productVariantId: variant.id,
+        productId: variant.productId,
+        sku: variant.sku,
+        productName: variant.product?.name || "",
+        available: isAvailable && isValidQuantity,
+        availableStock,
+        requestedQuantity,
+        minOrderQuantity,
+        maxOrderQuantity,
+        isValidQuantity,
+        errors: [
+          ...(availableStock < requestedQuantity ? [`Insufficient stock. Available: ${availableStock}`] : []),
+          ...(requestedQuantity < minOrderQuantity ? [`Minimum order quantity is ${minOrderQuantity}`] : []),
+          ...(maxOrderQuantity && requestedQuantity > maxOrderQuantity ? [`Maximum order quantity is ${maxOrderQuantity}`] : []),
+        ],
+      };
+    });
+
+    const allAvailable = validationResults.every(r => r.available);
+
+    return sendSuccess(res, {
+      allAvailable,
+      items: validationResults,
+    });
+
+  } catch (err) {
+    console.error("❌ VALIDATE STOCK ERROR:", err);
+    return sendError(res, err.message || "Failed to validate stock", 500);
   }
 };
 

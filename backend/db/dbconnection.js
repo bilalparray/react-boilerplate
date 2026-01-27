@@ -27,6 +27,7 @@ import createPaymentModel from "../model/payment.model.js";
 import createWebhookLogModel from "../model/webhookLog.model.js";
 import createErrorLogModel from "../model/errorLog.model.js";
 import createVisitorLogModel from "../model/visitorLog.model.js";
+import createStockTransactionModel from "../model/stockTransaction.model.js";
 
 // =======================
 // Model Holders
@@ -52,7 +53,8 @@ let User,
   Payment,
   WebhookLog,
   ErrorLog,
-  VisitorLog;
+  VisitorLog,
+  StockTransaction;
 
 // =======================
 // DB CONNECTION
@@ -188,6 +190,7 @@ export const dbConnection = async () => {
     WebhookLog = await createWebhookLogModel(sequelize);
     ErrorLog = await createErrorLogModel(sequelize);
     VisitorLog = await createVisitorLogModel(sequelize);
+    StockTransaction = await createStockTransactionModel(sequelize);
 
     // =======================
     // ASSOCIATIONS
@@ -248,6 +251,7 @@ export const dbConnection = async () => {
       OrderRecord,
       Payment,
       WebhookLog,
+      StockTransaction,
     ];
 
     for (const model of modelsToSync) {
@@ -287,6 +291,7 @@ export const dbConnection = async () => {
         WebhookLog,
         ErrorLog,
         VisitorLog,
+        StockTransaction,
       },
     };
   } catch (error) {
@@ -348,4 +353,5 @@ export {
   WebhookLog,
   ErrorLog,
   VisitorLog,
+  StockTransaction,
 };

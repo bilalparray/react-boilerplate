@@ -64,6 +64,51 @@ export function BannerCarousel() {
           onClick={() => setIndex((i) => (i + 1) % banners.length)}>
           ›
         </button>
+
+        {/* SCROLL DOWN BUTTON */}
+        <button
+          className="hero-scroll-down"
+          onClick={() => {
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: "smooth",
+            });
+          }}
+          aria-label="Scroll to bottom">
+          <div className="scroll-down-icon">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M7 10L12 15L17 10"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div className="scroll-down-arrow">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M7 10L12 15L17 10"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div className="scroll-pulse-ring"></div>
+        </button>
       </div>
     </section>
   );
